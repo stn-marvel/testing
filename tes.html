@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Pemesanan - Marfreelance</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-weight: bold;
+    }
+
+    /* Transisi WA */
+    #redirectMessage {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: #f4f4f4;
+      color: #222;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: 1.5rem;
+      padding: 2rem;
+      text-align: center;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Pemesanan | Prototype Version 0.25</h2>
+
+  <form id="orderForm">
+    <label>Nama</label>
+    <input type="text" name="nama" required>
+
+    <label>Email (opsional)</label>
+    <input type="email" name="email">
+
+    <label>Jenis Layanan</label>
+    <select name="layanan" required>
+      <option value="">-- Pilih Layanan --</option>
+      <option value="Template Website">Template Website</option>
+      <option value="Custom Development Service">Custom Development Service</option>
+      <option value="Setel Hosting">Setel Hosting</option>
+      <option value="Multiple Product Type">Multiple Product Type</option>
+    </select>
+
+    <label>Metode Pembayaran</label>
+    <select name="payment" required>
+      <option value="">-- Pilih Metode Pembayaran --</option>
+      <option value="QR">QR Code</option>
+      <option value="VA">Virtual Account</option>
+      <option value="TRX">Transfer Manual</option>
+    </select>
+
+    <label>Catatan Tambahan</label>
+    <textarea name="catatan" rows="4"></textarea>
+
+    <button type="submit">Kirim Pesanan via WhatsApp</button>
+  </form>
+
+  <!-- Pesan transisi -->
+  <div id="redirectMessage">
+    <h1>Mengalihkan ke WhatsApp...</h1>
+    <p>Anda hanya perlu mengirim <strong>kode pesanan</strong> kepada admin.</p>
+  </div>
+
+  <script>
+    function generateKodePesanan(jenisOrder, paymentType) {
+      const now = new Date();
+      const hhmm = ("0" + now.getHours()).slice(-2) + ("0" + now.getMinutes()).slice(-2); // HHMM
+      const mmdd = ("0" + (now.getMonth() + 1)).slice(-2) + ("0" + now.getDate()).slice(-2); // MMDD
+      const random3 = Math.floor(Math.random() * 900 + 100); // 100–999
+      return `${jenisOrder}${hhmm}${mmdd}${paymentType}${random3}`;
+    }
+
+    document.getElementById("orderForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const nama = e.target.nama.value;
+      const email = e.target.email.value;
+      const layanan = e.target.layanan.value;
+      const payment = e.target.payment.value;
+      const catatan = e.target.catatan.value;
+
+      let jenisKode = "TMP";
+      if (layanan.includes("Custom")) jenisKode = "CDS";
+      else if (layanan.includes("Hosting")) jenisKode = "HST";
+      else if (layanan.includes("Multiple")) jenisKode = "MPT";
+
+      const kodePesanan = generateKodePesanan(jenisKode, payment);
+
+      let pesan = `Halo admin Marfreelance, saya ingin melakukan pemesanan.\n\n`;
+      pesan += `Nama: ${nama}\n`;
+      if (email) pesan += `Email: ${email}\n`;
+      pesan += `Layanan: ${layanan}\n`;
+      pesan += `Metode Pembayaran: ${payment}\n`;
+      pesan += `Catatan: ${catatan || '-'}\n\n`;
+      pesan += `Kode Pesanan: *${kodePesanan}*`;
+
+      const nomorWA = "6285128025621"; 
+      const encodedPesan = encodeURIComponent(pesan);
+      const waURL = `https://wa.me/${nomorWA}?text=${encodedPesan}`;
+
+      // Pesan redirect
+      document.getElementById("redirectMessage").style.display = "flex";
+
+      // Redirect ke WA
+      setTimeout(() => {
+        window.location.href = waURL;
+      }, 2000); //durasi 2dtk 
+    });
+  </script>
+
+</body>
+</html>
