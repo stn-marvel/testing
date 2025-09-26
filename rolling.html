@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Rolling Tempat Duduk</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    select, button {
+      padding: 8px 12px;
+      margin: 5px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 150px);
+      grid-gap: 15px;
+    }
+
+    .meja {
+      background: white;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .meja:hover {
+      transform: scale(1.05);
+    }
+
+    .kursi {
+      display: flex;
+      gap: 6px;
+      margin: 5px 0;
+    }
+
+    .siswa {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      color: white;
+    }
+
+    .L {
+      background: #3498db;
+    }
+
+    .P {
+      background: #e67e22;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Rolling Tempat Duduk X-2</h1>
+
+  <div class="controls">
+    <label for="start">Pola Awal:</label>
+    <select id="start">
+      <option value="L">Laki-Laki</option>
+      <option value="P">Perempuan</option>
+    </select>
+    <button onclick="buatDenah()">Acak Denah</button>
+  </div>
+
+  <div id="denah" class="grid"></div>
+
+  <script>
+    const dataGender = {
+      1:"L",2:"L",3:"L",4:"L",5:"L",
+      6:"P",7:"P",8:"L",9:"P",10:"L",
+      11:"P",12:"P",13:"P",14:"P",15:"P",
+      16:"P",17:"P",18:"L",19:"L",20:"P",
+      21:"L",22:"P",23:"P",24:"P",25:"P",
+      26:"P",27:"L",28:"L",29:"L",30:"L",
+      31:"L",32:"L",33:"L",34:"P",35:"P",
+      36:"P",37:"L",38:"P",39:"L",40:"P",
+      41:"L",42:"L",43:"P",44:"P",45:"L",
+      46:"P",47:"L",48:"L"
+    };
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function generateCheckerboard(rows, cols, start) {
+      const pola = [];
+      for (let i = 0; i < rows; i++) {
+        const row = [];
+        for (let j = 0; j < cols; j++) {
+          if ((i + j) % 2 === 0) {
+            row.push(start);
+          } else {
+            row.push(start === "L" ? "P" : "L");
+          }
+        }
+        pola.push(row);
+      }
+      return pola;
+    }
+
+    function buatDenah() {
+      const start = document.getElementById("start").value;
+      let laki = Object.entries(dataGender).filter(([_, g]) => g === "L").map(([a]) => parseInt(a));
+      let perempuan = Object.entries(dataGender).filter(([_, g]) => g === "P").map(([a]) => parseInt(a));
+
+      shuffle(laki);
+      shuffle(perempuan);
+
+      const pola = generateCheckerboard(6, 4, start);
+      const denahEl = document.getElementById("denah");
+      denahEl.innerHTML = "";
+
+      pola.forEach(row => {
+        row.forEach(meja => {
+          const divMeja = document.createElement("div");
+          divMeja.className = "meja";
+
+          const kursiDiv = document.createElement("div");
+          kursiDiv.className = "kursi";
+
+          let kursi = [];
+          if (meja === "L") {
+            kursi = [laki.pop(), laki.pop()];
+          } else {
+            kursi = [perempuan.pop(), perempuan.pop()];
+          }
+
+          kursi.forEach(noAbsen => {
+            const siswaDiv = document.createElement("div");
+            siswaDiv.className = `siswa ${dataGender[noAbsen]}`;
+            siswaDiv.textContent = noAbsen;
+            kursiDiv.appendChild(siswaDiv);
+          });
+
+          divMeja.appendChild(kursiDiv);
+          denahEl.appendChild(divMeja);
+        });
+      });
+    }
+
+    // generate pertama kali
+    buatDenah();
+  </script>
+</body>
+</html>
