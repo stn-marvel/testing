@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CONFIDENTIAL — Verification Portal</title>
+<style>
+  :root{
+    --bg:#050608;--panel:#0a0b0c;--accent:#9aa93a;
+    --danger:#c74b4b;--muted:#9ea3a6;--glass:rgba(255,255,255,0.03);
+    --mono:ui-monospace,Menlo,Monaco,"Roboto Mono",monospace;
+  }
+  html,body{height:100%;margin:0;background:#000;font-family:Inter,system-ui;}
+  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:28px}
+  .card{width:100%;max-width:960px;border-radius:12px;background:linear-gradient(180deg,var(--panel),#091011);
+        box-shadow:0 20px 60px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.03);padding:28px;color:#ddd}
+  h2,h3{margin:0;color:var(--accent);font-family:var(--mono)}
+  .log{font-family:var(--mono);background:#000;padding:12px;border-radius:6px;height:180px;overflow:auto;font-size:14px}
+  .warn{color:var(--danger);font-weight:bold}
+  input{padding:8px;border:1px solid rgba(255,255,255,0.1);background:var(--glass);color:#fff;border-radius:6px;width:100%}
+  label{font-size:12px;color:var(--muted)}
+  .btn{padding:8px 12px;border:none;border-radius:6px;cursor:pointer;font-weight:600}
+  .primary{background:#2e3a1f;color:#fff}
+  .result,.dashboard{margin-top:16px;padding:12px;border-radius:8px;background:var(--glass);font-family:var(--mono)}
+  .passcode{color:var(--accent);font-weight:700;font-size:20px;letter-spacing:3px}
+  .dangerbox{color:var(--danger);font-weight:700}
+  .hidden{display:none}
+  .deptlist{margin-top:10px;font-size:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h2>CONFIDENTIAL — Verification Portal</h2>
+    <div class="log" id="logs"></div>
+    <form id="verifyForm" onsubmit="return false;" style="margin-top:12px">
+      <label>Full Name</label><input id="nama" placeholder="John Doe">
+      <label>Worker ID</label><input id="worker" placeholder="123456">
+      <label>Department Code</label><input id="dept" placeholder="e.g. BRD01">
+      <label>Year Employed</label><input id="year" type="number" placeholder="2020">
+      <button class="btn primary" id="submitBtn" style="margin-top:10px">Submit</button>
+    </form>
+    <div id="resultArea"></div>
+    
+    <form id="securityForm" class="hidden" onsubmit="return false;" style="margin-top:14px">
+      <label>Enter Passcode to Access Dashboard</label>
+      <input id="securityCode" placeholder="XXXXXXX">
+      <button class="btn primary" id="unlockBtn" style="margin-top:8px">Unlock</button>
+    </form>
+    
+    <div id="dashboard" class="dashboard hidden">
+      <h3>Military Dashboard — Classified</h3>
+      <p>Access Level: <strong>SECRET</strong></p>
+      <div class="deptlist">
+        <div>BRD01 — Board of Directions</div>
+        <div>MOP01 — Armed Operation Management</div>
+        <div>MPS01 — Psychological Operation Management</div>
+        <div>IGS02 — Data Intelligence & Storage</div>
+        <div>SSG02 — Secret Service</div>
+        <div>CYB03 — Cyber Security & Technical Support</div>
+        <div>IAF03 — Internal Affairs & Ethics</div>
+        <div>STM03 — Strategy & Risk Management</div>
+        <div>LGS04 — Logistics & Sustainment</div>
+        <div>RDO04 — Research & Development</div>
+        <div>HMR04 — Human Intelligence & Recruitment</div>
+        <div>STF04 — Special Operations & Task Force</div>
+        <div>MTF05 — Mobile Task Force</div>
+        <div>ITS05 — Internal Security</div>
+        <div>MED05 — Medical Assistance</div>
+        <div>BRS05 — Bio-Research</div>
+        <div>CBR05 — CBRN Threat Assessment</div>
+        <div>ENF06 — Engineering & Facilities</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const logs=document.getElementById("logs");
+const resultArea=document.getElementById("resultArea");
+const securityForm=document.getElementById("securityForm");
+const dashboard=document.getElementById("dashboard");
+let generatedPasscode="";
+
+function log(msg,cls){const d=document.createElement("div");d.textContent=msg;if(cls)d.className=cls;logs.appendChild(d);logs.scrollTop=logs.scrollHeight;}
+
+function generatePass(){const letters=Array.from({length:3},()=>String.fromCharCode(65+Math.random()*26)).join('');
+const numbers=Array.from({length:6},()=>Math.floor(Math.random()*10)).join('');return letters+numbers;}
+
+function rank(year){const cur=2025;let lama=cur-year;if(lama<=1)return"Recruit";if(lama==2)return"Cadet";if(lama==3)return"I Private";
+if(lama==4||lama==5)return"II Private";if(lama==6)return"Corporal";if(lama==7)return"Lance Corporal";if(lama==8)return"Major";
+if(lama>8&&lama<=12)return"Colonel";if(lama>12&&lama<18)return"Commander";return"General";}
+
+document.getElementById("submitBtn").onclick=()=>{
+  logs.innerHTML="";
+  const nama=document.getElementById("nama").value.trim();
+  const worker=parseInt(document.getElementById("worker").value.trim());
+  const dept=document.getElementById("dept").value.trim();
+  const year=parseInt(document.getElementById("year").value.trim());
+  
+  if(!nama||!worker||worker<=99999||!dept||!year){log("!!! INVALID DATA !!!","warn");resultArea.innerHTML='<div class="dangerbox">ACCESS TERMINATED</div>';return;}
+  
+  generatedPasscode=generatePass();
+  resultArea.innerHTML=`<div class="result">
+    Welcome <strong>${rank(year)} ${nama}</strong><br>
+    Worker ID: ${worker}<br>
+    Department Code: ${dept}<br>
+    Service Years: ${2025-year}<br>
+    Your Pass Code: <span class="passcode">${generatedPasscode}</span>
+  </div>`;
+  log("Verification successful. Enter passcode to continue.");
+  securityForm.classList.remove("hidden");
+};
+
+document.getElementById("unlockBtn").onclick=()=>{
+  const val=document.getElementById("securityCode").value.trim();
+  if(val===generatedPasscode){securityForm.classList.add("hidden");dashboard.classList.remove("hidden");log("Access Granted. Welcome to the Dashboard.");}
+  else{log("Incorrect Passcode","warn");}
+};
+</script>
+</body>
+</html>
