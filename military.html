@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CONFIDENTIAL — Verification Portal</title>
+  <style>
+    :root{
+      --bg:#050608;
+      --panel:#0a0b0c;
+      --accent:#9aa93a;
+      --danger:#c74b4b;
+      --muted:#9ea3a6;
+      --glass: rgba(255,255,255,0.03);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#030303 0%, #0a0a0a 100%);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#e6efe6}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:28px;}
+    .card{width:100%;max-width:980px;border-radius:12px;background:linear-gradient(180deg,var(--panel),#091011);box-shadow:0 20px 60px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.03);display:grid;grid-template-columns:1fr 420px;overflow:hidden;transition:transform .25s ease}
+    .left{padding:28px;background:linear-gradient(180deg, rgba(0,0,0,0.35), transparent);display:flex;flex-direction:column;gap:12px;}
+    .right{padding:28px;border-left:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px;align-items:stretch;}
+    .hdr{display:flex;justify-content:space-between;align-items:center;}
+    .hdr .title{font-family:var(--mono);letter-spacing:1.6px;color:var(--accent);font-weight:700;}
+    .hdr .sub{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+    .console{flex:1;background:linear-gradient(180deg,#060607,#050506);padding:14px;border-radius:8px;overflow:auto;box-shadow:inset 0 2px 8px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.02);}
+    .log{font-family:var(--mono);font-size:14px;line-height:1.5;color:#dfe6d3;white-space:pre-wrap;}
+    .log .muted{color:var(--muted)}
+    .log .warn{color:var(--danger);font-weight:700}
+    .log .count{color:#ffcc66;font-weight:800;font-size:28px}
+    .controls{display:flex;gap:8px;align-items:center;}
+    .btn{padding:8px 12px;border-radius:8px;border:0;background:transparent;color:#ddd;font-weight:600;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,#28321b,#374824);color:white;border:1px solid rgba(255,255,255,0.03)}
+    .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:12px;color:var(--muted);font-weight:700}
+    input{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:#e6efe6;font-family:inherit;outline:none}
+    input::placeholder{color:rgba(255,255,255,0.25)}
+    .small{font-size:12px;color:var(--muted)}
+    .result{padding:12px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);font-family:var(--mono)}
+    .passcode{font-family:var(--mono);font-weight:800;letter-spacing:4px;font-size:20px;color:var(--accent)}
+    .dangerbox{background:linear-gradient(90deg, rgba(199,75,75,0.12), rgba(199,75,75,0.04));border:1px solid rgba(199,75,75,0.12);padding:12px;border-radius:8px;color:var(--danger);font-weight:700}
+    footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
+    .locked { opacity: 0.5; pointer-events: none; }
+
+    /* overlay merah */
+    .overlay { position:fixed; inset:0; background: linear-gradient(90deg, rgba(199,75,75,0.85), rgba(0,0,0,0.2));
+      display:flex; align-items:center; justify-content:center; z-index:9999; pointer-events:none; opacity:0; transition:opacity .2s ease; }
+    .overlay.active { opacity: 1; pointer-events:none; }
+    .overlay .big { font-family:var(--mono); font-size:48px; color:#ffecec; text-align:center; letter-spacing:2px; text-shadow:0 0 20px rgba(199,75,75,0.9); }
+
+    @keyframes overlayFlick { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    .overlay.flick { animation: overlayFlick 1.2s linear infinite; }
+
+    @media (max-width:900px){
+      .card{grid-template-columns:1fr;max-width:720px}
+      .right{order:2}
+      .left{order:1}
+    }
+
+    /* Modal pop-up untuk passcode */
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      display: none; align-items: center; justify-content: center;
+      z-index: 10000;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #111; padding: 20px; border-radius: 12px; text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 20px rgba(0,255,0,0.3);
+    }
+    .modal-content input {
+      width: 200px; padding: 10px; font-family: var(--mono); font-size: 16px;
+      text-align: center; border: 1px solid #333; border-radius: 6px; margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="card">
+      <div class="left">
+        <div class="hdr">
+          <div class="title">Badan Intelijen Negara</div>
+          <div class="sub">Verifikasi Keamanan • v1.0</div>
+        </div>
+        <div class="console" id="console"><div id="logs" class="log"></div></div>
+        <div class="controls">
+          <button id="startBtn" class="btn primary">Start Verification</button>
+          <button id="resetBtn" class="btn ghost">Reset</button>
+          <div style="margin-left:auto" class="small">One attempt per session</div>
+        </div>
+      </div>
+      <div class="right">
+        <div id="formWrapper" class="locked">
+          <h3 style="margin:0;color:#e3e7e0;font-family:var(--mono)">Keanggotaan SRAB SI</h3>
+          <p class="small">Serikat Rahasia Angkatan Bersenjata Seluruh Indonesia</p>
+          <form id="verifyForm" onsubmit="return false;">
+            <label for="nama">Full name</label>
+            <input id="nama" placeholder="Full Name" />
+            <label for="worker">Worker ID (numeric)</label>
+            <input id="worker" placeholder="Worker ID" inputmode="numeric" />
+            <label for="dept">Department Code</label>
+            <input id="dept" placeholder="Department Code" maxlength="5" />
+            <label for="year">Year employed</label>
+            <input id="year" type="number" min="1900" max="2025" value="2024" />
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button id="submitBtn" class="btn primary" style="flex:1">Submit</button>
+              <button id="previewBtn" class="btn" style="width:90px">Preview</button>
+            </div>
+          </form>
+        </div>
+        <div id="resultArea" style="margin-top:10px"></div>
+        <footer style="margin-top:auto;padding-top:10px;">
+          <div class="small">Secure Portal — Classified</div>
+          <div class="small">2025 • Do not share</div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- overlay kegagalan -->
+  <div id="overlay" class="overlay"><div class="big">ACCESS TERMINATED</div></div>
+
+  <!-- modal pop-up untuk passcode -->
+  <div id="passcodeModal" class="modal">
+    <div class="modal-content">
+      <h2>Secure Access Required</h2>
+      <p>Enter the generated pass code to proceed:</p>
+      <input id="passInput" placeholder="Enter pass code" />
+      <button id="confirmPassBtn" class="btn primary" style="margin-top:12px;">Confirm</button>
+      <p id="modalError" style="color:#c74b4b;display:none;margin-top:8px;">Invalid passcode. Try again.</p>
+    </div>
+  </div>
+
+  <script>
+    const logsEl = document.getElementById('logs');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const resultArea = document.getElementById('resultArea');
+    const formWrapper = document.getElementById('formWrapper');
+    const overlay = document.getElementById('overlay');
+    const passcodeModal = document.getElementById('passcodeModal');
+    const confirmPassBtn = document.getElementById('confirmPassBtn');
+
+    let attemptLocked = false;
+    let currentPasscode = null;
+  // delay (ms) before the passcode modal appears after result is shown
+  const passcodeModalDelay = 3000; // change this value to adjust the delay (milliseconds)
+
+    const departments = { BRD01:"Board of Directions", MOP01:"Armed Operation Management", MPS01:"Psychological Operation Management", IGS02:"Data Intelligence & Storage", SSG02:"Secret Service", CYB03:"Cyber Security & Technical Support", IAF03:"Internal Affairs & Ethics", STM03:"Strategy & Risk Management", LGS04:"Logistics & Sustainment", RDO04:"Research & Development", HMR04:"Human Intelligence & Recruitment", STF04:"Special Operations & Task Force", MTF05:"Mobile Task Force", ITS05:"Internal Security", MED05:"Medical Assistance", BRS05:"Bio-Research", CBR05:"CBRN Threat Assessment", ENF06:"Engineering & Facilities" };
+
+    function appendLog(text, cls) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      if (cls) div.className = cls;
+      logsEl.appendChild(div);
+    }
+    function clearLogs(){ logsEl.innerHTML=''; }
+    function sleep(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+    function generatePasscode(){
+      const letters = Array.from({length:3},()=>String.fromCharCode(65+Math.floor(Math.random()*26))).join('');
+      const numbers = Array.from({length:6},()=>Math.floor(Math.random()*10)).join('');
+      return letters+numbers;
+    }
+    function rankFromYears(yearJoined){
+      const current=2025; const lama=current-Number(yearJoined);
+      if(lama<=0) return {jabatan:'Recruit',lama};
+      if(lama<3) return {jabatan:'Cadet',lama};
+      if(lama<6) return {jabatan:'Private',lama};
+      if(lama<9) return {jabatan:'Corporal',lama};
+      if(lama<12) return {jabatan:'Colonel',lama};
+      if(lama<18) return {jabatan:'Commander',lama};
+      return {jabatan:'General',lama};
+    }
+
+    async function startSequence(){
+      if(attemptLocked) return;
+      clearLogs();
+      appendLog('CONFIDENTIAL | RAHASIA NEGARA','muted');
+      await sleep(800); appendLog('=== SRAB SI Member Verification ===');
+      await sleep(600); appendLog('!!!You only have 1 attempt!!!','warn');
+      await sleep(600); appendLog('Verification will start in...');
+      for(let i=3;i>0;i--){ await sleep(700); appendLog(String(i),'count'); }
+      appendLog('Verification begins!'); formWrapper.classList.remove('locked');
+    }
+
+    function failSequence(reason='INVALID DATA'){
+      attemptLocked=true; overlay.classList.add('active','flick');
+      appendLog('!!! '+reason+' !!!','warn');
+    }
+
+    function showResult(res){
+      currentPasscode = res.passcode;
+      const html = `
+        <div class="result">
+          <div style="font-size:12px;color:var(--muted)">=== Welcome ===</div>
+          <div style="font-size:15px;font-weight:700">${res.jabatan} ${res.nama}</div>
+          <div>Worker ID: <strong>${res.workerId}</strong></div>
+          <div>Department: <strong>${res.department}</strong></div>
+          <div style="margin-top:10px">Your Pass Code:</div>
+          <div class="passcode">${res.passcode}</div>
+        </div>`;
+      resultArea.innerHTML=html;
+  // persist the profile so dashboard can load it
+  try { localStorage.setItem('agentProfile', JSON.stringify(res)); } catch(e) { /* ignore storage errors */ }
+      appendLog('=== Verification Complete ===');
+      appendLog(`PASS CODE: ${res.passcode}`,'count');
+      appendLog(`Passcode prompt will appear in ${passcodeModalDelay/1000} seconds`,`muted`);
+      // show modal after a short delay so user can see the passcode first
+      setTimeout(()=>{
+        // clear any previous modal error and focus input
+        const err = document.getElementById('modalError'); if(err) err.style.display='none';
+        const pin = document.getElementById('passInput');
+        passcodeModal.classList.add('active');
+        if(pin){ pin.value=''; pin.focus(); }
+      }, passcodeModalDelay);
+    }
+
+    // listeners
+    startBtn.addEventListener('click',()=>startSequence());
+    resetBtn.addEventListener('click',()=>{
+      // unlock attempts and clear UI
+      attemptLocked = false;
+      clearLogs();
+      resultArea.innerHTML = '';
+      appendLog('System reset. Press Start Verification.','muted');
+
+      // reset form fields to defaults
+      try {
+        document.getElementById('nama').value = '';
+        document.getElementById('worker').value = '';
+        document.getElementById('dept').value = '';
+        document.getElementById('year').value = '2024';
+      } catch(e) {}
+
+      // re-lock form and hide overlays/modals
+      formWrapper.classList.add('locked');
+      overlay.classList.remove('active','flick');
+      if (passcodeModal) passcodeModal.classList.remove('active');
+
+      // clear stored profile so dashboard doesn't pick stale data
+      try { localStorage.removeItem('agentProfile'); } catch(e) {}
+
+      // clear current passcode/state
+      currentPasscode = null;
+    });
+    previewBtn.addEventListener('click',()=>{
+      appendLog('Preview...','muted');
+    });
+
+    submitBtn.addEventListener('click',()=>{
+      if(attemptLocked) return;
+      const nama=document.getElementById('nama').value||'Anonymous';
+      const worker=document.getElementById('worker').value;
+      const dept=document.getElementById('dept').value.toUpperCase();
+      const year=document.getElementById('year').value;
+      if(!departments[dept]){ failSequence('INVALID DEPT'); return; }
+      const {jabatan,lama}=rankFromYears(year);
+      const pass=generatePasscode();
+      showResult({nama,workerId:worker,department:departments[dept],jabatan,lama,passcode:pass});
+      attemptLocked=true;
+    });
+
+    confirmPassBtn.addEventListener('click',()=>{
+      const val=document.getElementById('passInput').value.trim().toUpperCase();
+      const err=document.getElementById('modalError');
+      if(val===currentPasscode){
+        window.location.href='dashboard.html';
+      }else{
+        err.style.display='block';
+        setTimeout(()=>err.style.display='none',2000);
+      }
+    });
+
+    appendLog('System offline. Press Start Verification.','muted');
+  </script>
+</body>
+</html>
