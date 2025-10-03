@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CONFIDENTIAL — Verification Portal</title>
+  <style>
+    :root{
+      --bg:#050608;
+      --panel:#0a0b0c;
+      --accent:#9aa93a; /* military green */
+      --danger:#c74b4b;
+      --muted:#9ea3a6;
+      --glass: rgba(255,255,255,0.03);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#030303 0%, #0a0a0a 100%);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:28px;}
+    .card{width:100%;max-width:980px;border-radius:12px;background:linear-gradient(180deg,var(--panel),#091011);box-shadow:0 20px 60px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.03);display:grid;grid-template-columns:1fr 420px;overflow:hidden;}
+    .left{padding:28px;background:linear-gradient(180deg, rgba(0,0,0,0.35), transparent);display:flex;flex-direction:column;gap:12px;}
+    .right{padding:28px;border-left:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:12px;align-items:stretch;}
+    .hdr{display:flex;justify-content:space-between;align-items:center;}
+    .hdr .title{font-family:var(--mono);letter-spacing:1.6px;color:var(--accent);font-weight:700;}
+    .hdr .sub{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+    .console{flex:1;background:linear-gradient(180deg,#060607,#050506);padding:14px;border-radius:8px;overflow:auto;box-shadow:inset 0 2px 8px rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.02);}
+    .log{font-family:var(--mono);font-size:14px;line-height:1.5;color:#dfe6d3;white-space:pre-wrap;}
+    .log .muted{color:var(--muted)}
+    .log .warn{color:var(--danger);font-weight:700}
+    .log .count{color:#ffcc66;font-weight:800;font-size:28px}
+    .controls{display:flex;gap:8px;align-items:center;}
+    .btn{padding:8px 12px;border-radius:8px;border:0;background:transparent;color:#ddd;font-weight:600;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,#28321b,#374824);color:white;border:1px solid rgba(255,255,255,0.03)}
+    .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
+    /* form */
+    form{display:flex;flex-direction:column;gap:10px}
+    label{font-size:12px;color:var(--muted);font-weight:700}
+    input,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:#e6efe6;font-family:inherit;outline:none}
+    input::placeholder{color:rgba(255,255,255,0.25)}
+    .small{font-size:12px;color:var(--muted)}
+    .result{padding:12px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.02);font-family:var(--mono)}
+    .passcode{font-family:var(--mono);font-weight:800;letter-spacing:4px;font-size:20px;color:var(--accent)}
+    .dangerbox{background:linear-gradient(90deg, rgba(199,75,75,0.12), rgba(199,75,75,0.04));border:1px solid rgba(199,75,75,0.12);padding:12px;border-radius:8px;color:var(--danger);font-weight:700}
+    footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
+    @media (max-width:900px){
+      .card{grid-template-columns:1fr;max-width:720px}
+      .right{order:2}
+      .left{order:1}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="application" aria-label="Confidential verification portal">
+      <div class="left">
+        <div class="hdr">
+          <div class="title">CONFIDENTIAL</div>
+          <div class="sub">Secure Verification • v1.0</div>
+        </div>
+
+        <div class="console" id="console" aria-live="polite">
+          <div id="logs" class="log">
+            <!-- logs will populate here -->
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="startBtn" class="btn primary">Start Verification</button>
+          <button id="resetBtn" class="btn ghost">Reset</button>
+          <div style="margin-left:auto" class="small">One attempt per session</div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div>
+          <h3 style="margin:0;color:#e3e7e0;font-family:var(--mono);letter-spacing:1px">Operator Input</h3>
+          <p class="small" style="margin:6px 0 12px 0">Fill the fields and submit during the form phase.</p>
+
+          <form id="verifyForm" onsubmit="return false;">
+            <label for="nama">Full name</label>
+            <input id="nama" placeholder="e.g. John Doe" autocomplete="name" />
+
+            <label for="worker">Worker ID (numeric)</label>
+            <input id="worker" placeholder="e.g. 123456" inputmode="numeric" />
+
+            <label for="dept">Department code</label>
+            <select id="dept">
+              <option value="">-- select department --</option>
+              <option value="BRD01">BRD01 — Board of Directions</option>
+              <option value="MOP01">MOP01 — Armed Operation Management</option>
+              <option value="MPS01">MPS01 — Psychological Operation Management</option>
+              <option value="IGS02">IGS02 — Data Intelligence & Storage</option>
+              <option value="SSG02">SSG02 — Secret Service</option>
+              <option value="CYB03">CYB03 — Cyber Security & Technical Support</option>
+              <option value="IAF03">IAF03 — Internal Affairs & Ethics</option>
+              <option value="STM03">STM03 — Strategy & Risk Management</option>
+              <option value="LGS04">LGS04 — Logistics & Sustainment</option>
+              <option value="RDO04">RDO04 — Research & Development</option>
+              <option value="HMR04">HMR04 — Human Intelligence & Recruitment</option>
+              <option value="STF04">STF04 — Special Operations & Task Force</option>
+              <option value="MTF05">MTF05 — Mobile Task Force</option>
+              <option value="ITS05">ITS05 — Internal Security</option>
+              <option value="MED05">MED05 — Medical Assistance</option>
+              <option value="BRS05">BRS05 — Bio-Research</option>
+              <option value="CBR05">CBR05 — CBRN Threat Assessment</option>
+              <option value="ENF06">ENF06 — Engineering & Facilities</option>
+            </select>
+
+            <label for="year">Year employed</label>
+            <input id="year" type="number" min="1900" max="2025" value="2024" />
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button id="submitBtn" class="btn primary" style="flex:1">Submit</button>
+              <button id="previewBtn" class="btn" style="width:90px">Preview</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="resultArea" style="margin-top:10px"></div>
+
+        <footer style="margin-top:auto;padding-top:10px;">
+          <div class="small">Secure Portal — Classified</div>
+          <div class="small">2025 • Do not share</div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const logsEl = document.getElementById('logs');
+    const consoleEl = document.getElementById('console');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const resultArea = document.getElementById('resultArea');
+
+    let phase = 'idle'; // idle, countdown, form, done, fail
+    let attemptLocked = false;
+
+    const departments = {
+      BRD01: "Board of Directions",
+      MOP01: "Armed Operation Management",
+      MPS01: "Psychological Operation Management",
+      IGS02: "Data Intelligence & Storage",
+      SSG02: "Secret Service",
+      CYB03: "Cyber Security & Technical Support",
+      IAF03: "Internal Affairs & Ethics",
+      STM03: "Strategy & Risk Management",
+      LGS04: "Logistics & Sustainment",
+      RDO04: "Research & Development",
+      HMR04: "Human Intelligence & Recruitment",
+      STF04: "Special Operations & Task Force",
+      MTF05: "Mobile Task Force",
+      ITS05: "Internal Security",
+      MED05: "Medical Assistance",
+      BRS05: "Bio-Research",
+      CBR05: "CBRN Threat Assessment",
+      ENF06: "Engineering & Facilities"
+    };
+
+    function appendLog(text, cls) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      if (cls) div.className = cls;
+      logsEl.appendChild(div);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function clearLogs() {
+      logsEl.innerHTML = '';
+    }
+
+    function sleep(ms) {
+      return new Promise(res => setTimeout(res, ms));
+    }
+
+    // passcode generator: 3 uppercase letters + 6 digits
+    function generatePasscode() {
+      const letters = Array.from({length:3}, () => String.fromCharCode(65 + Math.floor(Math.random()*26))).join('');
+      const numbers = Array.from({length:6}, () => Math.floor(Math.random()*10)).join('');
+      return letters + numbers;
+    }
+
+    // rank calculation (kept faithful-ish to original mapping)
+    function rankFromYears(yearJoined) {
+      const current = 2025;
+      const lama = current - Number(yearJoined);
+      if (lama <= 0) return {jabatan:'Recruit', lama};
+      if (lama === 1) return {jabatan:'Recruit', lama};
+      if (lama === 2) return {jabatan:'Cadet', lama};
+      if (lama === 3) return {jabatan:'I Private', lama};
+      if (lama === 4) return {jabatan:'II Private', lama};
+      if (lama === 5) return {jabatan:'II Private', lama};
+      if (lama === 6) return {jabatan:'Corporal', lama};
+      if (lama === 7) return {jabatan:'Lance Corporal', lama};
+      if (lama === 8) return {jabatan:'Major', lama};
+      if (lama > 8 && lama <= 12) return {jabatan:'Colonel', lama};
+      if (lama > 12 && lama < 18) return {jabatan:'Commander', lama};
+      if (lama >= 18) return {jabatan:'General', lama};
+      return {jabatan:'Captain', lama};
+    }
+
+    // UI sequences
+    async function startSequence() {
+      if (attemptLocked) return;
+      clearLogs();
+      phase = 'intro';
+      appendLog('CONFIDENTIAL', 'muted');
+      await sleep(1200);
+      appendLog('=== Worker\'s Data Verification ===');
+      await sleep(900);
+      appendLog('!!!You only have 1 attempt!!!', 'warn');
+      await sleep(800);
+      appendLog('INVALID DATA MAY HAVE SEVERE CONSEQUENCES', 'warn');
+      await sleep(900);
+      appendLog('Verification will start in...');
+      await sleep(500);
+
+      phase = 'countdown';
+      for (let i=3;i>0;i--){
+        appendLog(String(i), 'count');
+        await sleep(1000);
+      }
+      appendLog('Verification begins!');
+      phase = 'form';
+      appendLog('Form unlocked. Enter details on the right and press Submit.');
+    }
+
+    // failure sequence
+    async function failSequence(reason='INVALID DATA') {
+      phase = 'fail';
+      attemptLocked = true;
+      for (let i=3;i>0;i--){
+        appendLog('!!!' + reason + '!!!', 'warn');
+        await sleep(800);
+      }
+      await sleep(400);
+      appendLog('Your employment status has been deactivated', 'warn');
+      await sleep(1200);
+      appendLog('Enjoy your last day', 'warn');
+      resultArea.innerHTML = '<div class="dangerbox">ACCESS TERMINATED — Session locked</div>';
+    }
+
+    function showResult(res) {
+      const html = `
+        <div class="result">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">=== Welcome ===</div>
+          <div style="font-size:15px;font-weight:700">${res.jabatan} ${res.nama}</div>
+          <div style="margin-top:6px">Worker ID: <strong>${res.workerId}</strong></div>
+          <div>Service Years: <strong>${res.lama}</strong> Year(s)</div>
+          <div>Department: <strong>${res.department}</strong></div>
+          <div style="margin-top:10px">Your Pass Code Is:</div>
+          <div class="passcode">${res.passcode}</div>
+        </div>
+      `;
+      resultArea.innerHTML = html;
+      appendLog('=== Verification Complete ===');
+      appendLog(`PASS CODE: ${res.passcode}`, 'count');
+    }
+
+    // events
+    startBtn.addEventListener('click', () => {
+      startSequence();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      attemptLocked = false;
+      phase = 'idle';
+      clearLogs();
+      resultArea.innerHTML = '';
+      appendLog('System reset. Press Start Verification to begin.', 'muted');
+    });
+
+    previewBtn.addEventListener('click', () => {
+      // small preview (no validation)
+      const nama = document.getElementById('nama').value || 'John Doe';
+      const wid = document.getElementById('worker').value || '123456';
+      const dept = document.getElementById('dept').value || 'BRD01';
+      const year = document.getElementById('year').value || '2024';
+      const depname = departments[dept] || 'Unknown';
+      appendLog(`Preview -> ${nama} | ${wid} | ${dept} (${depname}) | ${year}`, 'muted');
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      if (attemptLocked) {
+        appendLog('Session locked. Reset required.', 'warn');
+        return;
+      }
+      if (phase !== 'form' && phase !== 'intro' && phase !== 'countdown') {
+        appendLog('Please press Start Verification first.', 'muted');
+        return;
+      }
+
+      const nama = document.getElementById('nama').value.trim();
+      const workerVal = document.getElementById('worker').value.trim();
+      const dept = document.getElementById('dept').value.trim();
+      const year = document.getElementById('year').value.trim();
+
+      appendLog('Verification begins!', 'muted');
+
+      // validate worker id numeric
+      const workerNum = Number(workerVal);
+      if (!Number.isInteger(workerNum) || workerNum <= 99999) {
+        await failSequence('INVALID DATA');
+        return;
+      }
+
+      // validate department
+      if (!departments[dept]) {
+        await failSequence('INVALID DEPARTMENT');
+        return;
+      }
+
+      // validate year
+      const yearNum = Number(year);
+      if (!Number.isInteger(yearNum) || yearNum < 1900 || yearNum > 2025) {
+        await failSequence('INVALID YEAR');
+        return;
+      }
+
+      // success
+      const {jabatan, lama} = rankFromYears(yearNum);
+      const pass = generatePasscode();
+
+      const res = {
+        nama: nama || 'Anonymous',
+        workerId: workerNum,
+        department: departments[dept],
+        jabatan,
+        lama,
+        passcode: pass
+      };
+
+      showResult(res);
+      attemptLocked = true; // only one successful/failed attempt per session
+    });
+
+    // initial hint
+    appendLog('System offline. Press Start Verification to engage.', 'muted');
+  </script>
+</body>
+</html>
