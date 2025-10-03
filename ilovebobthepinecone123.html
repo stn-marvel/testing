@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hartara - Harmoni Nusantara</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Turn.js untuk flipbook -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  
+  <!-- Navbar -->
+  <nav class="bg-indigo-700 text-white p-4 flex justify-between">
+    <h1 class="font-bold text-xl">HARTARA</h1>
+    <div class="space-x-4">
+      <a href="#video" class="hover:underline">Video</a>
+      <a href="#roblox" class="hover:underline">Roblox</a>
+      <a href="#buku" class="hover:underline">Buku Cerita</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="text-center py-12 bg-gradient-to-r from-indigo-600 to-purple-500 text-white">
+    <h2 class="text-3xl font-bold">Harmoni Nusantara</h2>
+    <p class="mt-2">Video • Permainan Roblox • Buku Cerita Digital</p>
+  </section>
+
+  <!-- Video Section -->
+  <section id="video" class="p-8">
+    <h3 class="text-2xl font-bold mb-4">Video</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Video Embed -->
+      <div class="aspect-w-16 aspect-h-9">
+        <iframe class="w-full h-64 rounded-lg shadow" src="https://www.youtube.com/embed/ysz5S6PUM-U" 
+                title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div class="aspect-w-16 aspect-h-9">
+        <iframe class="w-full h-64 rounded-lg shadow" src="https://www.youtube.com/embed/tgbNymZ7vqY" 
+                title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roblox Section -->
+  <section id="roblox" class="p-8 bg-white">
+    <h3 class="text-2xl font-bold mb-4">Permainan Roblox</h3>
+    <p class="mb-4">Mainkan permainan Roblox bertema Nusantara langsung melalui link berikut:</p>
+    <a href="https://www.roblox.com" target="_blank" 
+       class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700">
+       Mainkan di Roblox
+    </a>
+  </section>
+
+  <!-- Buku Cerita Digital -->
+  <section id="buku" class="p-8">
+    <h3 class="text-2xl font-bold mb-4">Buku Cerita Digital</h3>
+    <div id="flipbook" class="w-[600px] h-[400px] mx-auto shadow-lg">
+      <div class="bg-yellow-200 flex items-center justify-center text-xl font-bold">📖 Sampul Buku</div>
+      <div class="bg-white p-6">Halaman 1: Dahulu kala, di Nusantara...</div>
+      <div class="bg-white p-6">Halaman 2: Gunung, laut, dan hutan menjadi sahabat manusia.</div>
+      <div class="bg-white p-6">Halaman 3: Cerita rakyat mengajarkan harmoni...</div>
+      <div class="bg-yellow-200 flex items-center justify-center">📘 Penutup</div>
+    </div>
+  </section>
+
+  <script>
+    // Inisialisasi flipbook
+    document.addEventListener("DOMContentLoaded", function() {
+      $("#flipbook").turn({
+        width: 600,
+        height: 400,
+        autoCenter: true
+      });
+    });
+  </script>
+
+</body>
+</html>
