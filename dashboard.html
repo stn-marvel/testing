@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SRAB SI — Military Dashboard</title>
+  <style>
+    :root{
+      --bg:#050608;
+      --panel:#0a0b0c;
+      --accent:#9aa93a;
+      --muted:#9ea3a6;
+      --glass: rgba(255,255,255,0.05);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+    }
+    html,body{
+      height:100%;margin:0;
+      background:linear-gradient(180deg,#030303 0%, #0a0a0a 100%);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      color:#e6efe6;
+    }
+    .wrap{
+      min-height:100%;display:flex;flex-direction:column;
+      padding:20px;gap:20px;
+    }
+    header{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:12px 20px;
+      background:linear-gradient(180deg,var(--panel),#091011);
+      border:1px solid rgba(255,255,255,0.05);
+      border-radius:12px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.5);
+    }
+    header .title{
+      font-family:var(--mono);
+      color:var(--accent);
+      font-size:18px;
+      letter-spacing:1.2px;
+      font-weight:700;
+    }
+    main{
+      flex:1;
+      display:grid;
+      grid-template-columns:2fr 1fr;
+      gap:20px;
+      align-items:start;
+    }
+    .panel{
+      background:linear-gradient(180deg,var(--panel),#091011);
+      border:1px solid rgba(255,255,255,0.05);
+      border-radius:12px;
+      padding:16px;
+      display:flex;flex-direction:column;gap:12px;
+      box-shadow:0 12px 40px rgba(0,0,0,0.5);
+    }
+    h2{
+      margin:0;font-size:15px;
+      font-family:var(--mono);
+      color:var(--accent);
+      letter-spacing:1px;
+    }
+    .datagrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .databox{
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:8px;
+      padding:10px;
+      font-family:var(--mono);
+      font-size:13px;
+    }
+    #matrixCanvas{
+      width:100%;height:300px;
+      background:#000;
+      display:block;
+      border:1px solid rgba(255,255,255,0.05);
+      border-radius:10px;
+    }
+    .comms-log{
+      flex:1;
+      max-height:220px;
+      overflow-y:auto;
+      background:linear-gradient(180deg,#060606,#050506);
+      border-radius:8px;
+      padding:10px;
+      border:1px solid rgba(255,255,255,0.02);
+      font-family:var(--mono);
+      font-size:13px;
+      color:#cfe6c7;
+      line-height:1.4;
+    }
+    footer{
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      margin-top:auto;
+    }
+    .blink {
+      animation: blink 1.2s infinite;
+    }
+    @keyframes blink {
+      50% { opacity:0.3; }
+    }
+    .user-message {
+      text-align:center;
+      font-size:14px;
+      font-family:var(--mono);
+      color:var(--accent);
+      margin-top:10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">SERIKAT RAHASIA ANGKATAN BERSENJATA SELURUH INDONESIA</div>
+      <div style="font-size:12px;color:var(--muted)">CLASSIFIED — 2025</div>
+    </header>
+
+    <main>
+      <div class="left-col">
+        <!-- Data Stream -->
+        <div class="panel">
+          <h2>Data Stream — Secure Channel</h2>
+          <canvas id="matrixCanvas"></canvas>
+          <div class="datagrid">
+            <div class="databox">Active Ops: <strong id="ops">23</strong></div>
+            <div class="databox">Agents Online: <strong id="agents">142</strong></div>
+            <div class="databox">Signal: <span class="blink" style="color:#0f0">SECURE</span></div>
+            <div class="databox">Threat Level: <span style="color:#ff3" id="threat">ELEVATED</span></div>
+          </div>
+        </div>
+
+        <!-- Comm Log -->
+        <div class="panel">
+          <h2>Comm Log</h2>
+          <div class="comms-log" id="commsLog"></div>
+          <div class="user-message" id="userMessage"></div>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <!-- Agent Identity -->
+        <div class="panel identity">
+          <h2>Agent Identity</h2>
+          <div class="databox">Name: <strong id="agentName"></strong></div>
+          <div class="databox">Worker ID: <strong id="agentId"></strong></div>
+          <div class="databox">Department: <strong id="agentDept"></strong></div>
+          <div class="databox">Rank: <strong id="agentRank"></strong></div>
+          <div class="databox">Service Years: <strong id="agentYears"></strong></div>
+          <div class="databox">Pass Code: <strong id="agentPass"></strong></div>
+        </div>
+
+        <!-- Departments -->
+        <div class="panel">
+          <h2>Departments — Overview</h2>
+          <div class="databox">BRD01 — Board of Directions</div>
+          <div class="databox">MOP01 — Armed Operation Management</div>
+          <div class="databox">MPS01 — Psychological Operation Management</div>
+          <div class="databox">IGS02 — Data Intelligence & Storage</div>
+          <div class="databox">SSG02 — Secret Service</div>
+          <div class="databox">CYB03 — Cyber Security & Technical Support</div>
+          <div class="databox">IAF03 — Internal Affairs & Ethics</div>
+          <div class="databox">STM03 — Strategy & Risk Management</div>
+          <div class="databox">LGS04 — Logistics & Sustainment</div>
+          <div class="databox">RDO04 — Research & Development</div>
+          <div class="databox">HMR04 — Human Intelligence & Recruitment</div>
+          <div class="databox">STF04 — Special Operations & Task Force</div>
+          <div class="databox">MTF05 — Mobile Task Force</div>
+          <div class="databox">ITS05 — Internal Security</div>
+          <div class="databox">MED05 — Medical Assistance</div>
+          <div class="databox">BRS05 — Bio-Research</div>
+          <div class="databox">CBR05 — CBRN Threat Assessment</div>
+          <div class="databox">ENF06 — Engineering & Facilities</div>
+        </div>
+      </div>
+    </main>
+
+    <footer>© SRAB SI — Internal Military Network</footer>
+  </div>
+
+  <script>
+    // === Load agent identity from localStorage ===
+    const profile = JSON.parse(localStorage.getItem("agentProfile") || "{}");
+    if(profile.nama){
+      document.getElementById("agentName").textContent = profile.nama;
+      document.getElementById("agentId").textContent = profile.workerId;
+      document.getElementById("agentDept").textContent = profile.department;
+      document.getElementById("agentRank").textContent = profile.jabatan;
+      document.getElementById("agentYears").textContent = profile.lama;
+      document.getElementById("agentPass").textContent = profile.passcode;
+
+      // pesan khusus di bawah comm log
+      document.getElementById("userMessage").textContent = 
+        `Welcome, Agent ${profile.nama}. Stay alert on secure channel.`;
+    }
+
+    // === Matrix Rain Effect (departemen + huruf + angka) ===
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    const departments = [
+      "BRD01","MOP01","MPS01","IGS02","SSG02","CYB03","IAF03",
+      "STM03","LGS04","RDO04","HMR04","STF04","MTF05","ITS05",
+      "MED05","BRS05","CBR05","ENF06"
+    ];
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    function randomChar() {
+      if (Math.random() < 0.2) {
+        return departments[Math.floor(Math.random() * departments.length)];
+      }
+      return alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+    }
+
+    const fontSize = 16;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = Array(columns).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0,0,0,0.05)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      ctx.fillStyle = "#9aa93a"; 
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = randomChar();
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 60);
+
+    // === Comm Log Simulation ===
+    const commsLog = document.getElementById("commsLog");
+    const commMsgs = [
+      "Secure channel established with CYB03.",
+      "BRD01 requests operation status update.",
+      "Transmission packet received from MOP01.",
+      "IAF03 flagged unusual behavior in sector 7.",
+      "Intrusion attempt blocked by ITS05.",
+      "Logistics request from LGS04 acknowledged.",
+      "Recon report uploaded by STF04.",
+      "New medical supplies registered by MED05.",
+      "Cyber scan detected vulnerability in STM03."
+    ];
+    let msgIndex = 0;
+    const maxMessages = 100;
+
+    function renderMessage(msg){
+      const time = new Date().toLocaleTimeString();
+      const div = document.createElement("div");
+      div.textContent = `[${time}] ${msg}`;
+      commsLog.appendChild(div);
+
+      // auto scroll ke bawah
+      commsLog.scrollTop = commsLog.scrollHeight;
+
+      // rolling buffer
+      if(commsLog.childNodes.length > maxMessages){
+        commsLog.removeChild(commsLog.firstChild);
+      }
+    }
+
+    setInterval(()=>{
+      renderMessage(commMsgs[msgIndex % commMsgs.length]);
+      msgIndex++;
+    }, 2500);
+  </script>
+</body>
+</html>
