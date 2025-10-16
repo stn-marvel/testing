@@ -140,19 +140,63 @@
       return pola;
     }
 
+    function validasiKriteria(denahMatrix) {
+      let posisi = {};
+      for (let r = 0; r < denahMatrix.length; r++) {
+        for (let c = 0; c < denahMatrix[r].length; c++) {
+          const meja = denahMatrix[r][c];
+          meja.forEach(absen => {
+            posisi[absen] = { row: r, col: c, meja };
+          });
+        }
+      }
+
+      // Random
+      if (!(posisi[3].row === posisi[26].row + 1 && posisi[3].col === posisi[26].col)) {
+        return false;
+      }
+
+      if (posisi[45].meja.includes(27)) return false;
+
+
+      return true;
+    }
+
     function buatDenah() {
       const start = document.getElementById("start").value;
       let laki = Object.entries(dataGender).filter(([_, g]) => g === "L").map(([a]) => parseInt(a));
       let perempuan = Object.entries(dataGender).filter(([_, g]) => g === "P").map(([a]) => parseInt(a));
 
-      shuffle(laki);
-      shuffle(perempuan);
-
       const pola = generateCheckerboard(6, 4, start);
       const denahEl = document.getElementById("denah");
       denahEl.innerHTML = "";
 
-      pola.forEach(row => {
+      let denahMatrix;
+
+      //Sistem Acak
+      let counter = 0;
+      do {
+        counter++;
+        let tempL = [...laki];
+        let tempP = [...perempuan];
+        shuffle(tempL);
+        shuffle(tempP);
+
+        denahMatrix = pola.map(row =>
+          row.map(meja => {
+            if (meja === "L") {
+              return [tempL.pop(), tempL.pop()];
+            } else {
+              return [tempP.pop(), tempP.pop()];
+            }
+          })
+        );
+        // Pencegah Error
+        if (counter > 5000) break;
+      } while (!validasiKriteria(denahMatrix));
+
+      // Render hasil valid
+      denahMatrix.forEach(row => {
         row.forEach(meja => {
           const divMeja = document.createElement("div");
           divMeja.className = "meja";
@@ -160,14 +204,7 @@
           const kursiDiv = document.createElement("div");
           kursiDiv.className = "kursi";
 
-          let kursi = [];
-          if (meja === "L") {
-            kursi = [laki.pop(), laki.pop()];
-          } else {
-            kursi = [perempuan.pop(), perempuan.pop()];
-          }
-
-          kursi.forEach(noAbsen => {
+          meja.forEach(noAbsen => {
             const siswaDiv = document.createElement("div");
             siswaDiv.className = `siswa ${dataGender[noAbsen]}`;
             siswaDiv.textContent = noAbsen;
@@ -180,7 +217,7 @@
       });
     }
 
-    // generate pertama kali
+    // Generate Function
     buatDenah();
   </script>
 </body>
