@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hartara | Harmoni Nusantara</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cookie&family=Lora:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --light: #c1f1fd;
+      --dark: #010101;
+      --primary: #d4382f;
+      --secondary: #fe6160;
+      --info: #bf2e1e;
+      --accent1: #11623a;
+      --accent2: #2da643;
+      --accent3: #d3b8ae;
+      --success: #61ac05;
+      --warning: #ffc272;
+      --danger: #f50267;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      margin: 0;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+
+    nav {
+      background-color: var(--primary);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .navbar-brand {
+      font-family: 'Lora', serif;
+      font-size: 1.5rem;
+      color: white !important;
+    }
+
+    .nav-link {
+      color: white !important;
+      font-weight: 500;
+    }
+
+    .cta {
+      height: 100vh;
+      background: url("https://via.placeholder.com/1200x700") center/cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+
+    .cta h1 {
+      font-family: 'Lora', serif;
+      font-size: 3rem;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .cta p {
+      font-family: 'Cookie', cursive;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .cta button {
+      background-color: var(--secondary);
+      border: none;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      transition: 0.3s;
+    }
+
+    .cta button:hover {
+      background-color: var(--info);
+    }
+
+    section {
+      padding: 4rem 1rem;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s ease-out;
+    }
+
+    section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    h2 {
+      font-family: 'Lora', serif;
+      color: var(--primary);
+      margin-bottom: 2rem;
+    }
+
+    .card img {
+      border-radius: 10px;
+    }
+
+    footer {
+      background-color: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    footer a {
+      color: var(--secondary);
+      text-decoration: none;
+    }
+
+    .saran-btn {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: var(--primary);
+      color: white;
+      padding: 0.6rem;
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      cursor: pointer;
+      font-size: 0.9rem;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .saran-btn i {
+      transform: rotate(90deg);
+    }
+
+    @media (max-width: 768px) {
+      .cta h1 {
+        font-size: 2.3rem;
+      }
+      .cta p {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#">Hartara</a>
+      <button class="navbar-toggler text-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <i class="bx bx-menu"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#">Beranda</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Tentang Kami</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Buku Cerita</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Game Roblox</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CTA -->
+  <section class="cta" id="cta">
+    <h1>Harmoni Nusantara</h1>
+    <p>Jelajahi Keberagaman di Indonesia</p>
+    <button onclick="document.getElementById('beranda').scrollIntoView({behavior:'smooth'})">Lanjut</button>
+  </section>
+
+  <!-- Beranda -->
+  <section id="beranda" class="container text-center">
+    <h2>Tentang Proyek Hartara</h2>
+    <img src="https://via.placeholder.com/150" alt="Logo Hartara" class="mb-3">
+    <p>Proyek Hartara merupakan inisiatif kelas X-2 SMAN 1 Depok untuk memperkenalkan keberagaman flora, fauna, dan budaya Indonesia dalam bentuk karya digital yang menarik.</p>
+    <a href="#" class="btn btn-primary mt-3"><i class='bx bx-info-circle'></i> Selengkapnya</a>
+  </section>
+
+  <!-- Hasil Proyek -->
+  <section class="container text-center">
+    <h2>Hasil Proyek Kami</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <img src="https://via.placeholder.com/400x250" class="card-img-top" alt="Buku Cerita">
+          <div class="card-body">
+            <h5 class="card-title">Buku Cerita</h5>
+            <p class="card-text">Kumpulan cerita dengan ilustrasi menarik tentang keberagaman Indonesia.</p>
+            <a href="#" class="btn btn-outline-primary btn-sm">Selengkapnya</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <img src="https://via.placeholder.com/400x250" class="card-img-top" alt="Video">
+          <div class="card-body">
+            <h5 class="card-title">Video Edukasi</h5>
+            <p class="card-text">Tonton video yang menampilkan budaya dan keindahan alam nusantara.</p>
+            <a href="#" class="btn btn-outline-primary btn-sm">Tonton</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <img src="https://via.placeholder.com/400x250" class="card-img-top" alt="Game Roblox">
+          <div class="card-body">
+            <h5 class="card-title">Game Roblox</h5>
+            <p class="card-text">Rasakan petualangan unik menjelajahi Indonesia di dunia virtual Roblox.</p>
+            <a href="#" class="btn btn-outline-primary btn-sm">Main Sekarang</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Carousel Video -->
+  <section class="container text-center">
+    <h2>Video Karya Kami</h2>
+    <div id="videoCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="card mx-auto border-0 shadow-sm" style="max-width: 600px;">
+            <img src="https://via.placeholder.com/600x350" class="card-img-top" alt="Video 1">
+            <div class="card-body">
+              <h5 class="card-title">Video 1: Pesona Alam Indonesia</h5>
+              <p class="card-text">Menampilkan keindahan alam dari Sabang sampai Merauke.</p>
+              <a href="#" class="btn btn-outline-primary btn-sm">Tonton</a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card mx-auto border-0 shadow-sm" style="max-width: 600px;">
+            <img src="https://via.placeholder.com/600x350" class="card-img-top" alt="Video 2">
+            <div class="card-body">
+              <h5 class="card-title">Video 2: Ragam Budaya</h5>
+              <p class="card-text">Eksplorasi kekayaan budaya dan tradisi yang mempersatukan bangsa.</p>
+              <a href="#" class="btn btn-outline-primary btn-sm">Tonton</a>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="card mx-auto border-0 shadow-sm" style="max-width: 600px;">
+            <img src="https://via.placeholder.com/600x350" class="card-img-top" alt="Video 3">
+            <div class="card-body">
+              <h5 class="card-title">Video 3: Harmoni Nusantara</h5>
+              <p class="card-text">Menyoroti keberagaman sebagai kekuatan utama Indonesia.</p>
+              <a href="#" class="btn btn-outline-primary btn-sm">Tonton</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#videoCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#videoCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Dokumentasi -->
+  <section class="container text-center">
+    <h2>Dokumentasi Proyek</h2>
+    <div class="row g-3">
+      <div class="col-6 col-md-3"><img src="https://via.placeholder.com/200" class="img-fluid rounded" alt=""></div>
+      <div class="col-6 col-md-3"><img src="https://via.placeholder.com/200" class="img-fluid rounded" alt=""></div>
+      <div class="col-6 col-md-3"><img src="https://via.placeholder.com/200" class="img-fluid rounded" alt=""></div>
+      <div class="col-6 col-md-3"><img src="https://via.placeholder.com/200" class="img-fluid rounded" alt=""></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <img src="https://via.placeholder.com/50" alt="Logo kecil"><br>
+    <p>© 2025 Kelas X-2 SMAN 1 Depok. Semua hak dilindungi.</p>
+    <p>
+      <a href="#"><i class='bx bxl-instagram'></i> Instagram</a> |
+      <a href="#"><i class='bx bx-message-rounded-dots'></i> Saran</a>
+    </p>
+  </footer>
+
+  <!-- Tombol Shortcut -->
+  <div class="saran-btn" onclick="document.querySelector('footer').scrollIntoView({behavior:'smooth'})">
+    <i class='bx bx-message-rounded-dots'></i> Berikan Saran
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Animasi Fade-in saat section muncul di viewport
+    const sections = document.querySelectorAll("section");
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.2 });
+    sections.forEach(section => observer.observe(section));
+  </script>
+</body>
+</html>
