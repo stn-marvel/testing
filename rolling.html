@@ -151,21 +151,6 @@
         }
       }
 
-      // Random
-      if (!(posisi[3].row === posisi[26].row + 1 && posisi[3].col === posisi[26].col)) {
-        return false;
-      }
-
-      if (!(posisi[22].row === posisi[42].row + 1 && posisi[22].col === posisi[42].col)) {
-        return false;
-      }
-
-      if (posisi[45].meja.includes(27)) return false;
-
-
-      return true;
-    }
-
     function buatDenah() {
       const start = document.getElementById("start").value;
       let laki = Object.entries(dataGender).filter(([_, g]) => g === "L").map(([a]) => parseInt(a));
