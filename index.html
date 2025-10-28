@@ -84,7 +84,7 @@
 <body>
   <header>
     <h1>🐍 Panduan Lengkap Python Dasar</h1>
-    <p>Pelajari dasar-dasar Python, manipulasi data, dan input pengguna</p>
+    <p>Rangkuman Pelajaran KKA Kelas X-2</p>
   </header>
 
   <main>
@@ -168,21 +168,40 @@ print(orang)</code></pre>
       <div id="out6" class="output">Marvel<br>{'nama': 'Marvel', 'umur': 21, 'kota': 'Jakarta', 'hobi': 'coding'}</div>
     </section>
 
+
     <section>
-      <h2>7. Kombinasi Input, List, dan Dictionary</h2>
+        <h2>7. Fungsi Def</h2>
+        <p class="info">Mendefinisikan fungsi untuk mengelompokkan kode yang dapat digunakan ulang.</p>
+        <pre><code>def sapa(nama):
+            print(f"Halo, {nama}! Selamat datang di Panduan Python.")
+
+            nama = input("Masukkan nama Anda: ")
+
+            sapa(nama)
+
+        </code></pre>
+
+        <button onclick="showOutput(7)">Simulasi Input</button>
+        <div id="out7" class="output">Masukkan nama Anda: Firdaus<br>Halo, Firdaus! Selamat datang di Panduan Python.</div>
+
+    </section>
+
+
+    <section>
+      <h2>8. Kombinasi Input, List, dan Dictionary</h2>
       <p class="info">Contoh mengolah input pengguna menjadi list, lalu membentuk dictionary sederhana.</p>
       <pre><code>buah_input = input("Masukkan nama buah (pisahkan spasi): ").split()
 harga_input = list(map(int, input("Masukkan harga tiap buah: ").split()))
 
 data_buah = dict(zip(buah_input, harga_input))
 print(data_buah)</code></pre>
-      <button onclick="showOutput(7)">Simulasi Input</button>
-      <div id="out7" class="output">Masukkan nama buah: apel jeruk mangga<br>Masukkan harga tiap buah: 10000 8000 12000<br><br>{'apel': 10000, 'jeruk': 8000, 'mangga': 12000}</div>
+      <button onclick="showOutput(8)">Simulasi Input</button>
+      <div id="out8" class="output">Masukkan nama buah: apel jeruk mangga<br>Masukkan harga tiap buah: 10000 8000 12000<br><br>{'apel': 10000, 'jeruk': 8000, 'mangga': 12000}</div>
     </section>
   </main>
 
   <footer>
-    <p>© 2025 Panduan Python Dasar — Oleh Absen 45 X-2</p>
+    <p>© 2025 Panduan Python Dasar — Oleh Absen 45</p>
   </footer>
 
   <script>
