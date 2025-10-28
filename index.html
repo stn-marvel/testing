@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Lengkap Python Dasar</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f6f8fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #007acc;
+      color: white;
+      padding: 1.2rem;
+      text-align: center;
+    }
+
+    main {
+      max-width: 950px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #007acc;
+      border-left: 5px solid #007acc;
+      padding-left: 10px;
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    button {
+      background-color: #007acc;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .output {
+      background: #eef;
+      padding: 0.7rem;
+      border-radius: 6px;
+      display: none;
+      margin-top: 0.5rem;
+    }
+
+    .info {
+      background: #eaf7ff;
+      border-left: 4px solid #007acc;
+      padding: 0.8rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🐍 Panduan Lengkap Python Dasar</h1>
+    <p>Pelajari dasar-dasar Python, manipulasi data, dan input pengguna</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>1. Output & Variabel</h2>
+      <p class="info">Python menggunakan <code>print()</code> untuk menampilkan teks ke layar.</p>
+      <pre><code>print("Halo, dunia!")
+nama = "Marvel"
+umur = 20
+print("Nama:", nama)
+print("Umur:", umur)</code></pre>
+      <button onclick="showOutput(1)">Lihat Hasil</button>
+      <div id="out1" class="output">Halo, dunia!<br>Nama: Marvel<br>Umur: 20</div>
+    </section>
+
+    <section>
+      <h2>2. Operasi Aritmetika</h2>
+      <p class="info">Python mendukung operasi seperti +, -, *, /, %, dan ** (pangkat).</p>
+      <pre><code>a = 10
+b = 3
+print(a + b)
+print(a ** b)</code></pre>
+      <button onclick="showOutput(2)">Lihat Hasil</button>
+      <div id="out2" class="output">13<br>1000</div>
+    </section>
+
+    <section>
+      <h2>3. Konversi & Manipulasi Data</h2>
+      <p class="info">Gunakan fungsi bawaan seperti <code>int()</code>, <code>str()</code>, <code>list()</code>, dan <code>set()</code> untuk konversi tipe data.</p>
+      <pre><code>angka_str = "42"
+angka_int = int(angka_str)
+print(angka_int + 8)
+
+data_list = [1, 2, 3, 3, 2]
+print(set(data_list))    # hapus duplikat
+print(tuple(data_list))  # ubah ke tuple</code></pre>
+      <button onclick="showOutput(3)">Lihat Hasil</button>
+      <div id="out3" class="output">50<br>{1, 2, 3}<br>(1, 2, 3, 3, 2)</div>
+    </section>
+
+    <section>
+      <h2>4. Manipulasi Input Pengguna</h2>
+      <p class="info">Input bawaan Python selalu berupa string. Kita dapat ubah ke huruf kecil, besar, atau format lain.</p>
+      <pre><code>teks = input("Masukkan kalimat: ")
+
+print(teks.lower())  # jadi huruf kecil semua
+print(teks.upper())  # jadi huruf besar semua
+print(teks.title())  # kapital tiap kata</code></pre>
+      <button onclick="showOutput(4)">Simulasi Input</button>
+      <div id="out4" class="output">Masukkan kalimat: Belajar Python Itu Seru<br><br>belajar python itu seru<br>BELAJAR PYTHON ITU SERU<br>Belajar Python Itu Seru</div>
+    </section>
+
+    <section>
+      <h2>5. Manipulasi List</h2>
+      <p class="info">List di Python sangat fleksibel — bisa ditambah, dihapus, diurutkan, atau diakses per elemen.</p>
+      <pre><code>buah = ["apel", "pisang", "mangga"]
+
+buah.append("jeruk")    # tambah item
+buah.remove("pisang")   # hapus item
+buah.sort()             # urutkan
+print(buah)
+print(buah[0])          # akses item pertama</code></pre>
+      <button onclick="showOutput(5)">Lihat Hasil</button>
+      <div id="out5" class="output">['apel', 'jeruk', 'mangga']<br>apel</div>
+    </section>
+
+    <section>
+      <h2>6. Dictionary (Kamus Data)</h2>
+      <p class="info">Dictionary menyimpan data dalam format pasangan <code>key: value</code>.</p>
+      <pre><code>orang = {
+    "nama": "Marvel",
+    "umur": 20,
+    "kota": "Jakarta"
+}
+
+print(orang["nama"])
+orang["umur"] = 21
+orang["hobi"] = "coding"
+print(orang)</code></pre>
+      <button onclick="showOutput(6)">Lihat Hasil</button>
+      <div id="out6" class="output">Marvel<br>{'nama': 'Marvel', 'umur': 21, 'kota': 'Jakarta', 'hobi': 'coding'}</div>
+    </section>
+
+    <section>
+      <h2>7. Kombinasi Input, List, dan Dictionary</h2>
+      <p class="info">Contoh mengolah input pengguna menjadi list, lalu membentuk dictionary sederhana.</p>
+      <pre><code>buah_input = input("Masukkan nama buah (pisahkan spasi): ").split()
+harga_input = list(map(int, input("Masukkan harga tiap buah: ").split()))
+
+data_buah = dict(zip(buah_input, harga_input))
+print(data_buah)</code></pre>
+      <button onclick="showOutput(7)">Simulasi Input</button>
+      <div id="out7" class="output">Masukkan nama buah: apel jeruk mangga<br>Masukkan harga tiap buah: 10000 8000 12000<br><br>{'apel': 10000, 'jeruk': 8000, 'mangga': 12000}</div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Panduan Python Dasar — Oleh Absen 45 X-2</p>
+  </footer>
+
+  <script>
+    function showOutput(n) {
+      const el = document.getElementById('out' + n);
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+  </script>
+</body>
+</html>
