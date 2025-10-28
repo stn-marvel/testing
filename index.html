@@ -89,7 +89,57 @@
 
   <main>
     <section>
-      <h2>1. Output & Variabel</h2>
+      <h2>1. Tipe-tipe Data</h2>
+      <p class="info">Python memiliki beberapa tipe data dasar yang sering digunakan dalam pemrograman.</p>
+      <pre><code># Tipe data Number (int, float)
+angka_bulat = 42        # integer
+desimal = 3.14          # float
+
+# Tipe data String
+teks = "Python"         # string
+multi_baris = """Ini adalah
+teks multi baris"""     # multi-line string
+
+# Tipe data Boolean
+benar = True
+salah = False
+
+# Tipe data List dan Tuple
+list_data = [1, 2, 3]   # list (bisa diubah)
+tuple_data = (1, 2, 3)  # tuple (tidak bisa diubah)
+
+#Tipe data Dictionary dan Set
+dictionary_data = {"nama": "Alice", "umur": 25}  # dictionary (key: value, dan berurut)
+set_data = {1, 2, 3}                          # set (tidak berurut, unik)
+
+
+print(angka_bulat)
+print(desimal)
+print(teks)
+print(multi_baris)
+print(benar)
+print(list_data)
+print(tuple_data)
+print(dictionary_data)
+print(set_data)
+</code></pre>
+      <button onclick="showOutput(0)">Lihat Hasil</button>
+      <div id="out0" class="output">
+        42 <br>
+        3.14  <br>
+        Python <br>
+        Ini adalah <br>
+        teks multi baris <br>
+        True  <br>
+        [1, 2, 3] <br>
+        (1, 2, 3) <br>
+        {'nama': 'Alice', 'umur': 25} <br>
+        {1, 2, 3}
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Output & Variabel</h2>
       <p class="info">Python menggunakan <code>print()</code> untuk menampilkan teks ke layar.</p>
       <pre><code>print("Halo, dunia!")
 nama = "Marvel"
@@ -101,7 +151,7 @@ print("Umur:", umur)</code></pre>
     </section>
 
     <section>
-      <h2>2. Operasi Aritmetika</h2>
+      <h2>3. Operasi Aritmetika</h2>
       <p class="info">Python mendukung operasi seperti +, -, *, /, %, dan ** (pangkat).</p>
       <pre><code>a = 10
 b = 3
@@ -112,7 +162,7 @@ print(a ** b)</code></pre>
     </section>
 
     <section>
-      <h2>3. Konversi & Manipulasi Data</h2>
+      <h2>4. Konversi & Manipulasi Data</h2>
       <p class="info">Gunakan fungsi bawaan seperti <code>int()</code>, <code>str()</code>, <code>list()</code>, dan <code>set()</code> untuk konversi tipe data.</p>
       <pre><code>angka_str = "42"
 angka_int = int(angka_str)
@@ -126,7 +176,7 @@ print(tuple(data_list))  # ubah ke tuple</code></pre>
     </section>
 
     <section>
-      <h2>4. Manipulasi Input Pengguna</h2>
+      <h2>5. Manipulasi Input Pengguna</h2>
       <p class="info">Input bawaan Python selalu berupa string. Kita dapat ubah ke huruf kecil, besar, atau format lain.</p>
       <pre><code>teks = input("Masukkan kalimat: ")
 
@@ -138,7 +188,7 @@ print(teks.title())  # kapital tiap kata</code></pre>
     </section>
 
     <section>
-      <h2>5. Manipulasi List</h2>
+      <h2>6. Manipulasi List</h2>
       <p class="info">List di Python sangat fleksibel — bisa ditambah, dihapus, diurutkan, atau diakses per elemen.</p>
       <pre><code>buah = ["apel", "pisang", "mangga"]
 
@@ -152,7 +202,7 @@ print(buah[0])          # akses item pertama</code></pre>
     </section>
 
     <section>
-      <h2>6. Dictionary (Kamus Data)</h2>
+      <h2>7. Dictionary (Kamus Data)</h2>
       <p class="info">Dictionary menyimpan data dalam format pasangan <code>key: value</code>.</p>
       <pre><code>orang = {
     "nama": "Marvel",
@@ -170,11 +220,11 @@ print(orang)</code></pre>
 
 
     <section>
-        <h2>7. Fungsi Def</h2>
+        <h2>8. Fungsi Def</h2>
         <p class="info">Mendefinisikan fungsi untuk mengelompokkan kode yang dapat digunakan ulang.</p>
         <pre><code>def sapa(nama):
     print(f"Halo, {nama}! Selamat datang di Panduan Python.")
-    
+
 nama = input("Masukkan nama Anda: ")
 sapa(nama)
 
@@ -187,7 +237,7 @@ sapa(nama)
 
 
     <section>
-      <h2>8. Kombinasi Input, List, dan Dictionary</h2>
+      <h2>9. Kombinasi Input, List, dan Dictionary</h2>
       <p class="info">Contoh mengolah input pengguna menjadi list, lalu membentuk dictionary sederhana.</p>
       <pre><code>buah_input = input("Masukkan nama buah (pisahkan spasi): ").split()
 harga_input = list(map(int, input("Masukkan harga tiap buah: ").split()))
@@ -200,7 +250,7 @@ print(data_buah)</code></pre>
   </main>
 
   <footer>
-    <p>© 2025 Panduan Python Dasar — Oleh Absen 45</p>
+    <p>© 2025 Panduan Python Dasar — Marvel Londar</p>
   </footer>
 
   <script>
