@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembuat Surat Resmi</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #2563eb;
+      --light: #f8fafc;
+      --dark: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background-color: var(--light);
+      margin: 0;
+      padding: 0;
+      color: var(--dark);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      padding: 2rem;
+      gap: 2rem;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .form-container, .preview-container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      flex: 1 1 400px;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 0.8rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      margin-top: 1rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .preview {
+      border: 1px solid #ddd;
+      padding: 1.2rem;
+      border-radius: 8px;
+      background: #f9fafb;
+      height: 80vh;
+      overflow-y: auto;
+    }
+
+    .kop {
+      text-align: center;
+      border-bottom: 3px solid black;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .kop h3, .kop p {
+      margin: 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: var(--primary);
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .ttd-item {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .ttd-item input {
+      flex: 1;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 1rem;
+        flex-direction: column;
+      }
+
+      .preview {
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pembuat Surat Resmi</h1>
+    <p>Buat surat dinas dengan cepat dan profesional</p>
+  </header>
+
+  <main>
+    <div class="form-container">
+      <h2>Isi Data Surat</h2>
+      <label for="instansi">Nama Instansi</label>
+      <input type="text" id="instansi" placeholder="Misal: Dinas Pendidikan Kota Jakarta">
+
+      <label for="alamat">Alamat Instansi</label>
+      <input type="text" id="alamat" placeholder="Jl. Contoh No. 123, Jakarta">
+
+      <label for="nomor">Nomor Surat</label>
+      <input type="text" id="nomor" placeholder="Misal: 123/DP/2025">
+
+      <label for="tanggal">Tanggal</label>
+      <input type="date" id="tanggal">
+
+      <label for="tujuan">Kepada</label>
+      <input type="text" id="tujuan" placeholder="Nama atau jabatan penerima surat">
+
+      <label for="perihal">Perihal</label>
+      <input type="text" id="perihal" placeholder="Misal: Undangan Rapat">
+
+      <label for="isi">Isi Surat</label>
+      <textarea id="isi" placeholder="Tulis isi surat di sini..."></textarea>
+
+      <label for="penutup">Penutup</label>
+      <textarea id="penutup" placeholder="Misal: Atas perhatian dan kerja samanya, kami ucapkan terima kasih."></textarea>
+
+      <h3 style="margin-top:1.5rem;color:var(--primary);">Penanda Tangan</h3>
+      <div id="ttdContainer">
+        <div class="ttd-item">
+          <input type="text" placeholder="Nama Penanda Tangan">
+        </div>
+      </div>
+      <button type="button" onclick="addTtd()">+ Tambah Penanda Tangan</button>
+
+      <button onclick="generateLetter()">Buat Surat</button>
+      <button onclick="downloadLetter()">Unduh Surat (.docx)</button>
+      <input type="file" id="importFile" accept=".txt,.docx" onchange="importLetter(event)">
+    </div>
+
+    <div class="preview-container">
+      <h2>Pratinjau Surat</h2>
+      <div class="preview" id="preview">
+        <p>Isi surat akan tampil di sini...</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Pembuat Surat Resmi | Dibuat dengan ❤️ di Indonesia
+  </footer>
+
+  <script>
+    function addTtd() {
+      const container = document.getElementById("ttdContainer");
+      const newRow = document.createElement("div");
+      newRow.classList.add("ttd-item");
+      newRow.innerHTML = `<input type="text" placeholder="Nama Penanda Tangan Tambahan">`;
+      container.appendChild(newRow);
+    }
+
+    function generateLetter() {
+      const instansi = document.getElementById('instansi').value;
+      const alamat = document.getElementById('alamat').value;
+      const nomor = document.getElementById('nomor').value;
+      const tanggal = document.getElementById('tanggal').value;
+      const tujuan = document.getElementById('tujuan').value;
+      const perihal = document.getElementById('perihal').value;
+      const isi = document.getElementById('isi').value;
+      const penutup = document.getElementById('penutup').value;
+
+      const ttdInputs = document.querySelectorAll('#ttdContainer input');
+      let ttdList = "";
+      ttdInputs.forEach(ttd => {
+        if (ttd.value.trim() !== "") {
+          ttdList += `<p style="text-align:right;"><b>${ttd.value}</b></p>`;
+        }
+      });
+
+      const letterHTML = `
+        <div class="kop">
+          <h3>${instansi}</h3>
+          <p>${alamat}</p>
+          <p><b>Nomor:</b> ${nomor}</p>
+        </div>
+        <p><b>Tanggal:</b> ${tanggal}</p>
+        <p><b>Kepada Yth.</b> ${tujuan}</p>
+        <p><b>Perihal:</b> ${perihal}</p>
+        <br>
+        <p>${isi.replace(/\n/g, "<br>")}</p>
+        <br>
+        <p>${penutup.replace(/\n/g, "<br>")}</p>
+        <br><br>
+        <p style="text-align:right;">Hormat kami,</p>
+        ${ttdList}
+      `;
+      document.getElementById('preview').innerHTML = letterHTML;
+    }
+
+    function downloadLetter() {
+      const content = document.getElementById('preview').innerText;
+      const blob = new Blob([content], { type: "application/msword" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "surat_resmi.doc";
+      link.click();
+    }
+
+    function importLetter(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('preview').innerText = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>
