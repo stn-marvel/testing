@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angka BOM - Game Interaktif</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            position: relative;
+        }
+
+        .game-title {
+            font-size: 4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ff0000, #ff5555, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+            background: linear-gradient(45deg, #ff3333, #ff0000);
+        }
+
+        .btn:active {
+            transform: translateY(-2px);
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 20px 0;
+            color: #ff5555;
+            font-weight: bold;
+        }
+
+        .timer.warning {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .range-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #ff5555;
+            box-shadow: 0 0 10px rgba(255, 85, 85, 0.5);
+            transform: scale(1.02);
+        }
+
+        .input-hint {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .guessed-numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .guessed-number {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.5);
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+        }
+
+        .message.warning {
+            background: rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .win-animation {
+            animation: winPulse 1s infinite;
+        }
+
+        @keyframes winPulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 255, 0, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+        }
+
+        .lose-animation {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .explosion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 100, 0, 0.8) 0%, rgba(255, 0, 0, 0.6) 50%, rgba(255, 0, 0, 0) 70%);
+            z-index: 999;
+            display: none;
+        }
+
+        .explosion.active {
+            display: block;
+            animation: explode 1s forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+        .rules-content, .credits-content, .secret-content, .code-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .rules-content h2, .credits-content h2, .secret-content h2, .code-content h2 {
+            color: #ff5555;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .rules-content ol, .credits-content p, .secret-content p {
+            margin-bottom: 15px;
+        }
+
+        .rules-content li {
+            margin-bottom: 10px;
+            margin-left: 20px;
+        }
+
+        .code-container {
+            background: #222;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .code-container pre {
+            color: #f8f8f2;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff5555;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #ff3333;
+        }
+
+        .copy-btn.copied {
+            background: #4CAF50;
+        }
+
+        .warning {
+            background: rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .warning i {
+            color: #FFA500;
+            font-size: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #ff5555;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .keyboard-hint {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 3rem;
+            }
+            
+            .menu-buttons {
+                margin: 30px auto;
+            }
+            
+            .input-area {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .input-field {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .keyboard-hint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="game-title">Angka BOM</h1>
+        </header>
+
+        <main>
+            <!-- Menu Section -->
+            <section id="menu" class="section active">
+                <div class="menu-buttons">
+                    <button class="btn" onclick="showSection('game')">
+                        <i class="fas fa-play"></i> Permainan
+                    </button>
+                    <button class="btn" onclick="showSection('rules')">
+                        <i class="fas fa-book"></i> Peraturan
+                    </button>
+                    <button class="btn" onclick="showSection('credits')">
+                        <i class="fas fa-user"></i> Credits
+                    </button>
+                    <button class="btn" onclick="showSection('secret')">
+                        <i class="fas fa-lock"></i> Secret Section
+                    </button>
+                    <button class="btn" onclick="showSection('code')">
+                        <i class="fas fa-code"></i> Kode Python
+                    </button>
+                </div>
+            </section>
+
+            <!-- Game Section -->
+            <section id="game" class="section">
+                <div class="game-area">
+                    <div class="timer" id="timer">Waktu tersisa: 20 detik</div>
+                    <div class="range-display" id="rangeDisplay">
+                        Tebak angka antara 1 sampai 100
+                    </div>
+                    <div class="input-area">
+                        <div style="position: relative;">
+                            <input type="number" id="guessInput" class="input-field" min="1" max="100" placeholder="Masukkan tebakan" autocomplete="off">
+                            <div class="keyboard-hint">Tekan Enter</div>
+                        </div>
+                        <button class="btn" onclick="makeGuess()">Tebak</button>
+                    </div>
+                    <div class="input-hint">Tekan Enter atau klik tombol Tebak untuk submit</div>
+                    <div class="message" id="message"></div>
+                    <div class="guessed-numbers" id="guessedNumbers"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="resetGame()">Mulai Ulang</button>
+                        <button class="btn" onclick="showSection('menu')">Kembali ke Menu</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Rules Section -->
+            <section id="rules" class="section">
+                <div class="rules-content">
+                    <h2>Peraturan Permainan Angka BOM</h2>
+                    <ol>
+                        <li>Komputer memilih 1 angka BOM acak antara 1 sampai 100.</li>
+                        <li>Pemain menebak angka dalam kisaran saat ini. Jika menebak angka BOM, pemain kalah.</li>
+                        <li>Jika tebakan > angka BOM, kisaran selanjutnya menjadi [terendah .. tebakan-1].</li>
+                        <li>Jika tebakan < angka BOM, kisaran selanjutnya menjadi [tebakan+1 .. tertinggi].</li>
+                        <li>Angka yang sudah ditebak tidak lagi termasuk ke kisaran selanjutnya.</li>
+                        <li><strong>Jika tersisa 1 angka (angka BOM), pemain menang karena berhasil menghindari semua angka non-BOM.</strong></li>
+                        <li><strong>Jika tersisa 2 angka, dan pemain berhasil menebak 1 angka yang bukan BOM, pemain menang.</strong></li>
+                        <li>Pemain hanya punya 20 detik untuk menyelesaikan permainan sebelum BOM meledak!</li>
+                    </ol>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn" onclick="showSection('menu')">Kembali ke Menu</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Credits Section -->
+            <section id="credits" class="section">
+                <div class="credits-content">
+                    <h2>Credits</h2>
+                    <p><strong>Developer:</strong> Marvel Londar (stn-marvel)</p>
+                    <p><strong>GitHub:</strong> <a href="https://github.com/stn-marvel" target="_blank">https://github.com/stn-marvel</a></p>
+                    <p><strong>Layanan:</strong> Jasa pembuatan website dan development (React/Tailwind, Firebase, dsb.)</p>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn" onclick="showSection('menu')">Kembali ke Menu</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Secret Section -->
+            <section id="secret" class="section">
+                <div class="secret-content">
+                    <h2>Secret Section</h2>
+                    <div id="secretMessage">
+                        <p>Anda belum memiliki kode akses. Menangkan permainan untuk mendapatkan kode.</p>
+                    </div>
+                    <div id="secretAccess" style="display: none;">
+                        <div class="input-area">
+                            <div style="position: relative;">
+                                <input type="text" id="secretCode" class="input-field" placeholder="Masukkan kode akses" autocomplete="off">
+                                <div class="keyboard-hint">Tekan Enter</div>
+                            </div>
+                            <button class="btn" onclick="checkSecretCode()">Masuk</button>
+                        </div>
+                        <div class="input-hint">Tekan Enter atau klik tombol Masuk untuk submit</div>
+                        <div class="message" id="secretMessageResult"></div>
+                    </div>
+                    <div id="secretContent" style="display: none;">
+                        <p><strong>Selamat! Anda berhasil memasuki Secret Section.</strong></p>
+                        <p>Ucapan: Terima kasih telah memainkan Angka BOM — Anda benar-benar ahli mengelola risiko!</p>
+                        <p>Promosi: Kunjungi GitHub saya <a href="https://github.com/stn-marvel" target="_blank">https://github.com/stn-marvel</a> untuk melihat proyek.</p>
+                        <p>Jasa Development: Saya menyediakan pembuatan website (React, Tailwind, Firebase), integrasi, dan konsultasi. Hubungi saya jika tertarik.</p>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn" onclick="showSection('menu')">Kembali ke Menu</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Code Section -->
+            <section id="code" class="section">
+                <div class="code-content">
+                    <h2>Kode Python</h2>
+                    <div class="warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Peringatan:</strong> Kode Python ini mungkin tidak dapat berfungsi di Google Colab, dan hanya dapat berfungsi di terminal Python lokal.
+                            <br>Jangan lupa untuk mengunduh library <code>InquirerPy, pyfiglet,</code> dan <code>rich.console</code> melalui <code>pip install</code>
+                        </div>
+                    </div>
+                    <div class="code-container">
+                        <button class="copy-btn" id="copyBtn" onclick="copyCode()">Salin Kode</button>
+                        <pre id="pythonCode">from InquirerPy import inquirer
+from pyfiglet import figlet_format
+from rich.console import Console
+import os
+import random
+import secrets
+import string
+import time
+
+MERAH = "\033[31m"
+KUNING = "\033[33m"
+HIJAU = "\033[32m"
+BIRU = "\033[34m"
+WARNING = "\033[1;31m"
+RESET = "\033[0m"
+
+console = Console()
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def tampilkan_judul():
+    judul = figlet_format("Angka BOM", font="slant")
+    print(MERAH + judul + RESET)
+
+def show_credits():
+    clear()
+    tampilkan_judul()
+    console.print("Developer: [bold]Marvel Londar (stn-marvel)[/bold]")
+    console.print("GitHub: [underline]https://github.com/stn-marvel[/underline]")
+    console.print("Layanan: Jasa pembuatan website dan development (React/Tailwind, Firebase, dsb.)\n")
+    inquirer.text(message="Tekan Enter untuk kembali ke menu...").execute()
+
+def show_rules():
+    clear()
+    tampilkan_judul()
+    console.print("[bold underline]Peraturan Permainan Angka BOM[/bold underline]\n")
+    console.print("1. Komputer memilih 1 angka BOM acak antara 1 sampai 100.")
+    console.print("2. Pemain menebak angka dalam kisaran saat ini. Jika menebak angka BOM, pemain kalah.")
+    console.print("3. Jika tebakan > angka BOM, kisaran selanjutnya menjadi [terendah .. tebakan-1].")
+    console.print("4. Jika tebakan < angka BOM, kisaran selanjutnya menjadi [tebakan+1 .. tertinggi].")
+    console.print("5. Angka yang sudah ditebak tidak lagi termasuk ke kisaran selanjutnya.")
+    console.print("6. Jika tersisa 1 angka (angka BOM), pemain menang karena berhasil menghindari semua angka non-BOM.")
+    console.print("7. Jika tersisa 2 angka, dan pemain berhasil menebak 1 angka yang bukan BOM, pemain menang.")
+    console.print("8. Pemain hanya punya 20 detik untuk menyelesaikan permainan sebelum BOM meledak!\n")
+    inquirer.text(message="Tekan Enter untuk kembali ke menu...").execute()
+
+def dramatic_loss(reason):
+    clear()
+    tampilkan_judul()
+    msg = figlet_format("KALAH!", font="big")
+    console.print(MERAH + msg + RESET)
+    console.print(f":boom: {reason}\n")
+    inquirer.text(message="Tekan Enter untuk kembali ke menu...").execute()
+
+def dramatic_win(secret_code):
+    clear()
+    tampilkan_judul()
+    msg = figlet_format("MENANG!", font="big")
+    console.print(HIJAU + msg + RESET)
+    console.print("Selamat — Anda berhasil menghindari angka BOM dan memenangkan permainan!\n")
+    console.print(f"Kode akses Secret Section Anda adalah: [bold]{secret_code}[/bold]\n")
+    inquirer.text(message="Tekan Enter untuk kembali ke menu...").execute()
+
+def generate_secret_code(length: int = 8) -> str:
+    alphabet = string.ascii_uppercase + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
+
+def ask_number_in_range(low: int, high: int, guessed: list) -> int:
+    prompt = f"Tebak sebuah angka antara {low} sampai {high}: "
+
+    def _validate(result):
+        try:
+            val = int(result)
+        except Exception:
+            return "Masukkan harus berupa angka bulat."
+        if val < low or val > high:
+            return f"Masukkan harus berada dalam kisaran {low} sampai {high}."
+        if val in guessed:
+            return f"Angka {val} sudah ditebak sebelumnya. Coba angka lain."
+        return True
+
+    answer = inquirer.text(message=prompt, validate=_validate).execute()
+    return int(answer)
+
+def countdown(seconds_left):
+    for i in range(seconds_left, 0, -1):
+        clear()
+        tampilkan_judul()
+        console.print(f"[bold red]BOM akan meledak dalam {i} detik![/bold red]")
+        time.sleep(1)
+
+def play_game():
+    clear()
+    tampilkan_judul()
+
+    low, high = 1, 100
+    bomb = random.randint(low, high)
+    guessed = []
+    secret_code = None
+
+    console.print("Permainan dimulai! Anda memiliki [bold red]20 detik[/bold red] untuk menghindari angka BOM!\n")
+    start_time = time.time()
+
+    countdown_started = False
+
+    while True:
+        elapsed = time.time() - start_time
+        remaining_time = 20 - elapsed
+
+        if remaining_time <= 0:
+            dramatic_loss("Waktu habis! BOM meledak sebelum Anda sempat menebak semua angka.")
+            break
+
+        # Mulai countdown ketika waktu tinggal 5 detik
+        if remaining_time <= 5 and not countdown_started:
+            countdown_started = True
+            countdown(5)
+            dramatic_loss("Waktu habis! BOM meledak tepat setelah hitungan berakhir.")
+            break
+
+        remaining = high - low + 1
+        if remaining <= 0:
+            dramatic_loss("Kisaran angka tidak valid.")
+            break
+
+        try:
+            guess = ask_number_in_range(low, high, guessed)
+        except KeyboardInterrupt:
+            console.print("\nPermainan dihentikan oleh pemain. Kembali ke menu.")
+            time.sleep(1)
+            break
+
+        if guess == bomb:
+            dramatic_loss(f"Anda menebak angka BOM ({bomb}). Permainan berakhir.")
+            break
+
+        guessed.append(guess)
+
+        # Check win condition: only 1 number left and it's the bomb
+        if remaining == 1 and low == bomb:
+            secret_code = generate_secret_code(8)
+            dramatic_win(secret_code)
+            break
+
+        # Check win condition: 2 numbers left and you guessed the non-bomb
+        if remaining == 2:
+            # If one of the remaining numbers is the bomb and you guessed the other one
+            if (low == bomb and high == guess) or (high == bomb and low == guess):
+                secret_code = generate_secret_code(8)
+                dramatic_win(secret_code)
+                break
+
+        if guess > bomb:
+            high = guess - 1
+            console.print(f"Tebakan {guess} lebih besar dari angka BOM. Kisaran diperbarui menjadi [{low}..{high}].\n")
+        else:
+            low = guess + 1
+            console.print(f"Tebakan {guess} lebih kecil dari angka BOM. Kisaran diperbarui menjadi [{low}..{high}].\n")
+
+        remaining = high - low + 1
+        if remaining == 2:
+            console.print("Hati-hati — hanya tersisa 2 angka. Tebak salah satu yang bukan BOM untuk menang!")
+
+    return secret_code
+
+def secret_section(access_code_stored):
+    clear()
+    tampilkan_judul()
+    console.print("[bold]Secret Section[/bold]\n")
+    if not access_code_stored:
+        console.print("Anda belum memiliki kode akses. Menangkan permainan untuk mendapatkan kode.\n")
+        inquirer.text(message="Tekan Enter untuk kembali ke menu...").execute()
+        return
+
+    code = inquirer.text(message="Masukkan kode akses Secret Section:").execute()
+    if code.strip() == access_code_stored:
+        clear()
+        tampilkan_judul()
+        console.print("[bold green]Selamat! Anda berhasil memasuki Secret Section.[/bold green]\n")
+        console.print("Ucapan: Terima kasih telah memainkan Angka BOM — Anda benar-benar ahli mengelola risiko!\n")
+        console.print("Promosi: Kunjungi GitHub saya [underline]https://github.com/stn-marvel[/underline] untuk melihat proyek.")
+        console.print("Jasa Development: Saya menyediakan pembuatan website (React, Tailwind, Firebase), integrasi, dan konsultasi. Hubungi saya jika tertarik.\n")
+        inquirer.text(message="Tekan Enter untuk kembali ke menu...").execute()
+    else:
+        console.print(":no_entry_sign: Kode salah. Akses ditolak.\n")
+        inquirer.text(message="Tekan Enter untuk kembali ke menu...").execute()
+
+def main_menu():
+    secret_code = None
+    while True:
+        clear()
+        tampilkan_judul()
+        choice = inquirer.select(
+            message="Pilih opsi:",
+            choices=["Permainan", "Peraturan", "Credits", "Secret Section", "Keluar"],
+        ).execute()
+
+        if choice == "Permainan":
+            code = play_game()
+            if code:
+                secret_code = code
+        elif choice == "Peraturan":
+            show_rules()
+        elif choice == "Credits":
+            show_credits()
+        elif choice == "Secret Section":
+            secret_section(secret_code)
+        elif choice == "Keluar":
+            console.print("Terima kasih sudah bermain Angka BOM. Sampai jumpa!")
+            break
+
+if __name__ == "__main__":
+    main_menu()</pre>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn" onclick="showSection('menu')">Kembali ke Menu</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Angka BOM Game. Dikembangkan oleh <a href="https://github.com/stn-marvel" target="_blank">Marvel Londar</a></p>
+        </footer>
+    </div>
+
+    <!-- Modal for Win/Loss -->
+    <div class="modal" id="gameModal">
+        <div class="modal-content" id="modalContent">
+            <h2 id="modalTitle"></h2>
+            <p id="modalMessage"></p>
+            <div id="modalSecretCode" style="display: none;">
+                <p>Kode akses Secret Section Anda adalah: <strong id="secretCodeDisplay"></strong></p>
+            </div>
+            <button class="btn" onclick="closeModal()">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Explosion Effect -->
+    <div class="explosion" id="explosion"></div>
+
+    <script>
+        // Game variables
+        let bombNumber;
+        let lowRange = 1;
+        let highRange = 100;
+        let guessedNumbers = [];
+        let timeLeft = 20;
+        let gameTimer;
+        let secretCode = null;
+        let gameActive = false;
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Reset game if leaving game section
+            if (sectionId !== 'game') {
+                stopGameTimer();
+                gameActive = false;
+            }
+            
+            // Initialize secret section if needed
+            if (sectionId === 'secret') {
+                initSecretSection();
+            }
+            
+            // Start game when entering game section
+            if (sectionId === 'game' && !gameActive) {
+                setTimeout(() => startGame(), 100);
+            }
+        }
+
+        // Game functions
+        function startGame() {
+            // Reset game variables
+            bombNumber = Math.floor(Math.random() * 100) + 1;
+            lowRange = 1;
+            highRange = 100;
+            guessedNumbers = [];
+            timeLeft = 20;
+            gameActive = true;
+            
+            // Reset UI
+            document.getElementById('rangeDisplay').textContent = `Tebak angka antara ${lowRange} sampai ${highRange}`;
+            document.getElementById('message').textContent = '';
+            document.getElementById('message').className = 'message';
+            document.getElementById('guessedNumbers').innerHTML = '';
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').disabled = false;
+            document.getElementById('guessInput').focus();
+            document.getElementById('timer').textContent = `Waktu tersisa: ${timeLeft} detik`;
+            document.getElementById('timer').classList.remove('warning');
+            
+            // Start timer
+            startGameTimer();
+        }
+
+        function startGameTimer() {
+            stopGameTimer();
+            gameTimer = setInterval(() => {
+                if (!gameActive) return;
+                
+                timeLeft--;
+                document.getElementById('timer').textContent = `Waktu tersisa: ${timeLeft} detik`;
+                
+                // Add warning class when time is running out
+                if (timeLeft <= 5) {
+                    document.getElementById('timer').classList.add('warning');
+                }
+                
+                // Check if time is up
+                if (timeLeft <= 0) {
+                    endGame(false, "Waktu habis! BOM meledak sebelum Anda sempat menebak semua angka.");
+                }
+            }, 1000);
+        }
+
+        function stopGameTimer() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+                gameTimer = null;
+            }
+        }
+
+        function makeGuess() {
+            if (!gameActive) return;
+            
+            const guessInput = document.getElementById('guessInput');
+            const guess = parseInt(guessInput.value);
+            
+            // Validate input
+            if (isNaN(guess)) {
+                showMessage("Masukkan harus berupa angka bulat.", "error");
+                guessInput.focus();
+                return;
+            }
+            
+            if (guess < lowRange || guess > highRange) {
+                showMessage(`Masukkan harus berada dalam kisaran ${lowRange} sampai ${highRange}.`, "error");
+                guessInput.focus();
+                return;
+            }
+            
+            if (guessedNumbers.includes(guess)) {
+                showMessage(`Angka ${guess} sudah ditebak sebelumnya. Coba angka lain.`, "error");
+                guessInput.focus();
+                return;
+            }
+            
+            // Add to guessed numbers
+            guessedNumbers.push(guess);
+            updateGuessedNumbers();
+            
+            // Check if guess is the bomb
+            if (guess === bombNumber) {
+                endGame(false, `Anda menebak angka BOM (${bombNumber}). Permainan berakhir.`);
+                return;
+            }
+            
+            // Update range based on guess
+            if (guess > bombNumber) {
+                highRange = guess - 1;
+                showMessage(`Tebakan ${guess} lebih besar dari angka BOM. Kisaran diperbarui menjadi [${lowRange}..${highRange}].`, "success");
+            } else {
+                lowRange = guess + 1;
+                showMessage(`Tebakan ${guess} lebih kecil dari angka BOM. Kisaran diperbarui menjadi [${lowRange}..${highRange}].`, "success");
+            }
+            
+            // Update range display
+            document.getElementById('rangeDisplay').textContent = `Tebak angka antara ${lowRange} sampai ${highRange}`;
+            
+            // Check win conditions
+            const remainingNumbers = highRange - lowRange + 1;
+            
+            // WIN CONDITION 1: Only 1 number left and it's the bomb
+            if (remainingNumbers === 1 && lowRange === bombNumber) {
+                endGame(true, "Selamat — Anda berhasil menghindari semua angka non-BOM dan memenangkan permainan!");
+                return;
+            }
+            
+            // WIN CONDITION 2: 2 numbers left and you guessed the non-bomb
+            if (remainingNumbers === 2) {
+                showMessage("Hati-hati — hanya tersisa 2 angka. Tebak salah satu yang bukan BOM untuk menang!", "warning");
+                
+                // Check if the guess was the non-bomb number
+                if ((lowRange === bombNumber && highRange === guess) || 
+                    (highRange === bombNumber && lowRange === guess)) {
+                    endGame(true, "Selamat — Anda berhasil menebak angka non-BOM dan memenangkan permainan!");
+                    return;
+                }
+            }
+            
+            // Clear input and focus
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        function updateGuessedNumbers() {
+            const container = document.getElementById('guessedNumbers');
+            const numElement = document.createElement('div');
+            const lastNum = guessedNumbers[guessedNumbers.length - 1];
+            numElement.className = 'guessed-number';
+            numElement.textContent = lastNum;
+            container.appendChild(numElement);
+        }
+
+        function showMessage(text, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = text;
+            messageElement.className = `message ${type}`;
+        }
+
+        function endGame(won, reason) {
+            gameActive = false;
+            stopGameTimer();
+            document.getElementById('guessInput').disabled = true;
+            
+            if (won) {
+                // Generate secret code
+                secretCode = generateSecretCode(8);
+                
+                // Show win modal
+                document.getElementById('modalTitle').textContent = 'MENANG!';
+                document.getElementById('modalTitle').style.color = '#00ff00';
+                document.getElementById('modalMessage').textContent = reason;
+                document.getElementById('secretCodeDisplay').textContent = secretCode;
+                document.getElementById('modalSecretCode').style.display = 'block';
+                document.getElementById('modalContent').classList.add('win-animation');
+                
+                // Store secret code in localStorage
+                localStorage.setItem('angkaBOMSecretCode', secretCode);
+            } else {
+                // Show loss modal
+                document.getElementById('modalTitle').textContent = 'KALAH!';
+                document.getElementById('modalTitle').style.color = '#ff0000';
+                document.getElementById('modalMessage').textContent = reason;
+                document.getElementById('modalSecretCode').style.display = 'none';
+                document.getElementById('modalContent').classList.add('lose-animation');
+                
+                // Show explosion effect
+                showExplosion();
+            }
+            
+            // Show modal
+            document.getElementById('gameModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('gameModal').classList.remove('active');
+            document.getElementById('modalContent').classList.remove('win-animation', 'lose-animation');
+        }
+
+        function showExplosion() {
+            const explosion = document.getElementById('explosion');
+            explosion.classList.add('active');
+            
+            setTimeout(() => {
+                explosion.classList.remove('active');
+            }, 1000);
+        }
+
+        function resetGame() {
+            stopGameTimer();
+            startGame();
+        }
+
+        function generateSecretCode(length = 8) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+            }
+            return result;
+        }
+
+        // Secret section functions
+        function initSecretSection() {
+            const storedCode = localStorage.getItem('angkaBOMSecretCode');
+            
+            if (storedCode) {
+                document.getElementById('secretMessage').style.display = 'none';
+                document.getElementById('secretAccess').style.display = 'block';
+                document.getElementById('secretContent').style.display = 'none';
+                document.getElementById('secretCode').value = '';
+                document.getElementById('secretMessageResult').textContent = '';
+                document.getElementById('secretMessageResult').className = 'message';
+            } else {
+                document.getElementById('secretMessage').style.display = 'block';
+                document.getElementById('secretAccess').style.display = 'none';
+                document.getElementById('secretContent').style.display = 'none';
+            }
+        }
+
+        function checkSecretCode() {
+            const inputCode = document.getElementById('secretCode').value.trim();
+            const storedCode = localStorage.getItem('angkaBOMSecretCode');
+            
+            if (inputCode === storedCode) {
+                document.getElementById('secretAccess').style.display = 'none';
+                document.getElementById('secretContent').style.display = 'block';
+                document.getElementById('secretMessageResult').textContent = '';
+            } else {
+                document.getElementById('secretMessageResult').textContent = 'Kode salah. Akses ditolak.';
+                document.getElementById('secretMessageResult').className = 'message error';
+                document.getElementById('secretCode').focus();
+            }
+        }
+
+        // Code section functions
+        function copyCode() {
+            const codeText = document.getElementById('pythonCode').textContent;
+            navigator.clipboard.writeText(codeText).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.textContent = 'Tersalin!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Salin Kode';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add enter key support for guess input
+            const guessInput = document.getElementById('guessInput');
+            guessInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    makeGuess();
+                }
+            });
+            
+            // Add enter key support for secret code input
+            const secretCodeInput = document.getElementById('secretCode');
+            secretCodeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkSecretCode();
+                }
+            });
+            
+            // Add visual feedback when typing
+            guessInput.addEventListener('input', () => {
+                if (guessInput.value) {
+                    guessInput.style.borderColor = '#ff5555';
+                } else {
+                    guessInput.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                }
+            });
+            
+            secretCodeInput.addEventListener('input', () => {
+                if (secretCodeInput.value) {
+                    secretCodeInput.style.borderColor = '#ff5555';
+                } else {
+                    secretCodeInput.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
