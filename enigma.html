@@ -45,7 +45,7 @@
         
         .header {
             background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             border-bottom: 3px solid #444;
             position: relative;
@@ -54,38 +54,39 @@
         
         .header h1 {
             font-family: 'Bebas Neue', cursive;
-            font-size: 3em;
-            letter-spacing: 8px;
+            font-size: clamp(1.5em, 5vw, 3em);
+            letter-spacing: clamp(4px, 2vw, 8px);
             background: linear-gradient(45deg, #00ff00, #00cc00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .subtitle {
             color: #888;
-            font-size: 0.9em;
-            letter-spacing: 2px;
+            font-size: clamp(0.7em, 2vw, 0.9em);
+            letter-spacing: clamp(1px, 1vw, 2px);
         }
         
         .mode-toggle {
-            margin-top: 15px;
+            margin-top: 12px;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
         .mode-btn {
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
             border: 2px solid #444;
             color: #888;
-            padding: 8px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: inherit;
-            font-size: 0.9em;
+            font-size: clamp(0.75em, 2vw, 0.9em);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -105,8 +106,8 @@
         .main-container {
             flex: 1;
             display: flex;
-            padding: 30px;
-            gap: 30px;
+            padding: clamp(10px, 3vw, 30px);
+            gap: clamp(15px, 3vw, 30px);
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
@@ -115,10 +116,10 @@
         }
         
         .enigma-machine {
-            flex: 2;
+            flex: 1.5;
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
             border-radius: 15px;
-            padding: 30px;
+            padding: clamp(15px, 3vw, 30px);
             box-shadow: 
                 0 10px 40px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -128,14 +129,14 @@
         .input-section {
             background: #1f1f1f;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             border: 1px solid #444;
         }
         
         .input-label {
-            font-size: 1.1em;
-            margin-bottom: 10px;
+            font-size: clamp(0.9em, 2vw, 1.1em);
+            margin-bottom: 8px;
             color: #00ff00;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -146,12 +147,12 @@
             background: #000;
             border: 2px solid #444;
             border-radius: 8px;
-            padding: 12px;
+            padding: 10px;
             color: #00ff00;
             font-family: 'Courier Prime', monospace;
-            font-size: 1em;
+            font-size: clamp(0.9em, 2vw, 1em);
             resize: vertical;
-            min-height: 80px;
+            min-height: 70px;
             transition: all 0.3s ease;
         }
         
@@ -162,7 +163,7 @@
         }
         
         .process-btn {
-            margin-top: 15px;
+            margin-top: 12px;
             width: 100%;
             background: linear-gradient(145deg, #00ff00, #00cc00);
             border: none;
@@ -171,10 +172,10 @@
             border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 1.1em;
+            font-size: clamp(0.9em, 2vw, 1.1em);
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
@@ -207,27 +208,30 @@
         .rotors-section {
             background: #1f1f1f;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             border: 1px solid #444;
         }
         
         .rotors-container {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             justify-content: center;
-            margin: 20px 0;
+            margin: 15px 0;
+            flex-wrap: wrap;
         }
         
         .rotor {
             background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
             border-radius: 10px;
-            padding: 15px;
+            padding: 12px;
             border: 2px solid #555;
             box-shadow: 
                 0 5px 15px rgba(0, 0, 0, 0.3),
                 inset 0 2px 5px rgba(0, 0, 0, 0.5);
             transition: transform 0.3s ease;
+            flex: 1;
+            min-width: 120px;
         }
         
         .rotor:hover {
@@ -238,9 +242,9 @@
         }
         
         .rotor-label {
-            font-size: 0.8em;
+            font-size: clamp(0.7em, 2vw, 0.8em);
             color: #888;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -249,19 +253,19 @@
             background: #000;
             border: 2px solid #444;
             border-radius: 5px;
-            padding: 10px;
-            font-size: 2em;
+            padding: 8px;
+            font-size: clamp(1.2em, 3vw, 2em);
             text-align: center;
             color: #00ff00;
             font-weight: bold;
-            letter-spacing: 5px;
+            letter-spacing: 3px;
             box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .rotor-controls {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
         }
         
@@ -269,12 +273,12 @@
             background: linear-gradient(145deg, #444, #333);
             border: 1px solid #555;
             color: #00ff00;
-            padding: 5px 10px;
+            padding: 5px 8px;
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: inherit;
-            font-size: 0.9em;
+            font-size: clamp(0.75em, 2vw, 0.9em);
         }
         
         .rotor-btn:hover {
@@ -289,14 +293,14 @@
         .plugboard-section {
             background: #1f1f1f;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             border: 1px solid #444;
         }
         
         .plugboard-title {
-            font-size: 1.2em;
-            margin-bottom: 15px;
+            font-size: clamp(1em, 2.5vw, 1.2em);
+            margin-bottom: 12px;
             color: #00ff00;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -304,17 +308,20 @@
         
         .plugboard-grid {
             display: grid;
-            grid-template-columns: repeat(13, 1fr);
-            gap: 10px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+            gap: 8px;
+            margin-top: 12px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .plug {
             background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
             border: 2px solid #555;
             border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            width: clamp(30px, 5vw, 35px);
+            height: clamp(30px, 5vw, 35px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -322,6 +329,7 @@
             transition: all 0.3s ease;
             font-weight: bold;
             color: #888;
+            font-size: clamp(0.8em, 2vw, 0.9em);
         }
         
         .plug:hover {
@@ -346,26 +354,26 @@
         .keyboard-section {
             background: #1f1f1f;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             border: 1px solid #444;
         }
         
         .keyboard {
             display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            gap: 8px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 6px;
+            margin-top: 12px;
         }
         
         .key {
             background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
             border: 2px solid #555;
             border-radius: 8px;
-            padding: 15px;
+            padding: clamp(8px, 2vw, 15px);
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 1.2em;
+            font-size: clamp(0.9em, 2.5vw, 1.2em);
             font-weight: bold;
             color: #aaa;
             position: relative;
@@ -406,13 +414,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
         
         .output-panel {
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 
                 0 10px 40px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -423,25 +431,25 @@
         }
         
         .panel-title {
-            font-size: 1.3em;
-            margin-bottom: 15px;
+            font-size: clamp(1em, 2.5vw, 1.3em);
+            margin-bottom: 12px;
             color: #00ff00;
             text-transform: uppercase;
             letter-spacing: 2px;
             border-bottom: 2px solid #444;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
         
         .output-display {
             background: #000;
             border: 2px solid #444;
             border-radius: 8px;
-            padding: 15px;
-            font-size: 1.1em;
+            padding: 12px;
+            font-size: clamp(0.9em, 2vw, 1.1em);
             color: #00ff00;
             font-family: 'Courier Prime', monospace;
-            min-height: 150px;
-            max-height: 300px;
+            min-height: 120px;
+            max-height: 250px;
             overflow-y: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -450,7 +458,7 @@
         }
         
         .output-display::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         
         .output-display::-webkit-scrollbar-track {
@@ -459,7 +467,7 @@
         
         .output-display::-webkit-scrollbar-thumb {
             background: #444;
-            border-radius: 4px;
+            border-radius: 3px;
         }
         
         .output-display::-webkit-scrollbar-thumb:hover {
@@ -467,22 +475,22 @@
         }
         
         .control-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
         
         .control-btn {
-            flex: 1;
             background: linear-gradient(145deg, #444, #333);
             border: 2px solid #555;
             color: #00ff00;
-            padding: 12px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: inherit;
-            font-size: 1em;
+            font-size: clamp(0.8em, 2vw, 1em);
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -518,7 +526,7 @@
         .settings-panel {
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 
                 0 10px 40px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -526,14 +534,14 @@
         }
         
         .setting-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .setting-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #888;
-            font-size: 0.9em;
+            font-size: clamp(0.75em, 2vw, 0.9em);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -543,10 +551,10 @@
             background: #1a1a1a;
             border: 2px solid #444;
             border-radius: 5px;
-            padding: 8px 12px;
+            padding: 8px 10px;
             color: #00ff00;
             font-family: inherit;
-            font-size: 1em;
+            font-size: clamp(0.85em, 2vw, 1em);
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -564,11 +572,11 @@
         
         .status-indicator {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #00ff00;
-            margin-right: 8px;
+            margin-right: 6px;
             animation: pulse 2s infinite;
         }
         
@@ -583,38 +591,39 @@
         
         .info-text {
             color: #666;
-            font-size: 0.85em;
-            margin-top: 10px;
+            font-size: clamp(0.75em, 2vw, 0.85em);
+            margin-top: 8px;
             line-height: 1.5;
         }
         
         .instructions-panel {
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 
                 0 10px 40px rgba(0, 0, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
             border: 2px solid #333;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .instructions-title {
-            font-size: 1.3em;
-            margin-bottom: 15px;
+            font-size: clamp(1em, 2.5vw, 1.3em);
+            margin-bottom: 12px;
             color: #00ff00;
             text-transform: uppercase;
             letter-spacing: 2px;
             border-bottom: 2px solid #444;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
         
         .instruction-step {
-            margin-bottom: 12px;
-            padding-left: 20px;
+            margin-bottom: 10px;
+            padding-left: 15px;
             position: relative;
             color: #aaa;
-            line-height: 1.6;
+            line-height: 1.5;
+            font-size: clamp(0.8em, 2vw, 0.9em);
         }
         
         .instruction-step::before {
@@ -629,9 +638,10 @@
             background: rgba(255, 107, 0, 0.1);
             border: 2px solid #ff6b00;
             border-radius: 8px;
-            padding: 12px;
-            margin-top: 15px;
+            padding: 10px;
+            margin-top: 12px;
             color: #ff9500;
+            font-size: clamp(0.75em, 2vw, 0.85em);
         }
         
         .warning-box::before {
@@ -639,9 +649,99 @@
             font-weight: bold;
         }
         
+        .file-controls {
+            background: #1f1f1f;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #444;
+        }
+        
+        .file-controls-title {
+            font-size: clamp(0.9em, 2.5vw, 1.1em);
+            margin-bottom: 12px;
+            color: #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .file-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .file-btn {
+            background: linear-gradient(145deg, #444, #333);
+            border: 2px solid #555;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: clamp(0.8em, 2vw, 0.9em);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-btn:hover {
+            background: linear-gradient(145deg, #555, #444);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .file-btn:active {
+            transform: translateY(0);
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(145deg, #00ff00, #00cc00);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
         @media (max-width: 1024px) {
             .main-container {
                 flex-direction: column;
+            }
+            
+            .enigma-machine {
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .rotors-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .rotor {
+                width: 100%;
+                max-width: 200px;
             }
             
             .keyboard {
@@ -649,26 +749,21 @@
             }
             
             .plugboard-grid {
-                grid-template-columns: repeat(10, 1fr);
+                grid-template-columns: repeat(7, 1fr);
+            }
+            
+            .file-buttons {
+                grid-template-columns: 1fr;
             }
         }
         
-        @media (max-width: 640px) {
-            .header h1 {
-                font-size: 2em;
-                letter-spacing: 4px;
-            }
-            
-            .rotors-container {
-                flex-direction: column;
-            }
-            
+        @media (max-width: 480px) {
             .keyboard {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(5, 1fr);
             }
             
             .plugboard-grid {
-                grid-template-columns: repeat(7, 1fr);
+                grid-template-columns: repeat(6, 1fr);
             }
         }
     </style>
@@ -788,6 +883,22 @@
                 </div>
             </div>
             
+            <div class="file-controls">
+                <div class="file-controls-title">Manajemen Konfigurasi</div>
+                <div class="file-buttons">
+                    <button class="file-btn" onclick="downloadSettings()">
+                        📥 Download Enigma Key
+                    </button>
+                    <button class="file-btn" onclick="document.getElementById('file-input').click()">
+                        📤 Upload Enigma Key
+                    </button>
+                </div>
+                <input type="file" id="file-input" accept=".json" onchange="uploadSettings(event)">
+                <div class="info-text" style="margin-top: 10px;">
+                    Simpan konfigurasi mesin Anda untuk penggunaan berulang
+                </div>
+            </div>
+            
             <div class="instructions-panel">
                 <div class="instructions-title">Petunjuk <span id="instruction-mode">Enkripsi</span></div>
                 
@@ -808,11 +919,13 @@
                 </div>
                 
                 <div class="warning-box">
-                    <strong>PENTING:</strong> Untuk dekripsi berhasil, konfigurasi mesin (posisi rotor, plugboard, dan pengaturan) harus sama persis dengan saat enkripsi!
+                    <strong>PENTING:</strong> Untuk dekripsi berhasil, konfigurasi mesin harus sama persis dengan saat enkripsi!
                 </div>
             </div>
         </div>
     </div>
+    
+    <div class="toast" id="toast"></div>
     
     <script>
         // Enigma Machine Configuration
@@ -861,8 +974,22 @@
             createPlugboard();
             updateRotorDisplays();
             
-            // Add keyboard event listener
+            // Add keyboard event listener only when not typing in input
             document.addEventListener('keydown', handleKeyPress);
+            
+            // Load saved settings if available
+            loadLocalSettings();
+        }
+        
+        // Show toast notification
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
         }
         
         // Set mode (encrypt/decrypt)
@@ -951,7 +1078,7 @@
         function processMessage() {
             const input = document.getElementById('message-input').value.toUpperCase();
             if (!input) {
-                alert('Silakan masukkan pesan terlebih dahulu!');
+                showToast('Silakan masukkan pesan terlebih dahulu!');
                 return;
             }
             
@@ -981,6 +1108,11 @@
             // Restore state for next use
             machineState = savedState;
             updateRotorDisplays();
+            
+            // Auto-save settings
+            saveLocalSettings();
+            
+            showToast(currentMode === 'encrypt' ? 'Pesan berhasil dienkripsi!' : 'Pesan berhasil didekripsi!');
         }
         
         // Process key press
@@ -1006,20 +1138,23 @@
             updateRotorDisplays();
         }
         
-        // Handle physical keyboard input
+        // Handle physical keyboard input - FIXED VERSION
         function handleKeyPress(event) {
-                // If the user is typing inside an input, textarea or contenteditable element,
-                // do not intercept the key event — allow normal typing.
-                const tg = event.target;
-                const tag = tg && tg.tagName ? tg.tagName.toUpperCase() : '';
-                const isEditable = (tg && tg.isContentEditable) || tag === 'INPUT' || tag === 'TEXTAREA';
-                if (isEditable) return; // let the element handle typing
-
-                const key = (event.key || '').toUpperCase();
-                if (ALPHABET.includes(key)) {
-                    processKey(key);
-                    event.preventDefault();
-                }
+            // Check if user is typing in the message input
+            const activeElement = document.activeElement;
+            if (activeElement && (activeElement.id === 'message-input' || 
+                activeElement.tagName === 'INPUT' || 
+                activeElement.tagName === 'TEXTAREA' ||
+                activeElement.tagName === 'SELECT')) {
+                // Allow normal typing in input fields
+                return;
+            }
+            
+            const key = event.key.toUpperCase();
+            if (ALPHABET.includes(key)) {
+                processKey(key);
+                event.preventDefault();
+            }
         }
         
         // Encrypt a single character
@@ -1112,6 +1247,7 @@
             machineState.rotorPositions[index] = 
                 (machineState.rotorPositions[index] + direction + 26) % 26;
             updateRotorDisplays();
+            saveLocalSettings();
         }
         
         // Reset rotor to A
@@ -1119,6 +1255,7 @@
             const index = rotorNum - 1;
             machineState.rotorPositions[index] = 0;
             updateRotorDisplays();
+            saveLocalSettings();
         }
         
         // Clear output
@@ -1126,35 +1263,142 @@
             outputText = '';
             document.getElementById('output-display').textContent = '';
             document.getElementById('message-input').value = '';
+            showToast('Output dibersihkan');
         }
         
         // Copy output to clipboard
         function copyOutput() {
             const textToCopy = outputText || document.getElementById('output-display').textContent;
             navigator.clipboard.writeText(textToCopy).then(() => {
-                // Visual feedback
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = 'Tersalin!';
-                btn.style.background = 'linear-gradient(145deg, #00ff00, #00cc00)';
-                btn.style.color = '#000';
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '';
-                    btn.style.color = '';
-                }, 1500);
+                showToast('Teks berhasil disalin!');
+            }).catch(() => {
+                showToast('Gagal menyalin teks');
             });
+        }
+        
+        // Download settings as file
+        function downloadSettings() {
+            const settings = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                machine: {
+                    rotors: machineState.rotors,
+                    rotorPositions: machineState.rotorPositions.map(pos => ALPHABET[pos]),
+                    ringSettings: machineState.ringSettings.map(pos => ALPHABET[pos]),
+                    plugboard: machineState.plugboard,
+                    reflector: machineState.reflector
+                }
+            };
+            
+            const dataStr = JSON.stringify(settings, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `enigma_key_${new Date().getTime()}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast('Konfigurasi berhasil diunduh!');
+        }
+        
+        // Upload settings from file
+        function uploadSettings(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const settings = JSON.parse(e.target.result);
+                    
+                    if (settings.machine) {
+                        // Apply settings
+                        machineState.rotors = settings.machine.rotors || ['I', 'II', 'III'];
+                        machineState.rotorPositions = (settings.machine.rotorPositions || ['A', 'A', 'A'])
+                            .map(pos => ALPHABET.indexOf(pos));
+                        machineState.ringSettings = (settings.machine.ringSettings || ['A', 'A', 'A'])
+                            .map(pos => ALPHABET.indexOf(pos));
+                        machineState.plugboard = settings.machine.plugboard || {};
+                        machineState.reflector = settings.machine.reflector || 'B';
+                        
+                        // Update UI
+                        updateRotorDisplays();
+                        updatePlugboardUI();
+                        updateSettingsUI();
+                        saveLocalSettings();
+                        
+                        showToast('Konfigurasi berhasil dimuat!');
+                    } else {
+                        showToast('Format file tidak valid!');
+                    }
+                } catch (error) {
+                    showToast('Gagal memuat file: ' + error.message);
+                }
+            };
+            
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+        
+        // Update plugboard UI
+        function updatePlugboardUI() {
+            const plugs = document.querySelectorAll('.plug');
+            plugs.forEach(plug => {
+                plug.classList.remove('connected', 'active');
+                const letter = plug.textContent;
+                if (machineState.plugboard[letter]) {
+                    plug.classList.add('connected');
+                }
+            });
+        }
+        
+        // Update settings UI
+        function updateSettingsUI() {
+            // Update rotor type
+            const rotorType = machineState.rotors.join('-');
+            document.getElementById('rotor-type').value = rotorType;
+            
+            // Update reflector
+            document.getElementById('reflector-type').value = machineState.reflector;
+            
+            // Update ring setting
+            const ringSetting = machineState.ringSettings.map(pos => ALPHABET[pos]).join('');
+            document.getElementById('ring-setting').value = ringSetting;
+        }
+        
+        // Save settings to localStorage
+        function saveLocalSettings() {
+            localStorage.setItem('enigmaSettings', JSON.stringify(machineState));
+        }
+        
+        // Load settings from localStorage
+        function loadLocalSettings() {
+            const saved = localStorage.getItem('enigmaSettings');
+            if (saved) {
+                try {
+                    const settings = JSON.parse(saved);
+                    machineState = { ...machineState, ...settings };
+                    updateRotorDisplays();
+                    updatePlugboardUI();
+                    updateSettingsUI();
+                } catch (error) {
+                    console.error('Failed to load local settings:', error);
+                }
+            }
         }
         
         // Handle settings changes
         document.getElementById('rotor-type').addEventListener('change', (e) => {
             const types = e.target.value.split('-');
             machineState.rotors = types;
+            saveLocalSettings();
         });
         
         document.getElementById('reflector-type').addEventListener('change', (e) => {
             machineState.reflector = e.target.value;
+            saveLocalSettings();
         });
         
         document.getElementById('ring-setting').addEventListener('change', (e) => {
@@ -1162,6 +1406,7 @@
             for (let i = 0; i < 3; i++) {
                 machineState.ringSettings[i] = ALPHABET.indexOf(settings[i]);
             }
+            saveLocalSettings();
         });
         
         // Initialize on load
