@@ -15,7 +15,7 @@
         
         body {
             font-family: 'Courier Prime', monospace;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             color: #e0e0e0;
             min-height: 100vh;
             display: flex;
@@ -43,6 +43,373 @@
             z-index: 1;
         }
         
+        /* Login Screen Styles */
+        .login-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        
+        .login-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .login-box {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border-radius: 15px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid #333;
+            text-align: center;
+        }
+        
+        .login-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5em;
+            letter-spacing: 5px;
+            color: #ff3333;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+        }
+        
+        .login-subtitle {
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+        
+        .login-warning {
+            background: rgba(255, 51, 51, 0.1);
+            border: 1px solid #ff3333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            color: #ff6666;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .password-input {
+            width: 100%;
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            color: #00ff00;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #ff3333;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.3);
+        }
+        
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #ff3333, #cc0000);
+            border: none;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(145deg, #ff5555, #dd1111);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 51, 51, 0.5);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Warning Screen Styles - Enhanced */
+        .warning-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            overflow: hidden;
+        }
+        
+        .warning-container.active {
+            opacity: 1;
+            visibility: visible;
+            animation: shake 0.5s infinite;
+        }
+        
+        /* Siren effect */
+        .warning-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(255, 0, 0, 0.2) 50%, rgba(255, 0, 0, 0.6) 100%);
+            animation: pulse 1s infinite alternate;
+            z-index: -1;
+        }
+        
+        .warning-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.1) 0%, transparent 25%, transparent 75%, rgba(255, 0, 0, 0.1) 100%);
+            animation: siren 2s infinite linear;
+            z-index: -1;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-1px, -1px) rotate(-0.5deg); }
+            20% { transform: translate(1px, -1px) rotate(0.5deg); }
+            30% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+            40% { transform: translate(1px, 1px) rotate(0.5deg); }
+            50% { transform: translate(-1px, -1px) rotate(-0.2deg); }
+            60% { transform: translate(1px, -1px) rotate(0.2deg); }
+            70% { transform: translate(-1px, 1px) rotate(-0.2deg); }
+            80% { transform: translate(1px, 1px) rotate(0.2deg); }
+            90% { transform: translate(0, 0) rotate(0deg); }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.8; }
+        }
+        
+        @keyframes siren {
+            0% { opacity: 0.3; transform: rotate(0deg); }
+            50% { opacity: 0.7; transform: rotate(180deg); }
+            100% { opacity: 0.3; transform: rotate(360deg); }
+        }
+        
+        .warning-content {
+            text-align: center;
+            z-index: 10;
+            padding: 20px;
+            max-width: 90%;
+        }
+        
+        .warning-text {
+            color: #ff0000;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .warning-subtext {
+            color: #ff3333;
+            font-size: 1.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 0.5s;
+            text-shadow: 0 0 5px #ff3333;
+        }
+        
+        .warning-detail {
+            color: #ff6666;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            max-width: 80%;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 1s;
+            text-shadow: 0 0 3px #ff6666;
+        }
+        
+        .warning-location {
+            color: #ff8888;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 1.5s;
+            text-shadow: 0 0 3px #ff8888;
+        }
+        
+        .warning-final {
+            color: #ff0000;
+            font-size: 1.6em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+            animation-delay: 4.5s;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .military-progress-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 30px auto;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+        
+        .military-progress-title {
+            color: #ff3333;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .military-progress {
+            width: 100%;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #ff3333;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .military-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff0000, #ff5555, #ff0000);
+            background-size: 200% 100%;
+            animation: progress 5s forwards, loading 1.5s infinite linear;
+            position: relative;
+        }
+        
+        .military-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 2s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .military-progress-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-shadow: 0 0 3px #000;
+        }
+        
+        @keyframes glitch {
+            0%, 100% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255, 0, 0, 0.75),
+                    -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+                    0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            14% {
+                text-shadow: 
+                    0.05em 0 0 rgba(255, 0, 0, 0.75),
+                    -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
+                    0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            15% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+                    0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+                    -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            49% {
+                text-shadow: 
+                    -0.05em -0.025em 0 rgba(255, 0, 0, 0.75),
+                    0.025em 0.025em 0 rgba(0, 255, 0, 0.75),
+                    -0.05em -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            50% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+                    0.05em 0 0 rgba(0, 255, 0, 0.75),
+                    0 -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+            99% {
+                text-shadow: 
+                    0.025em 0.05em 0 rgba(255, 0, 0, 0.75),
+                    0.05em 0 0 rgba(0, 255, 0, 0.75),
+                    0 -0.05em 0 rgba(0, 0, 255, 0.75);
+            }
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes progress {
+            to {
+                width: 100%;
+            }
+        }
+        
+        /* Main App Styles */
         .header {
             background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
             padding: 15px;
@@ -523,6 +890,16 @@
             transform: translateY(0);
         }
         
+        .reset-btn {
+            background: linear-gradient(145deg, #ff3333, #cc0000);
+            color: #fff;
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(145deg, #ff5555, #dd1111);
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.4);
+        }
+        
         .settings-panel {
             background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
             border-radius: 15px;
@@ -723,6 +1100,12 @@
             opacity: 1;
         }
         
+        .toast.error {
+            background: linear-gradient(145deg, #ff3333, #cc0000);
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(255, 51, 51, 0.5);
+        }
+        
         @media (max-width: 1024px) {
             .main-container {
                 flex-direction: column;
@@ -769,6 +1152,40 @@
     </style>
 </head>
 <body>
+    <!-- Login Screen -->
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <div class="login-title">ASET NEGARA</div>
+            <div class="login-subtitle">AKSES SIPIL DIBATASI</div>
+            <div class="login-warning">
+                PERINGATAN: Akses tidak sah ke sistem ini adalah <strong><em>pelanggaran hukum militer</em></strong> dan akan ditindak tegas sesuai dengan regulasi keamanan negara. Akses sah hanya diperuntukkan kepada <strong><em>Aparat Keamanan Negara.</em></strong>
+            </div>
+            <input type="password" class="password-input" id="password-input" placeholder="Masukkan kata sandi...">
+            <button class="login-btn" onclick="checkPassword()">MASUK</button>
+        </div>
+    </div>
+    
+    <!-- Warning Screen - Enhanced -->
+    <div class="warning-container" id="warning-container">
+        <div class="warning-content">
+            <div class="warning-text">INTRUDERDETECTED</div>
+            <div class="warning-subtext">ANDA TELAH MELANGGAR HUKUM NEGARA</div>
+            <div class="warning-detail">Mencari lokasi pelanggar...</div>
+            <div class="warning-location">Melacak IP Address: 192.168.1.1</div>
+            
+            <div class="military-progress-container">
+                <div class="military-progress-title">MENDETEKSI LOKASI PELANGGAR</div>
+                <div class="military-progress">
+                    <div class="military-progress-bar" id="progress-bar"></div>
+                    <div class="military-progress-percentage" id="progress-percentage">0%</div>
+                </div>
+            </div>
+            
+            <div class="warning-final" id="warning-final">MELARIKAN DIRI HANYA AKAN MEMPERPARAH HUKUMAN ANDA</div>
+        </div>
+    </div>
+    
+    <!-- Main App -->
     <div class="header">
         <h1>ENIGMA</h1>
         <div class="subtitle">ELECTRO-MECHANICAL ROTOR CIPHER MACHINE</div>
@@ -841,6 +1258,7 @@
                 <div class="control-buttons">
                     <button class="control-btn" onclick="clearOutput()">Bersihkan</button>
                     <button class="control-btn" onclick="copyOutput()">Salin</button>
+                    <button class="control-btn reset-btn" onclick="resetMachine()">Reset Mesin</button>
                 </div>
             </div>
             
@@ -928,6 +1346,10 @@
     <div class="toast" id="toast"></div>
     
     <script>
+
+        const ACCESS_PASSWORD = "MR5fka2@";
+
+        
         // Enigma Machine Configuration
         const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         
@@ -968,6 +1390,67 @@
         let selectedPlug = null;
         let outputText = '';
         
+        // Check password
+        function checkPassword() {
+            const password = document.getElementById('password-input').value;
+            
+            if (password === ACCESS_PASSWORD) {
+                // Correct password - show main app
+                document.getElementById('login-container').classList.add('hidden');
+                initializeMachine();
+            } else {
+                // Wrong password - show enhanced warning
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('warning-container').classList.add('active');
+                
+                // Start progress bar animation
+                startProgressBar();
+                
+                // Reset after warning animation (5 seconds)
+                setTimeout(() => {
+                    // Show final message
+                    document.getElementById('warning-final').style.opacity = '1';
+                    
+                    // Disable all inputs and require page refresh
+                    document.getElementById('warning-container').style.pointerEvents = 'none';
+                    
+                    // Add a message about refreshing the page
+                    setTimeout(() => {
+                        const refreshMessage = document.createElement('div');
+                        refreshMessage.className = 'warning-final';
+                        refreshMessage.textContent = 'LOKASI DITEMUKAN - APARAT KEAMANAN SEDANG DITUGASKAN';
+                        refreshMessage.style.marginTop = '20px';
+                        refreshMessage.style.opacity = '1';
+                        document.querySelector('.warning-content').appendChild(refreshMessage);
+                    }, 2000);
+                }, 5000);
+            }
+        }
+        
+        // Start progress bar animation
+        function startProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercentage = document.getElementById('progress-percentage');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += 2;
+                progressBar.style.width = progress + '%';
+                progressPercentage.textContent = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+        
+        // Handle Enter key on password input
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        
         // Initialize the machine
         function initializeMachine() {
             createKeyboard();
@@ -982,10 +1465,16 @@
         }
         
         // Show toast notification
-        function showToast(message, duration = 3000) {
+        function showToast(message, duration = 3000, isError = false) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.classList.add('show');
+            
+            if (isError) {
+                toast.classList.add('error');
+            } else {
+                toast.classList.remove('error');
+            }
             
             setTimeout(() => {
                 toast.classList.remove('show');
@@ -1258,6 +1747,33 @@
             saveLocalSettings();
         }
         
+        // Reset entire machine to default settings
+        function resetMachine() {
+            // Reset to default state
+            machineState = {
+                rotors: ['I', 'II', 'III'],
+                rotorPositions: [0, 0, 0],
+                ringSettings: [0, 0, 0],
+                plugboard: {},
+                reflector: 'B'
+            };
+            
+            // Update UI
+            updateRotorDisplays();
+            updatePlugboardUI();
+            updateSettingsUI();
+            
+            // Clear inputs and outputs
+            document.getElementById('message-input').value = '';
+            document.getElementById('output-display').textContent = '';
+            outputText = '';
+            
+            // Save to localStorage
+            saveLocalSettings();
+            
+            showToast('Mesin telah direset ke pengaturan default');
+        }
+        
         // Clear output
         function clearOutput() {
             outputText = '';
@@ -1272,7 +1788,7 @@
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast('Teks berhasil disalin!');
             }).catch(() => {
-                showToast('Gagal menyalin teks');
+                showToast('Gagal menyalin teks', 3000, true);
             });
         }
         
@@ -1331,10 +1847,10 @@
                         
                         showToast('Konfigurasi berhasil dimuat!');
                     } else {
-                        showToast('Format file tidak valid!');
+                        showToast('Format file tidak valid!', 3000, true);
                     }
                 } catch (error) {
-                    showToast('Gagal memuat file: ' + error.message);
+                    showToast('Gagal memuat file: ' + error.message, 3000, true);
                 }
             };
             
@@ -1408,9 +1924,8 @@
             }
             saveLocalSettings();
         });
-        
-        // Initialize on load
-        window.onload = initializeMachine;
     </script>
 </body>
 </html>
+
+
