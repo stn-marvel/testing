@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma Machine Simulator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Bebas+Neue&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier Prime', monospace;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 2px,
+                    rgba(0, 255, 0, 0.03) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #444;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3em;
+            letter-spacing: 8px;
+            background: linear-gradient(45deg, #00ff00, #00cc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+        }
+        
+        .mode-toggle {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .mode-btn {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 2px solid #444;
+            color: #888;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .mode-btn.active {
+            background: linear-gradient(145deg, #00ff00, #00cc00);
+            color: #000;
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .mode-btn:hover:not(.active) {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            padding: 30px;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .enigma-machine {
+            flex: 2;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid #333;
+        }
+        
+        .input-section {
+            background: #1f1f1f;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+        }
+        
+        .input-label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .message-input {
+            width: 100%;
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 12px;
+            color: #00ff00;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 80px;
+            transition: all 0.3s ease;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+        
+        .process-btn {
+            margin-top: 15px;
+            width: 100%;
+            background: linear-gradient(145deg, #00ff00, #00cc00);
+            border: none;
+            color: #000;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .process-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .process-btn:hover::before {
+            left: 100%;
+        }
+        
+        .process-btn:active {
+            transform: translateY(0);
+        }
+        
+        .rotors-section {
+            background: #1f1f1f;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+        }
+        
+        .rotors-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .rotor {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #555;
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+        
+        .rotor:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 7px 20px rgba(0, 0, 0, 0.4),
+                inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .rotor-label {
+            font-size: 0.8em;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .rotor-display {
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 2em;
+            text-align: center;
+            color: #00ff00;
+            font-weight: bold;
+            letter-spacing: 5px;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
+            margin-bottom: 10px;
+        }
+        
+        .rotor-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .rotor-btn {
+            background: linear-gradient(145deg, #444, #333);
+            border: 1px solid #555;
+            color: #00ff00;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.9em;
+        }
+        
+        .rotor-btn:hover {
+            background: linear-gradient(145deg, #555, #444);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .rotor-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .plugboard-section {
+            background: #1f1f1f;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+        }
+        
+        .plugboard-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .plugboard-grid {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .plug {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            border: 2px solid #555;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #888;
+        }
+        
+        .plug:hover {
+            background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+        
+        .plug.active {
+            background: linear-gradient(145deg, #00ff00, #00cc00);
+            color: #000;
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+        }
+        
+        .plug.connected {
+            background: linear-gradient(145deg, #ff6b00, #ff5500);
+            color: #fff;
+            border-color: #ff6b00;
+        }
+        
+        .keyboard-section {
+            background: #1f1f1f;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #444;
+        }
+        
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .key {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #aaa;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .key::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 255, 0, 0.8), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        
+        .key:hover {
+            background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .key.pressed {
+            background: linear-gradient(145deg, #00ff00, #00cc00);
+            color: #000;
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .key.pressed::before {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .output-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .output-panel {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid #333;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #444;
+            padding-bottom: 10px;
+        }
+        
+        .output-display {
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.1em;
+            color: #00ff00;
+            font-family: 'Courier Prime', monospace;
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.1);
+            flex: 1;
+        }
+        
+        .output-display::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .output-display::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        .output-display::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        
+        .output-display::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            flex: 1;
+            background: linear-gradient(145deg, #444, #333);
+            border: 2px solid #555;
+            color: #00ff00;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .control-btn:hover {
+            background: linear-gradient(145deg, #555, #444);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .control-btn:hover::before {
+            left: 100%;
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .settings-panel {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid #333;
+        }
+        
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        
+        .setting-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #888;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .setting-select {
+            width: 100%;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            border-radius: 5px;
+            padding: 8px 12px;
+            color: #00ff00;
+            font-family: inherit;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .setting-select:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+        
+        .setting-select:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff00;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+            }
+        }
+        
+        .info-text {
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        
+        .instructions-panel {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid #333;
+            margin-top: 20px;
+        }
+        
+        .instructions-title {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            color: #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #444;
+            padding-bottom: 10px;
+        }
+        
+        .instruction-step {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        
+        .instruction-step::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .warning-box {
+            background: rgba(255, 107, 0, 0.1);
+            border: 2px solid #ff6b00;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            color: #ff9500;
+        }
+        
+        .warning-box::before {
+            content: '⚠ ';
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .keyboard {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            
+            .plugboard-grid {
+                grid-template-columns: repeat(10, 1fr);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 2em;
+                letter-spacing: 4px;
+            }
+            
+            .rotors-container {
+                flex-direction: column;
+            }
+            
+            .keyboard {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .plugboard-grid {
+                grid-template-columns: repeat(7, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ENIGMA</h1>
+        <div class="subtitle">ELECTRO-MECHANICAL ROTOR CIPHER MACHINE</div>
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="encrypt-mode" onclick="setMode('encrypt')">ENKRIPSI</button>
+            <button class="mode-btn" id="decrypt-mode" onclick="setMode('decrypt')">DEKRIPSI</button>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="enigma-machine">
+            <div class="input-section">
+                <div class="input-label" id="input-label">Masukkan Pesan untuk Dienkripsi:</div>
+                <textarea class="message-input" id="message-input" placeholder="Ketik pesan Anda di sini..."></textarea>
+                <button class="process-btn" id="process-btn" onclick="processMessage()">
+                    <span id="btn-text">ENKRIPSI PESAN</span>
+                </button>
+            </div>
+            
+            <div class="rotors-section">
+                <div class="rotors-container">
+                    <div class="rotor">
+                        <div class="rotor-label">Rotor I</div>
+                        <div class="rotor-display" id="rotor1-display">A</div>
+                        <div class="rotor-controls">
+                            <button class="rotor-btn" onclick="adjustRotor(1, -1)">◀</button>
+                            <button class="rotor-btn" onclick="resetRotor(1)">↺</button>
+                            <button class="rotor-btn" onclick="adjustRotor(1, 1)">▶</button>
+                        </div>
+                    </div>
+                    <div class="rotor">
+                        <div class="rotor-label">Rotor II</div>
+                        <div class="rotor-display" id="rotor2-display">A</div>
+                        <div class="rotor-controls">
+                            <button class="rotor-btn" onclick="adjustRotor(2, -1)">◀</button>
+                            <button class="rotor-btn" onclick="resetRotor(2)">↺</button>
+                            <button class="rotor-btn" onclick="adjustRotor(2, 1)">▶</button>
+                        </div>
+                    </div>
+                    <div class="rotor">
+                        <div class="rotor-label">Rotor III</div>
+                        <div class="rotor-display" id="rotor3-display">A</div>
+                        <div class="rotor-controls">
+                            <button class="rotor-btn" onclick="adjustRotor(3, -1)">◀</button>
+                            <button class="rotor-btn" onclick="resetRotor(3)">↺</button>
+                            <button class="rotor-btn" onclick="adjustRotor(3, 1)">▶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="plugboard-section">
+                <div class="plugboard-title">Steckbrett (Plugboard)</div>
+                <div class="plugboard-grid" id="plugboard"></div>
+                <div class="info-text">Klik dua huruf untuk menghubungkan kabel</div>
+            </div>
+            
+            <div class="keyboard-section">
+                <div class="keyboard" id="keyboard"></div>
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <div class="output-panel">
+                <div class="panel-title">
+                    <span class="status-indicator"></span>
+                    <span id="output-label">Output Terenkripsi</span>
+                </div>
+                <div class="output-display" id="output-display"></div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="clearOutput()">Bersihkan</button>
+                    <button class="control-btn" onclick="copyOutput()">Salin</button>
+                </div>
+            </div>
+            
+            <div class="settings-panel">
+                <div class="panel-title">Pengaturan Mesin</div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Rotor Type</label>
+                    <select class="setting-select" id="rotor-type">
+                        <option value="I-III">I - II - III</option>
+                        <option value="I-II-IV">I - II - IV</option>
+                        <option value="I-V-III">I - V - III</option>
+                        <option value="II-III-V">II - III - V</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Reflector</label>
+                    <select class="setting-select" id="reflector-type">
+                        <option value="B">Reflector B</option>
+                        <option value="C">Reflector C</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Ring Setting</label>
+                    <select class="setting-select" id="ring-setting">
+                        <option value="AAA">AAA</option>
+                        <option value="ABC">ABC</option>
+                        <option value="QWE">QWE</option>
+                        <option value="RFV">RFV</option>
+                    </select>
+                </div>
+                
+                <div class="info-text">
+                    <strong>Catatan:</strong><br>
+                    • Mesin Enigma menggunakan substitusi polialfabetik<br>
+                    • Setiap huruf dienkripsi secara unik<br>
+                    • Posisi rotor berubah setiap penekanan tombol
+                </div>
+            </div>
+            
+            <div class="instructions-panel">
+                <div class="instructions-title">Petunjuk <span id="instruction-mode">Enkripsi</span></div>
+                
+                <div id="encrypt-instructions">
+                    <div class="instruction-step">Tulis pesan yang ingin dienkripsi di form input</div>
+                    <div class="instruction-step">Atur posisi awal rotor (A-Z) untuk setiap rotor</div>
+                    <div class="instruction-step">Hubungkan kabel di plugboard jika diperlukan</div>
+                    <div class="instruction-step">Klik tombol "ENKRIPSI PESAN" untuk memproses</div>
+                    <div class="instruction-step">Simpan hasil enkripsi dan posisi rotor untuk dekripsi</div>
+                </div>
+                
+                <div id="decrypt-instructions" style="display: none;">
+                    <div class="instruction-step">Masukkan kode terenkripsi di form input</div>
+                    <div class="instruction-step">Atur rotor ke posisi yang sama saat enkripsi</div>
+                    <div class="instruction-step">Gunakan konfigurasi plugboard yang identik</div>
+                    <div class="instruction-step">Klik tombol "DEKRIPSI PESAN" untuk memproses</div>
+                    <div class="instruction-step">Pesan asli akan muncul di output</div>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>PENTING:</strong> Untuk dekripsi berhasil, konfigurasi mesin (posisi rotor, plugboard, dan pengaturan) harus sama persis dengan saat enkripsi!
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Enigma Machine Configuration
+        const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        
+        // Rotor wirings (historical Enigma rotors)
+        const ROTORS = {
+            'I': 'EKMFLGDQVZNTOWYHXUSPAIBRCJ',
+            'II': 'AJDKSIRUXBLHWTMCQGZNPYFVOE',
+            'III': 'BDFHJLCPRTXVZNYEIWGAKMUSQO',
+            'IV': 'ESOVPZJAYQUIRHXLNFTGKDCMWB',
+            'V': 'VZBRGITYUPSDNHLXAWMJQOFECK'
+        };
+        
+        // Notch positions (when rotor causes next rotor to turn)
+        const NOTCHES = {
+            'I': 'Q',
+            'II': 'E',
+            'III': 'V',
+            'IV': 'J',
+            'V': 'Z'
+        };
+        
+        // Reflectors
+        const REFLECTORS = {
+            'B': 'YRUHQSLDPXNGOKMIEBFZCWVJAT',
+            'C': 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
+        };
+        
+        // Machine state
+        let machineState = {
+            rotors: ['I', 'II', 'III'],
+            rotorPositions: [0, 0, 0],
+            ringSettings: [0, 0, 0],
+            plugboard: {},
+            reflector: 'B'
+        };
+        
+        let currentMode = 'encrypt';
+        let selectedPlug = null;
+        let outputText = '';
+        
+        // Initialize the machine
+        function initializeMachine() {
+            createKeyboard();
+            createPlugboard();
+            updateRotorDisplays();
+            
+            // Add keyboard event listener
+            document.addEventListener('keydown', handleKeyPress);
+        }
+        
+        // Set mode (encrypt/decrypt)
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // Update UI
+            document.getElementById('encrypt-mode').classList.toggle('active', mode === 'encrypt');
+            document.getElementById('decrypt-mode').classList.toggle('active', mode === 'decrypt');
+            
+            // Update labels
+            document.getElementById('input-label').textContent = 
+                mode === 'encrypt' ? 'Masukkan Pesan untuk Dienkripsi:' : 'Masukkan Kode untuk Didekripsi:';
+            document.getElementById('output-label').textContent = 
+                mode === 'encrypt' ? 'Output Terenkripsi' : 'Output Terdekripsi';
+            document.getElementById('btn-text').textContent = 
+                mode === 'encrypt' ? 'ENKRIPSI PESAN' : 'DEKRIPSI PESAN';
+            document.getElementById('instruction-mode').textContent = 
+                mode === 'encrypt' ? 'Enkripsi' : 'Dekripsi';
+            
+            // Show/hide instructions
+            document.getElementById('encrypt-instructions').style.display = 
+                mode === 'encrypt' ? 'block' : 'none';
+            document.getElementById('decrypt-instructions').style.display = 
+                mode === 'decrypt' ? 'block' : 'none';
+        }
+        
+        // Create virtual keyboard
+        function createKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const keys = 'QWERTZUIOASDFGHJKPYXCVBNML'.split('');
+            
+            keys.forEach(key => {
+                const keyElement = document.createElement('div');
+                keyElement.className = 'key';
+                keyElement.textContent = key;
+                keyElement.onclick = () => processKey(key);
+                keyboard.appendChild(keyElement);
+            });
+        }
+        
+        // Create plugboard
+        function createPlugboard() {
+            const plugboard = document.getElementById('plugboard');
+            
+            for (let i = 0; i < 26; i++) {
+                const plug = document.createElement('div');
+                plug.className = 'plug';
+                plug.textContent = ALPHABET[i];
+                plug.onclick = () => togglePlug(ALPHABET[i], plug);
+                plugboard.appendChild(plug);
+            }
+        }
+        
+        // Toggle plugboard connection
+        function togglePlug(letter, element) {
+            if (selectedPlug === null) {
+                selectedPlug = { letter, element };
+                element.classList.add('active');
+            } else {
+                if (selectedPlug.letter !== letter) {
+                    // Remove old connection if exists
+                    for (let l in machineState.plugboard) {
+                        if (machineState.plugboard[l] === selectedPlug.letter || 
+                            machineState.plugboard[l] === letter) {
+                            delete machineState.plugboard[l];
+                        }
+                    }
+                    
+                    // Create new connection
+                    machineState.plugboard[selectedPlug.letter] = letter;
+                    machineState.plugboard[letter] = selectedPlug.letter;
+                    
+                    selectedPlug.element.classList.remove('active');
+                    selectedPlug.element.classList.add('connected');
+                    element.classList.add('connected');
+                } else {
+                    selectedPlug.element.classList.remove('active');
+                }
+                
+                selectedPlug = null;
+            }
+        }
+        
+        // Process message (encrypt/decrypt)
+        function processMessage() {
+            const input = document.getElementById('message-input').value.toUpperCase();
+            if (!input) {
+                alert('Silakan masukkan pesan terlebih dahulu!');
+                return;
+            }
+            
+            // Save current state
+            const savedState = JSON.parse(JSON.stringify(machineState));
+            
+            // Reset output
+            outputText = '';
+            
+            // Process each character
+            for (let char of input) {
+                if (ALPHABET.includes(char)) {
+                    const processed = encryptCharacter(char);
+                    outputText += processed;
+                    
+                    // Rotate rotors
+                    rotateRotors();
+                } else {
+                    // Keep spaces and punctuation
+                    outputText += char;
+                }
+            }
+            
+            // Display result
+            document.getElementById('output-display').textContent = outputText;
+            
+            // Restore state for next use
+            machineState = savedState;
+            updateRotorDisplays();
+        }
+        
+        // Process key press
+        function processKey(key) {
+            // Animate key press
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(k => {
+                if (k.textContent === key) {
+                    k.classList.add('pressed');
+                    setTimeout(() => k.classList.remove('pressed'), 200);
+                }
+            });
+            
+            // Encrypt the character
+            const encrypted = encryptCharacter(key);
+            
+            // Add to output
+            outputText += encrypted;
+            document.getElementById('output-display').textContent = outputText;
+            
+            // Rotate rotors
+            rotateRotors();
+            updateRotorDisplays();
+        }
+        
+        // Handle physical keyboard input
+        function handleKeyPress(event) {
+                // If the user is typing inside an input, textarea or contenteditable element,
+                // do not intercept the key event — allow normal typing.
+                const tg = event.target;
+                const tag = tg && tg.tagName ? tg.tagName.toUpperCase() : '';
+                const isEditable = (tg && tg.isContentEditable) || tag === 'INPUT' || tag === 'TEXTAREA';
+                if (isEditable) return; // let the element handle typing
+
+                const key = (event.key || '').toUpperCase();
+                if (ALPHABET.includes(key)) {
+                    processKey(key);
+                    event.preventDefault();
+                }
+        }
+        
+        // Encrypt a single character
+        function encryptCharacter(char) {
+            let index = ALPHABET.indexOf(char);
+            
+            // Apply plugboard
+            if (machineState.plugboard[char]) {
+                index = ALPHABET.indexOf(machineState.plugboard[char]);
+            }
+            
+            // Pass through rotors (right to left)
+            for (let i = 2; i >= 0; i--) {
+                index = passThroughRotor(index, i, true);
+            }
+            
+            // Pass through reflector
+            const reflectorWiring = REFLECTORS[machineState.reflector];
+            index = ALPHABET.indexOf(reflectorWiring[index]);
+            
+            // Pass through rotors (left to right)
+            for (let i = 0; i < 3; i++) {
+                index = passThroughRotor(index, i, false);
+            }
+            
+            // Apply plugboard again
+            let result = ALPHABET[index];
+            if (machineState.plugboard[result]) {
+                result = machineState.plugboard[result];
+            }
+            
+            return result;
+        }
+        
+        // Pass character through a rotor
+        function passThroughRotor(index, rotorNum, forward) {
+            const rotorType = machineState.rotors[rotorNum];
+            const wiring = ROTORS[rotorType];
+            const position = machineState.rotorPositions[rotorNum];
+            const ringSetting = machineState.ringSettings[rotorNum];
+            
+            if (forward) {
+                // Forward pass
+                const effectiveIndex = (index + position - ringSetting + 26) % 26;
+                const mappedChar = wiring[effectiveIndex];
+                return (ALPHABET.indexOf(mappedChar) - position + ringSetting + 26) % 26;
+            } else {
+                // Reverse pass
+                const effectiveIndex = (index + position - ringSetting + 26) % 26;
+                const mappedChar = ALPHABET[wiring.indexOf(ALPHABET[effectiveIndex])];
+                return (ALPHABET.indexOf(mappedChar) - position + ringSetting + 26) % 26;
+            }
+        }
+        
+        // Rotate rotors
+        function rotateRotors() {
+            // Always rotate rightmost rotor
+            machineState.rotorPositions[2]++;
+            
+            // Check for double step anomaly
+            const rotor2Type = machineState.rotors[1];
+            const rotor3Type = machineState.rotors[2];
+            
+            if (machineState.rotorPositions[2] === 26) {
+                machineState.rotorPositions[2] = 0;
+                machineState.rotorPositions[1]++;
+                
+                if (machineState.rotorPositions[1] === 26) {
+                    machineState.rotorPositions[1] = 0;
+                    machineState.rotorPositions[0]++;
+                    
+                    if (machineState.rotorPositions[0] === 26) {
+                        machineState.rotorPositions[0] = 0;
+                    }
+                }
+            }
+        }
+        
+        // Update rotor displays
+        function updateRotorDisplays() {
+            for (let i = 0; i < 3; i++) {
+                const display = document.getElementById(`rotor${i+1}-display`);
+                display.textContent = ALPHABET[machineState.rotorPositions[i]];
+            }
+        }
+        
+        // Adjust rotor position
+        function adjustRotor(rotorNum, direction) {
+            const index = rotorNum - 1;
+            machineState.rotorPositions[index] = 
+                (machineState.rotorPositions[index] + direction + 26) % 26;
+            updateRotorDisplays();
+        }
+        
+        // Reset rotor to A
+        function resetRotor(rotorNum) {
+            const index = rotorNum - 1;
+            machineState.rotorPositions[index] = 0;
+            updateRotorDisplays();
+        }
+        
+        // Clear output
+        function clearOutput() {
+            outputText = '';
+            document.getElementById('output-display').textContent = '';
+            document.getElementById('message-input').value = '';
+        }
+        
+        // Copy output to clipboard
+        function copyOutput() {
+            const textToCopy = outputText || document.getElementById('output-display').textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Visual feedback
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Tersalin!';
+                btn.style.background = 'linear-gradient(145deg, #00ff00, #00cc00)';
+                btn.style.color = '#000';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 1500);
+            });
+        }
+        
+        // Handle settings changes
+        document.getElementById('rotor-type').addEventListener('change', (e) => {
+            const types = e.target.value.split('-');
+            machineState.rotors = types;
+        });
+        
+        document.getElementById('reflector-type').addEventListener('change', (e) => {
+            machineState.reflector = e.target.value;
+        });
+        
+        document.getElementById('ring-setting').addEventListener('change', (e) => {
+            const settings = e.target.value;
+            for (let i = 0; i < 3; i++) {
+                machineState.ringSettings[i] = ALPHABET.indexOf(settings[i]);
+            }
+        });
+        
+        // Initialize on load
+        window.onload = initializeMachine;
+    </script>
+</body>
+</html>
