@@ -129,9 +129,20 @@
             transition: all 0.3s ease;
         }
 
+        .letter-box.center {
+            border-color: #e74c3c;
+            border-width: 3px;
+        }
+
         .letter-box.space {
             border: 2px dashed #bdc3c7;
             background-color: #f8f9fa;
+        }
+
+        .letter-box.space.center {
+            border-color: #e74c3c;
+            border-style: dashed;
+            border-width: 3px;
         }
 
         .letter-box.hidden {
@@ -287,18 +298,28 @@
             
             function displayLayoutInfo() {
                 const words = originalSentence.split(' ');
-                const layout = words.map(word => word.length).join('+1+');
-                layoutInfo.textContent = `Layout: ${layout}`;
+                const wordLengths = words.map(word => word.length);
+                const layout = wordLengths.join('+1+');
+                const totalBoxes = originalSentence.length;
+                layoutInfo.textContent = `Layout: ${layout} = ${totalBoxes}`;
             }
             
             function createLetterBoxes() {
                 gridContainer.innerHTML = '';
                 letterBoxes = [];
                 
+                const totalBoxes = originalSentence.length;
+                const centerIndices = getCenterIndices(totalBoxes);
+                
                 for (let i = 0; i < originalSentence.length; i++) {
                     const char = originalSentence[i];
                     const box = document.createElement('div');
                     box.className = 'letter-box';
+                    
+                    // Check if this is a center box
+                    if (centerIndices.includes(i)) {
+                        box.classList.add('center');
+                    }
                     
                     if (char === ' ') {
                         box.classList.add('space');
@@ -311,9 +332,23 @@
                     letterBoxes.push({
                         element: box,
                         char: char,
-                        isSpace: char === ' '
+                        isSpace: char === ' ',
+                        index: i
                     });
                 }
+            }
+            
+            function getCenterIndices(total) {
+                const indices = [];
+                if (total % 2 === 1) {
+                    // Odd number: single center
+                    indices.push(Math.floor(total / 2));
+                } else {
+                    // Even number: two centers
+                    indices.push(total / 2 - 1);
+                    indices.push(total / 2);
+                }
+                return indices;
             }
             
             function revealNextLetter() {
