@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Reveal Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .reset-btn {
+            background-color: #e74c3c;
+        }
+
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .visualization-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .layout-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 30px;
+            min-height: 60px;
+        }
+
+        .letter-box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #3498db;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .letter-box.space {
+            border: 2px dashed #bdc3c7;
+            background-color: #f8f9fa;
+        }
+
+        .letter-box.hidden {
+            background-color: #ecf0f1;
+            color: transparent;
+        }
+
+        .letter-box.revealed {
+            background-color: white;
+            color: #2c3e50;
+            animation: reveal 0.5s ease;
+        }
+
+        .letter-box.highlighted {
+            background-color: #e74c3c;
+            color: white;
+            animation: highlight 0.5s ease;
+        }
+
+        @keyframes reveal {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes highlight {
+            0% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .progress-indicator {
+            text-align: center;
+            margin-top: 15px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .letter-box {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Letter Reveal Visualizer</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="sentenceInput" placeholder="Enter a word or sentence">
+                <button id="submitBtn">Submit</button>
+            </div>
+        </div>
+        
+        <div class="visualization-section" id="visualizationSection">
+            <div class="layout-info" id="layoutInfo"></div>
+            
+            <div class="grid-container" id="gridContainer"></div>
+            
+            <div class="navigation">
+                <button id="backBtn">Back</button>
+                <button id="nextBtn">Next</button>
+                <button id="resetBtn" class="reset-btn">Reset</button>
+            </div>
+            
+            <div class="progress-indicator" id="progressIndicator"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM elements
+            const sentenceInput = document.getElementById('sentenceInput');
+            const submitBtn = document.getElementById('submitBtn');
+            const visualizationSection = document.getElementById('visualizationSection');
+            const layoutInfo = document.getElementById('layoutInfo');
+            const gridContainer = document.getElementById('gridContainer');
+            const backBtn = document.getElementById('backBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const progressIndicator = document.getElementById('progressIndicator');
+            
+            // State management
+            let originalSentence = '';
+            let uniqueLetters = [];
+            let currentStep = 0;
+            let letterBoxes = [];
+            
+            // Event listeners
+            submitBtn.addEventListener('click', initializeVisualization);
+            sentenceInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    initializeVisualization();
+                }
+            });
+            nextBtn.addEventListener('click', revealNextLetter);
+            backBtn.addEventListener('click', hidePreviousLetter);
+            resetBtn.addEventListener('click', resetVisualization);
+            
+            // Functions
+            function initializeVisualization() {
+                const sentence = sentenceInput.value.trim();
+                if (!sentence) return;
+                
+                originalSentence = sentence.toUpperCase();
+                
+                // Extract unique letters and sort alphabetically
+                const lettersSet = new Set();
+                for (const char of originalSentence) {
+                    if (char !== ' ') {
+                        lettersSet.add(char);
+                    }
+                }
+                uniqueLetters = Array.from(lettersSet).sort();
+                
+                // Reset state
+                currentStep = 0;
+                
+                // Display layout info
+                displayLayoutInfo();
+                
+                // Create letter boxes
+                createLetterBoxes();
+                
+                // Show visualization section
+                visualizationSection.style.display = 'block';
+                
+                // Update UI
+                updateUI();
+            }
+            
+            function displayLayoutInfo() {
+                const words = originalSentence.split(' ');
+                const layout = words.map(word => word.length).join('+1+');
+                layoutInfo.textContent = `Layout: ${layout}`;
+            }
+            
+            function createLetterBoxes() {
+                gridContainer.innerHTML = '';
+                letterBoxes = [];
+                
+                for (let i = 0; i < originalSentence.length; i++) {
+                    const char = originalSentence[i];
+                    const box = document.createElement('div');
+                    box.className = 'letter-box';
+                    
+                    if (char === ' ') {
+                        box.classList.add('space');
+                    } else {
+                        box.textContent = '-';
+                        box.classList.add('hidden');
+                    }
+                    
+                    gridContainer.appendChild(box);
+                    letterBoxes.push({
+                        element: box,
+                        char: char,
+                        isSpace: char === ' '
+                    });
+                }
+            }
+            
+            function revealNextLetter() {
+                if (currentStep >= uniqueLetters.length) return;
+                
+                const letterToReveal = uniqueLetters[currentStep];
+                
+                // Reveal all instances of the current letter
+                for (const box of letterBoxes) {
+                    if (!box.isSpace && box.char === letterToReveal) {
+                        box.element.textContent = letterToReveal;
+                        box.element.classList.remove('hidden');
+                        box.element.classList.add('highlighted');
+                    }
+                }
+                
+                currentStep++;
+                updateUI();
+                
+                // After animation, change highlighted to revealed
+                setTimeout(() => {
+                    for (const box of letterBoxes) {
+                        if (box.element.classList.contains('highlighted')) {
+                            box.element.classList.remove('highlighted');
+                            box.element.classList.add('revealed');
+                        }
+                    }
+                }, 500);
+            }
+            
+            function hidePreviousLetter() {
+                if (currentStep <= 0) return;
+                
+                currentStep--;
+                const letterToHide = uniqueLetters[currentStep];
+                
+                // Hide all instances of the current letter
+                for (const box of letterBoxes) {
+                    if (!box.isSpace && box.char === letterToHide) {
+                        box.element.textContent = '-';
+                        box.element.classList.remove('revealed');
+                        box.element.classList.add('hidden');
+                    }
+                }
+                
+                updateUI();
+            }
+            
+            function resetVisualization() {
+                originalSentence = '';
+                uniqueLetters = [];
+                currentStep = 0;
+                letterBoxes = [];
+                
+                visualizationSection.style.display = 'none';
+                sentenceInput.value = '';
+            }
+            
+            function updateUI() {
+                // Update button states
+                backBtn.disabled = currentStep === 0;
+                nextBtn.disabled = currentStep >= uniqueLetters.length;
+                
+                // Update progress indicator
+                const progress = currentStep > 0 
+                    ? `Revealed: ${uniqueLetters.slice(0, currentStep).join(', ')}`
+                    : 'No letters revealed yet';
+                progressIndicator.textContent = progress;
+            }
+        });
+    </script>
+</body>
+</html>
