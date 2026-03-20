@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indonesian Provinces Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 2rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .province-selector {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .mode-selector {
+            display: flex;
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            background: white;
+            color: var(--secondary-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .mode-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .mode-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .content-area {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            min-height: 500px;
+        }
+        
+        .lists-container {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .list-column {
+            flex: 1;
+        }
+        
+        .list-column h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .list-group {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+        
+        .list-group-item {
+            border: 1px solid #e9ecef;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .badge-regency {
+            background-color: #6f42c1;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-city {
+            background-color: #fd7e14;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .quiz-container {
+            text-align: center;
+        }
+        
+        .quiz-header {
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .quiz-header p {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+        
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+        
+        .progress {
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            background-color: #e9ecef;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, var(--success-color), #20c997);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .guess-input-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .guess-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .guess-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+            outline: none;
+        }
+        
+        .guess-input.is-invalid {
+            border-color: var(--danger-color);
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .btn-quiz {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+        }
+        
+        .btn-hint {
+            background-color: var(--info-color);
+            color: white;
+        }
+        
+        .btn-hint:hover {
+            background-color: #0aa2c0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(13, 202, 240, 0.3);
+        }
+        
+        .btn-give-up {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-give-up:hover {
+            background-color: #bb2d3b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-restart {
+            background-color: var(--success-color);
+            color: white;
+            margin-top: 1rem;
+        }
+        
+        .btn-restart:hover {
+            background-color: #157347;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+        }
+        
+        .hint-text {
+            background-color: #e7f5ff;
+            border-left: 4px solid var(--info-color);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 6px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .guessed-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            min-height: 50px;
+        }
+        
+        .guessed-item {
+            background-color: var(--success-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            animation: popIn 0.3s ease;
+        }
+        
+        .guessed-item.revealed {
+            background-color: var(--danger-color);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .game-complete {
+            background-color: #d1e7dd;
+            border: 1px solid #badbcc;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .game-complete h3 {
+            color: var(--success-color);
+            margin-bottom: 1rem;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+        
+        @media (max-width: 768px) {
+            .lists-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .guess-input-container {
+                flex-direction: column;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container text-center">
+            <h1><i class="bi bi-geo-alt-fill"></i> Indonesian Provinces Explorer</h1>
+            <p>Discover all cities and regencies across Indonesia's provinces</p>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <div class="province-selector">
+            <label for="provinceSelect" class="form-label fw-bold">Select a Province:</label>
+            <select class="form-select form-select-lg" id="provinceSelect">
+                <option value="">-- Choose a Province --</option>
+            </select>
+        </div>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" id="viewModeBtn">
+                <i class="bi bi-eye-fill"></i> View Mode
+            </button>
+            <button class="mode-btn" id="guessModeBtn">
+                <i class="bi bi-question-circle-fill"></i> Quiz Mode
+            </button>
+        </div>
+        
+        <div class="content-area">
+            <div id="viewMode">
+                <div class="lists-container">
+                    <div class="list-column">
+                        <h3><i class="bi bi-map-fill"></i> Regencies</h3>
+                        <ul class="list-group" id="regenciesList">
+                            <li class="list-group-item text-center text-muted">Please select a province</li>
+                        </ul>
+                    </div>
+                    <div class="list-column">
+                        <h3><i class="bi bi-building"></i> Cities</h3>
+                        <ul class="list-group" id="citiesList">
+                            <li class="list-group-item text-center text-muted">Please select a province</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="guessMode" style="display: none;">
+                <div class="quiz-container">
+                    <div class="quiz-header">
+                        <h2>Quiz Mode</h2>
+                        <p id="currentItem">Select a province to start guessing</p>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress">
+                            <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0/0</div>
+                    </div>
+                    
+                    <div class="hint-text" id="hintText">
+                        <i class="bi bi-info-circle-fill"></i> <span id="hintTextContent"></span>
+                    </div>
+                    
+                    <div class="guess-input-container">
+                        <input type="text" class="guess-input" id="guessInput" placeholder="Enter a city or regency name..." disabled>
+                        <button class="btn-quiz btn-submit" id="submitGuessBtn" disabled>
+                            <i class="bi bi-check-circle-fill"></i> Submit
+                        </button>
+                    </div>
+                    
+                    <div class="d-flex justify-content-center gap-2">
+                        <button class="btn-quiz btn-hint" id="hintBtn" disabled>
+                            <i class="bi bi-lightbulb-fill"></i> Hint
+                        </button>
+                        <button class="btn-quiz btn-give-up" id="giveUpBtn" disabled>
+                            <i class="bi bi-flag-fill"></i> Give Up
+                        </button>
+                    </div>
+                    
+                    <div class="guessed-items" id="guessedItems"></div>
+                    
+                    <div class="game-complete" id="gameComplete">
+                        <h3><i class="bi bi-trophy-fill"></i> Quiz Complete!</h3>
+                        <p id="completionMessage">Congratulations! You've completed the quiz!</p>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalGuesses">0</div>
+                                <div class="stat-label">Total Guesses</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="correctGuesses">0</div>
+                                <div class="stat-label">Correct</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="accuracy">0%</div>
+                                <div class="stat-label">Accuracy</div>
+                            </div>
+                        </div>
+                        <button class="btn-quiz btn-restart" id="restartBtn">
+                            <i class="bi bi-arrow-clockwise"></i> Restart Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Give Up Confirmation Modal -->
+    <div class="modal fade" id="giveUpModal" tabindex="-1" aria-labelledby="giveUpModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="giveUpModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Give Up?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to give up? All remaining cities and regencies will be revealed.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmGiveUpBtn">Yes, Give Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Second Confirmation Modal -->
+    <div class="modal fade" id="secondConfirmModal" tabindex="-1" aria-labelledby="secondConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="secondConfirmModalLabel">
+                        <i class="bi bi-exclamation-circle-fill"></i> Final Confirmation
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    This action cannot be undone. Are you absolutely sure you want to give up and reveal all answers?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="finalGiveUpBtn">Yes, I'm Sure</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Indonesian provinces data
+        const provincesData = {
+            "Aceh": {
+                regencies: [
+                    "Kabupaten Aceh Barat", "Kabupaten Aceh Barat Daya", "Kabupaten Aceh Besar", "Kabupaten Aceh Jaya",
+                    "Kabupaten Aceh Selatan", "Kabupaten Aceh Singkil", "Kabupaten Aceh Tamiang", "Kabupaten Aceh Tengah",
+                    "Kabupaten Aceh Tenggara", "Kabupaten Aceh Timur", "Kabupaten Aceh Utara", "Kabupaten Bener Meriah",
+                    "Kabupaten Bireuen", "Kabupaten Gayo Lues", "Kabupaten Nagan Raya", "Kabupaten Pidie",
+                    "Kabupaten Pidie Jaya", "Kabupaten Simeulue"
+                ],
+                cities: [
+                    "Kota Banda Aceh", "Kota Langsa", "Kota Lhokseumawe", "Kota Sabang", "Kota Subulussalam"
+                ]
+            },
+            "North Sumatra": {
+                regencies: [
+                    "Kabupaten Asahan", "Kabupaten Batubara", "Kabupaten Dairi", "Kabupaten Deli Serdang",
+                    "Kabupaten Humbang Hasundutan", "Kabupaten Karo", "Kabupaten Labuhanbatu", "Kabupaten Labuhanbatu Selatan",
+                    "Kabupaten Labuhanbatu Utara", "Kabupaten Langkat", "Kabupaten Mandailing Natal", "Kabupaten Nias",
+                    "Kabupaten Nias Barat", "Kabupaten Nias Selatan", "Kabupaten Nias Utara", "Kabupaten Padang Lawas",
+                    "Kabupaten Padang Lawas Utara", "Kabupaten Pakpak Bharat", "Kabupaten Samosir", "Kabupaten Serdang Bedagai",
+                    "Kabupaten Simalungun", "Kabupaten Tapanuli Selatan", "Kabupaten Tapanuli Tengah", "Kabupaten Tapanuli Utara",
+                    "Kabupaten Toba"
+                ],
+                cities: [
+                    "Kota Binjai", "Kota Gunungsitoli", "Kota Medan", "Kota Padang Sidempuan",
+                    "Kota Pematangsiantar", "Kota Sibolga", "Kota Tanjungbalai", "Kota Tebing Tinggi"
+                ]
+            },
+            "West Sumatra": {
+                regencies: [
+                    "Kabupaten Agam", "Kabupaten Dharmasraya", "Kabupaten Kepulauan Mentawai", "Kabupaten Lima Puluh Kota",
+                    "Kabupaten Padang Pariaman", "Kabupaten Pasaman", "Kabupaten Pasaman Barat", "Kabupaten Pesisir Selatan",
+                    "Kabupaten Sijunjung", "Kabupaten Solok", "Kabupaten Solok Selatan", "Kabupaten Tanah Datar"
+                ],
+                cities: [
+                    "Kota Bukittinggi", "Kota Padang", "Kota Padang Panjang", "Kota Pariaman",
+                    "Kota Payakumbuh", "Kota Sawahlunto", "Kota Solok"
+                ]
+            },
+            "Riau": {
+                regencies: [
+                    "Kabupaten Bengkalis", "Kabupaten Indragiri Hilir", "Kabupaten Indragiri Hulu", "Kabupaten Kampar",
+                    "Kabupaten Kepulauan Meranti", "Kabupaten Kuantan Singingi", "Kabupaten Pelalawan", "Kabupaten Rokan Hilir",
+                    "Kabupaten Rokan Hulu", "Kabupaten Siak"
+                ],
+                cities: ["Kota Dumai", "Kota Pekanbaru"]
+            },
+            "Jambi": {
+                regencies: [
+                    "Kabupaten Batang Hari", "Kabupaten Bungo", "Kabupaten Kerinci", "Kabupaten Merangin",
+                    "Kabupaten Muaro Jambi", "Kabupaten Sarolangun", "Kabupaten Tanjung Jabung Barat",
+                    "Kabupaten Tanjung Jabung Timur", "Kabupaten Tebo"
+                ],
+                cities: ["Kota Jambi", "Kota Sungai Penuh"]
+            },
+            "Bengkulu": {
+                regencies: [
+                    "Kabupaten Bengkulu Selatan", "Kabupaten Bengkulu Tengah", "Kabupaten Bengkulu Utara",
+                    "Kabupaten Kaur", "Kabupaten Kepahiang", "Kabupaten Lebong", "Kabupaten Mukomuko",
+                    "Kabupaten Rejang Lebong", "Kabupaten Seluma"
+                ],
+                cities: ["Kota Bengkulu"]
+            },
+            "South Sumatra": {
+                regencies: [
+                    "Kabupaten Banyuasin", "Kabupaten Empat Lawang", "Kabupaten Lahat", "Kabupaten Muara Enim",
+                    "Kabupaten Musi Banyuasin", "Kabupaten Musi Rawas", "Kabupaten Musi Rawas Utara",
+                    "Kabupaten Ogan Ilir", "Kabupaten Ogan Komering Ilir", "Kabupaten Ogan Komering Ulu",
+                    "Kabupaten Ogan Komering Ulu Selatan", "Kabupaten Ogan Komering Ulu Timur",
+                    "Kabupaten Penukal Abab Lematang Ilir"
+                ],
+                cities: ["Kota Lubuklinggau", "Kota Pagar Alam", "Kota Palembang", "Kota Prabumulih"]
+            },
+            "Lampung": {
+                regencies: [
+                    "Kabupaten Lampung Barat", "Kabupaten Lampung Selatan", "Kabupaten Lampung Tengah",
+                    "Kabupaten Lampung Timur", "Kabupaten Lampung Utara", "Kabupaten Mesuji", "Kabupaten Pesawaran",
+                    "Kabupaten Pesisir Barat", "Kabupaten Pringsewu", "Kabupaten Tanggamus", "Kabupaten Tulang Bawang",
+                    "Kabupaten Tulang Bawang Barat", "Kabupaten Way Kanan"
+                ],
+                cities: ["Kota Bandar Lampung", "Kota Metro"]
+            },
+            "Riau Islands": {
+                regencies: [
+                    "Kabupaten Bintan", "Kabupaten Karimun", "Kabupaten Kepulauan Anambas",
+                    "Kabupaten Lingga", "Kabupaten Natuna"
+                ],
+                cities: ["Kota Batam", "Kota Tanjungpinang"]
+            },
+            "Bangka Belitung Islands": {
+                regencies: [
+                    "Kabupaten Bangka", "Kabupaten Bangka Barat", "Kabupaten Bangka Selatan",
+                    "Kabupaten Bangka Tengah", "Kabupaten Belitung", "Kabupaten Belitung Timur"
+                ],
+                cities: ["Kota Pangkal Pinang"]
+            },
+            "Banten": {
+                regencies: [
+                    "Kabupaten Lebak", "Kabupaten Pandeglang", "Kabupaten Serang", "Kabupaten Tangerang"
+                ],
+                cities: ["Kota Cilegon", "Kota Serang", "Kota Tangerang", "Kota Tangerang Selatan"]
+            },
+            "Special Capital Region of Jakarta": {
+                regencies: ["Kabupaten Kepulauan Seribu"],
+                cities: [
+                    "Kota Administrasi Jakarta Barat", "Kota Administrasi Jakarta Pusat",
+                    "Kota Administrasi Jakarta Selatan", "Kota Administrasi Jakarta Timur",
+                    "Kota Administrasi Jakarta Utara"
+                ]
+            },
+            "West Java": {
+                regencies: [
+                    "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kabupaten Bekasi", "Kabupaten Bogor",
+                    "Kabupaten Ciamis", "Kabupaten Cianjur", "Kabupaten Cirebon", "Kabupaten Garut",
+                    "Kabupaten Indramayu", "Kabupaten Karawang", "Kabupaten Kuningan", "Kabupaten Majalengka",
+                    "Kabupaten Pangandaran", "Kabupaten Purwakarta", "Kabupaten Subang", "Kabupaten Sukabumi",
+                    "Kabupaten Sumedang", "Kabupaten Tasikmalaya"
+                ],
+                cities: [
+                    "Kota Bandung", "Kota Banjar", "Kota Bekasi", "Kota Bogor", "Kota Cimahi",
+                    "Kota Cirebon", "Kota Depok", "Kota Sukabumi", "Kota Tasikmalaya"
+                ]
+            },
+            "Central Java": {
+                regencies: [
+                    "Kabupaten Banjarnegara", "Kabupaten Banyumas", "Kabupaten Batang", "Kabupaten Blora",
+                    "Kabupaten Boyolali", "Kabupaten Brebes", "Kabupaten Cilacap", "Kabupaten Demak",
+                    "Kabupaten Grobogan", "Kabupaten Jepara", "Kabupaten Karanganyar", "Kabupaten Kebumen",
+                    "Kabupaten Kendal", "Kabupaten Klaten", "Kabupaten Kudus", "Kabupaten Magelang",
+                    "Kabupaten Pati", "Kabupaten Pekalongan", "Kabupaten Pemalang", "Kabupaten Purbalingga",
+                    "Kabupaten Purworejo", "Kabupaten Rembang", "Kabupaten Semarang", "Kabupaten Sragen",
+                    "Kabupaten Sukoharjo", "Kabupaten Tegal", "Kabupaten Temanggung", "Kabupaten Wonogiri",
+                    "Kabupaten Wonosobo"
+                ],
+                cities: [
+                    "Kota Magelang", "Kota Pekalongan", "Kota Salatiga", "Kota Semarang",
+                    "Kota Surakarta", "Kota Tegal"
+                ]
+            },
+            "Special Region of Yogyakarta": {
+                regencies: [
+                    "Kabupaten Bantul", "Kabupaten Gunung Kidul", "Kabupaten Kulon Progo", "Kabupaten Sleman"
+                ],
+                cities: ["Kota Yogyakarta"]
+            },
+            "East Java": {
+                regencies: [
+                    "Kabupaten Bangkalan", "Kabupaten Banyuwangi", "Kabupaten Blitar", "Kabupaten Bojonegoro",
+                    "Kabupaten Bondowoso", "Kabupaten Gresik", "Kabupaten Jember", "Kabupaten Jombang",
+                    "Kabupaten Kediri", "Kabupaten Lamongan", "Kabupaten Lumajang", "Kabupaten Madiun",
+                    "Kabupaten Magetan", "Kabupaten Malang", "Kabupaten Mojokerto", "Kabupaten Nganjuk",
+                    "Kabupaten Ngawi", "Kabupaten Pacitan", "Kabupaten Pamekasan", "Kabupaten Pasuruan",
+                    "Kabupaten Ponorogo", "Kabupaten Probolinggo", "Kabupaten Sampang", "Kabupaten Sidoarjo",
+                    "Kabupaten Situbondo", "Kabupaten Sumenep", "Kabupaten Trenggalek", "Kabupaten Tuban",
+                    "Kabupaten Tulungagung"
+                ],
+                cities: [
+                    "Kota Batu", "Kota Blitar", "Kota Kediri", "Kota Madiun", "Kota Malang",
+                    "Kota Mojokerto", "Kota Pasuruan", "Kota Probolinggo", "Kota Surabaya"
+                ]
+            },
+            "Bali": {
+                regencies: [
+                    "Kabupaten Badung", "Kabupaten Bangli", "Kabupaten Buleleng", "Kabupaten Gianyar",
+                    "Kabupaten Jembrana", "Kabupaten Karangasem", "Kabupaten Klungkung", "Kabupaten Tabanan"
+                ],
+                cities: ["Kota Denpasar"]
+            },
+            "West Nusa Tenggara": {
+                regencies: [
+                    "Kabupaten Bima", "Kabupaten Dompu", "Kabupaten Lombok Barat", "Kabupaten Lombok Tengah",
+                    "Kabupaten Lombok Timur", "Kabupaten Lombok Utara", "Kabupaten Sumbawa",
+                    "Kabupaten Sumbawa Barat"
+                ],
+                cities: ["Kota Bima", "Kota Mataram"]
+            },
+            "East Nusa Tenggara": {
+                regencies: [
+                    "Kabupaten Alor", "Kabupaten Belu", "Kabupaten Ende", "Kabupaten Flores Timur",
+                    "Kabupaten Kupang", "Kabupaten Lembata", "Kabupaten Malaka", "Kabupaten Manggarai",
+                    "Kabupaten Manggarai Barat", "Kabupaten Manggarai Timur", "Kabupaten Nagekeo",
+                    "Kabupaten Ngada", "Kabupaten Rote Ndao", "Kabupaten Sabu Raijua", "Kabupaten Sikka",
+                    "Kabupaten Sumba Barat", "Kabupaten Sumba Barat Daya", "Kabupaten Sumba Tengah",
+                    "Kabupaten Sumba Timur", "Kabupaten Timor Tengah Selatan", "Kabupaten Timor Tengah Utara"
+                ],
+                cities: ["Kota Kupang"]
+            },
+            "West Kalimantan": {
+                regencies: [
+                    "Kabupaten Bengkayang", "Kabupaten Kapuas Hulu", "Kabupaten Kayong Utara",
+                    "Kabupaten Ketapang", "Kabupaten Kubu Raya", "Kabupaten Landak", "Kabupaten Melawi",
+                    "Kabupaten Mempawah", "Kabupaten Sambas", "Kabupaten Sanggau", "Kabupaten Sekadau",
+                    "Kabupaten Sintang"
+                ],
+                cities: ["Kota Pontianak", "Kota Singkawang"]
+            },
+            "Central Kalimantan": {
+                regencies: [
+                    "Kabupaten Barito Selatan", "Kabupaten Barito Timur", "Kabupaten Barito Utara",
+                    "Kabupaten Gunung Mas", "Kabupaten Kapuas", "Kabupaten Katingan",
+                    "Kabupaten Kotawaringin Barat", "Kabupaten Kotawaringin Timur", "Kabupaten Lamandau",
+                    "Kabupaten Murung Raya", "Kabupaten Pulang Pisau", "Kabupaten Seruyan", "Kabupaten Sukamara"
+                ],
+                cities: ["Kota Palangka Raya"]
+            },
+            "South Kalimantan": {
+                regencies: [
+                    "Kabupaten Balangan", "Kabupaten Banjar", "Kabupaten Barito Kuala",
+                    "Kabupaten Hulu Sungai Selatan", "Kabupaten Hulu Sungai Tengah",
+                    "Kabupaten Hulu Sungai Utara", "Kabupaten Kotabaru", "Kabupaten Tabalong",
+                    "Kabupaten Tanah Bumbu", "Kabupaten Tanah Laut", "Kabupaten Tapin"
+                ],
+                cities: ["Kota Banjarbaru", "Kota Banjarmasin"]
+            },
+            "North Kalimantan": {
+                regencies: [
+                    "Kabupaten Bulungan", "Kabupaten Malinau", "Kabupaten Nunukan", "Kabupaten Tana Tidung"
+                ],
+                cities: ["Kota Tarakan"]
+            },
+            "East Kalimantan": {
+                regencies: [
+                    "Kabupaten Berau", "Kabupaten Kutai Barat", "Kabupaten Kutai Kartanegara",
+                    "Kabupaten Kutai Timur", "Kabupaten Mahakam Ulu", "Kabupaten Paser",
+                    "Kabupaten Penajam Paser Utara"
+                ],
+                cities: ["Kota Balikpapan", "Kota Bontang", "Kota Samarinda"]
+            },
+            "North Sulawesi": {
+                regencies: [
+                    "Kabupaten Bolaang Mongondow", "Kabupaten Bolaang Mongondow Selatan",
+                    "Kabupaten Bolaang Mongondow Timur", "Kabupaten Bolaang Mongondow Utara",
+                    "Kabupaten Kepulauan Sangihe", "Kabupaten Kepulauan Sitaro", "Kabupaten Kepulauan Talaud",
+                    "Kabupaten Minahasa", "Kabupaten Minahasa Selatan", "Kabupaten Minahasa Tenggara",
+                    "Kabupaten Minahasa Utara"
+                ],
+                cities: ["Kota Bitung", "Kota Kotamobagu", "Kota Manado", "Kota Tomohon"]
+            },
+            "Gorontalo": {
+                regencies: [
+                    "Kabupaten Boalemo", "Kabupaten Bone Bolango", "Kabupaten Gorontalo",
+                    "Kabupaten Gorontalo Utara", "Kabupaten Pohuwato"
+                ],
+                cities: ["Kota Gorontalo"]
+            },
+            "West Sulawesi": {
+                regencies: [
+                    "Kabupaten Majene", "Kabupaten Mamasa", "Kabupaten Mamuju", "Kabupaten Mamuju Tengah",
+                    "Kabupaten Pasangkayu", "Kabupaten Polewali Mandar"
+                ],
+                cities: []
+            },
+            "Central Sulawesi": {
+                regencies: [
+                    "Kabupaten Banggai", "Kabupaten Banggai Kepulauan", "Kabupaten Banggai Laut",
+                    "Kabupaten Buol", "Kabupaten Donggala", "Kabupaten Morowali", "Kabupaten Morowali Utara",
+                    "Kabupaten Parigi Moutong", "Kabupaten Poso", "Kabupaten Sigi", "Kabupaten Tojo Una-Una",
+                    "Kabupaten Tolitoli"
+                ],
+                cities: ["Kota Palu"]
+            },
+            "South Sulawesi": {
+                regencies: [
+                    "Kabupaten Bantaeng", "Kabupaten Barru", "Kabupaten Bone", "Kabupaten Bulukumba",
+                    "Kabupaten Enrekang", "Kabupaten Gowa", "Kabupaten Jeneponto", "Kabupaten Kepulauan Selayar",
+                    "Kabupaten Luwu", "Kabupaten Luwu Timur", "Kabupaten Luwu Utara", "Kabupaten Maros",
+                    "Kabupaten Pangkajene dan Kepulauan", "Kabupaten Pinrang", "Kabupaten Sidenreng Rappang",
+                    "Kabupaten Sinjai", "Kabupaten Soppeng", "Kabupaten Takalar", "Kabupaten Tana Toraja",
+                    "Kabupaten Toraja Utara", "Kabupaten Wajo"
+                ],
+                cities: ["Kota Makassar", "Kota Palopo", "Kota Parepare"]
+            },
+            "Southeast Sulawesi": {
+                regencies: [
+                    "Kabupaten Bombana", "Kabupaten Buton", "Kabupaten Buton Selatan", "Kabupaten Buton Tengah",
+                    "Kabupaten Buton Utara", "Kabupaten Kolaka", "Kabupaten Kolaka Timur", "Kabupaten Kolaka Utara",
+                    "Kabupaten Konawe", "Kabupaten Konawe Kepulauan", "Kabupaten Konawe Selatan",
+                    "Kabupaten Konawe Utara", "Kabupaten Muna", "Kabupaten Muna Barat", "Kabupaten Wakatobi"
+                ],
+                cities: ["Kota Baubau", "Kota Kendari"]
+            },
+            "North Maluku": {
+                regencies: [
+                    "Kabupaten Halmahera Barat", "Kabupaten Halmahera Selatan", "Kabupaten Halmahera Tengah",
+                    "Kabupaten Halmahera Timur", "Kabupaten Halmahera Utara", "Kabupaten Kepulauan Sula",
+                    "Kabupaten Pulau Morotai", "Kabupaten Pulau Taliabu"
+                ],
+                cities: ["Kota Ternate", "Kota Tidore Kepulauan"]
+            },
+            "Maluku": {
+                regencies: [
+                    "Kabupaten Buru", "Kabupaten Buru Selatan", "Kabupaten Kepulauan Aru",
+                    "Kabupaten Kepulauan Tanimbar", "Kabupaten Maluku Barat Daya", "Kabupaten Maluku Tengah",
+                    "Kabupaten Maluku Tenggara", "Kabupaten Seram Bagian Barat", "Kabupaten Seram Bagian Timur"
+                ],
+                cities: ["Kota Ambon", "Kota Tual"]
+            },
+            "Southwest Papua": {
+                regencies: [
+                    "Kabupaten Maybrat", "Kabupaten Raja Ampat", "Kabupaten Sorong", "Kabupaten Sorong Selatan",
+                    "Kabupaten Tambrauw"
+                ],
+                cities: ["Kota Sorong"]
+            },
+            "West Papua": {
+                regencies: [
+                    "Kabupaten Fakfak", "Kabupaten Kaimana", "Kabupaten Manokwari", "Kabupaten Manokwari Selatan",
+                    "Kabupaten Pegunungan Arfak", "Kabupaten Teluk Bintuni", "Kabupaten Teluk Wondama"
+                ],
+                cities: []
+            },
+            "Central Papua": {
+                regencies: [
+                    "Kabupaten Deiyai", "Kabupaten Dogiyai", "Kabupaten Intan Jaya", "Kabupaten Mimika",
+                    "Kabupaten Nabire", "Kabupaten Paniai", "Kabupaten Puncak", "Kabupaten Puncak Jaya"
+                ],
+                cities: []
+            },
+            "Papua": {
+                regencies: [
+                    "Kabupaten Biak Numfor", "Kabupaten Jayapura", "Kabupaten Keerom", "Kabupaten Kepulauan Yapen",
+                    "Kabupaten Mamberamo Raya", "Kabupaten Sarmi", "Kabupaten Supiori", "Kabupaten Waropen"
+                ],
+                cities: ["Kota Jayapura"]
+            },
+            "Highland Papua": {
+                regencies: [
+                    "Kabupaten Jayawijaya", "Kabupaten Lanny Jaya", "Kabupaten Mamberamo Tengah",
+                    "Kabupaten Nduga", "Kabupaten Pegunungan Bintang", "Kabupaten Tolikara",
+                    "Kabupaten Yahukimo", "Kabupaten Yalimo"
+                ],
+                cities: []
+            },
+            "South Papua": {
+                regencies: [
+                    "Kabupaten Asmat", "Kabupaten Boven Digoel", "Kabupaten Mappi", "Kabupaten Merauke"
+                ],
+                cities: []
+            }
+        };
+        
+        // DOM elements
+        const provinceSelect = document.getElementById('provinceSelect');
+        const viewModeBtn = document.getElementById('viewModeBtn');
+        const guessModeBtn = document.getElementById('guessModeBtn');
+        const viewMode = document.getElementById('viewMode');
+        const guessMode = document.getElementById('guessMode');
+        const regenciesList = document.getElementById('regenciesList');
+        const citiesList = document.getElementById('citiesList');
+        const currentItem = document.getElementById('currentItem');
+        const guessInput = document.getElementById('guessInput');
+        const submitGuessBtn = document.getElementById('submitGuessBtn');
+        const giveUpBtn = document.getElementById('giveUpBtn');
+        const hintBtn = document.getElementById('hintBtn');
+        const hintText = document.getElementById('hintText');
+        const hintTextContent = document.getElementById('hintTextContent');
+        const guessedItems = document.getElementById('guessedItems');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const gameComplete = document.getElementById('gameComplete');
+        const completionMessage = document.getElementById('completionMessage');
+        const totalGuesses = document.getElementById('totalGuesses');
+        const correctGuesses = document.getElementById('correctGuesses');
+        const accuracy = document.getElementById('accuracy');
+        const restartBtn = document.getElementById('restartBtn');
+        const giveUpModal = new bootstrap.Modal(document.getElementById('giveUpModal'));
+        const secondConfirmModal = new bootstrap.Modal(document.getElementById('secondConfirmModal'));
+        const confirmGiveUpBtn = document.getElementById('confirmGiveUpBtn');
+        const finalGiveUpBtn = document.getElementById('finalGiveUpBtn');
+        
+        // Game state
+        let currentProvince = null;
+        let allItems = [];
+        let remainingItems = [];
+        let guessedItemsList = [];
+        let guessCount = 0;
+        let correctCount = 0;
+        let gameEnded = false;
+        
+        // Initialize province selector
+        function initializeProvinceSelector() {
+            Object.keys(provincesData).forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        }
+        
+        // Switch between view and guess modes
+        viewModeBtn.addEventListener('click', () => {
+            viewModeBtn.classList.add('active');
+            guessModeBtn.classList.remove('active');
+            viewMode.style.display = 'block';
+            guessMode.style.display = 'none';
+        });
+        
+        guessModeBtn.addEventListener('click', () => {
+            guessModeBtn.classList.add('active');
+            viewModeBtn.classList.remove('active');
+            viewMode.style.display = 'none';
+            guessMode.style.display = 'block';
+        });
+        
+        // Handle province selection
+        provinceSelect.addEventListener('change', () => {
+            currentProvince = provinceSelect.value;
+            
+            if (!currentProvince) {
+                // Reset view mode
+                regenciesList.innerHTML = '<li class="list-group-item text-center text-muted">Please select a province</li>';
+                citiesList.innerHTML = '<li class="list-group-item text-center text-muted">Please select a province</li>';
+                
+                // Reset guess mode
+                resetQuizMode();
+                return;
+            }
+            
+            // Update view mode
+            updateViewMode();
+            
+            // Initialize guess mode
+            initializeGuessMode();
+        });
+        
+        // Update view mode with selected province data
+        function updateViewMode() {
+            const provinceData = provincesData[currentProvince];
+            
+            // Update regencies list
+            regenciesList.innerHTML = '';
+            if (provinceData.regencies.length > 0) {
+                provinceData.regencies.forEach(regency => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.textContent = regency;
+                    const badge = document.createElement('span');
+                    badge.className = 'badge badge-regency';
+                    badge.textContent = 'Regency';
+                    li.appendChild(badge);
+                    regenciesList.appendChild(li);
+                });
+            } else {
+                regenciesList.innerHTML = '<li class="list-group-item text-center text-muted">No regencies</li>';
+            }
+            
+            // Update cities list
+            citiesList.innerHTML = '';
+            if (provinceData.cities.length > 0) {
+                provinceData.cities.forEach(city => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.textContent = city;
+                    const badge = document.createElement('span');
+                    badge.className = 'badge badge-city';
+                    badge.textContent = 'City';
+                    li.appendChild(badge);
+                    citiesList.appendChild(li);
+                });
+            } else {
+                citiesList.innerHTML = '<li class="list-group-item text-center text-muted">No cities</li>';
+            }
+        }
+        
+        // Reset quiz mode to initial state
+        function resetQuizMode() {
+            currentItem.textContent = 'Select a province to start guessing';
+            guessInput.disabled = true;
+            submitGuessBtn.disabled = true;
+            giveUpBtn.disabled = true;
+            hintBtn.disabled = true;
+            guessedItems.innerHTML = '';
+            gameComplete.style.display = 'none';
+            hintText.style.display = 'none';
+            gameEnded = false;
+        }
+        
+        // Initialize guess mode
+        function initializeGuessMode() {
+            const provinceData = provincesData[currentProvince];
+            
+            // Combine all items (regencies and cities)
+            allItems = [...provinceData.regencies, ...provinceData.cities];
+            remainingItems = [...allItems];
+            guessedItemsList = [];
+            guessCount = 0;
+            correctCount = 0;
+            gameEnded = false;
+            
+            // Reset UI
+            guessedItems.innerHTML = '';
+            gameComplete.style.display = 'none';
+            hintText.style.display = 'none';
+            
+            // Enable input and buttons
+            guessInput.disabled = false;
+            submitGuessBtn.disabled = false;
+            giveUpBtn.disabled = false;
+            hintBtn.disabled = false;
+            
+            // Update progress
+            updateProgress();
+            
+            // Update current item text
+            updateCurrentItemText();
+            
+            // Clear input and focus
+            guessInput.value = '';
+            guessInput.focus();
+        }
+        
+        // Update current item text
+        function updateCurrentItemText() {
+            const total = allItems.length;
+            const guessed = guessedItemsList.length;
+            currentItem.textContent = `Guess any city or regency in ${currentProvince} (${guessed}/${total} found)`;
+        }
+        
+        // Handle guess submission
+        submitGuessBtn.addEventListener('click', submitGuess);
+        guessInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitGuess();
+            }
+        });
+        
+        function submitGuess() {
+            const guess = guessInput.value.trim();
+            
+            if (!guess || gameEnded) return;
+            
+            guessCount++;
+            
+            // Check if guess has already been submitted
+            if (guessedItemsList.some(item => item.toLowerCase() === guess.toLowerCase())) {
+                // Already guessed - show different feedback
+                guessInput.classList.add('is-invalid');
+                setTimeout(() => {
+                    guessInput.classList.remove('is-invalid');
+                }, 500);
+                
+                // Show a temporary message
+                const tempMessage = document.createElement('div');
+                tempMessage.className = 'text-warning mt-2';
+                tempMessage.textContent = 'Already guessed!';
+                guessInput.parentNode.appendChild(tempMessage);
+                setTimeout(() => {
+                    tempMessage.remove();
+                }, 2000);
+                
+                return;
+            }
+            
+            // Check if guess is correct
+            const correctItem = allItems.find(item => item.toLowerCase() === guess.toLowerCase());
+            
+            if (correctItem) {
+                // Correct guess
+                correctCount++;
+                
+                // Add to guessed items
+                guessedItemsList.push(correctItem);
+                const itemElement = document.createElement('div');
+                itemElement.className = 'guessed-item';
+                itemElement.textContent = correctItem;
+                guessedItems.appendChild(itemElement);
+                
+                // Remove from remaining items
+                remainingItems = remainingItems.filter(item => item !== correctItem);
+                
+                // Update progress
+                updateProgress();
+                updateCurrentItemText();
+                
+                // Check if game is complete
+                if (remainingItems.length === 0) {
+                    showGameComplete(true);
+                }
+                
+                // Clear input
+                guessInput.value = '';
+                guessInput.focus();
+            } else {
+                // Wrong guess - shake the input
+                guessInput.classList.add('is-invalid');
+                setTimeout(() => {
+                    guessInput.classList.remove('is-invalid');
+                }, 500);
+            }
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const total = allItems.length;
+            const guessed = guessedItemsList.length;
+            const percentage = (guessed / total) * 100;
+            
+            progressBar.style.width = `${percentage}%`;
+            progressBar.textContent = `${guessed}/${total}`;
+            progressText.textContent = `${guessed}/${total}`;
+        }
+        
+        // Show game complete screen
+        function showGameComplete(completed = false) {
+            gameEnded = true;
+            currentItem.textContent = completed ? 
+                'Congratulations! You guessed all cities and regencies!' : 
+                'Game ended - all items revealed';
+            guessInput.disabled = true;
+            submitGuessBtn.disabled = true;
+            giveUpBtn.disabled = true;
+            hintBtn.disabled = true;
+            gameComplete.style.display = 'block';
+            
+            // Update completion message
+            if (completed) {
+                completionMessage.textContent = 'Congratulations! You\'ve successfully guessed all cities and regencies in ' + currentProvince + '!';
+            } else {
+                completionMessage.textContent = 'You gave up. Better luck next time!';
+            }
+            
+            // Calculate and display stats
+            totalGuesses.textContent = guessCount;
+            correctGuesses.textContent = correctCount;
+            accuracy.textContent = guessCount > 0 ? `${Math.round((correctCount / guessCount) * 100)}%` : '0%';
+        }
+        
+        // Handle hint button
+        hintBtn.addEventListener('click', () => {
+            if (!currentProvince || remainingItems.length === 0) return;
+            
+            // Get a random unguessed item as a hint
+            const randomItem = remainingItems[Math.floor(Math.random() * remainingItems.length)];
+            const isCity = provincesData[currentProvince].cities.includes(randomItem);
+            const itemType = isCity ? 'City' : 'Regency';
+            
+            // Get the first word if it's a compound name
+            const firstWord = randomItem.split(' ')[0];
+            
+            hintTextContent.textContent = `Hint: There's a ${itemType} that starts with "${firstWord}"`;
+            hintText.style.display = 'block';
+        });
+        
+        // Handle give up button
+        giveUpBtn.addEventListener('click', () => {
+            giveUpModal.show();
+        });
+        
+        // First confirmation
+        confirmGiveUpBtn.addEventListener('click', () => {
+            giveUpModal.hide();
+            secondConfirmModal.show();
+        });
+        
+        // Final confirmation
+        finalGiveUpBtn.addEventListener('click', () => {
+            secondConfirmModal.hide();
+            
+            // Reveal all remaining items
+            remainingItems.forEach(item => {
+                guessedItemsList.push(item);
+                const itemElement = document.createElement('div');
+                itemElement.className = 'guessed-item revealed';
+                itemElement.textContent = item;
+                guessedItems.appendChild(itemElement);
+            });
+            
+            // Update progress
+            remainingItems = [];
+            updateProgress();
+            
+            // Show game complete
+            showGameComplete(false);
+        });
+        
+        // Handle restart button
+        restartBtn.addEventListener('click', () => {
+            // Reset and reinitialize the quiz
+            initializeGuessMode();
+        });
+        
+        // Initialize the app
+        initializeProvinceSelector();
+    </script>
+</body>
+</html>
