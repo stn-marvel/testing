@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conlang Dictionary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #8b4513;
+            --secondary-color: #d2b48c;
+            --paper-color: #f9f3e9;
+            --text-color: #3e2723;
+            --accent-color: #a0522d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background-color: #e6d7c3;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e6d7c3"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="%23d2b48c" stroke-width="0.5" opacity="0.3"/></svg>');
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: var(--paper-color);
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        header::before, header::after {
+            content: "❦";
+            position: absolute;
+            font-size: 24px;
+            color: var(--secondary-color);
+        }
+
+        header::before {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        header::after {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-style: italic;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .book-container {
+            display: flex;
+            background-color: var(--paper-color);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .book-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            height: 100%;
+            width: 3px;
+            background-color: rgba(139, 69, 19, 0.3);
+            z-index: 10;
+        }
+
+        .page {
+            flex: 1;
+            padding: 40px;
+            position: relative;
+        }
+
+        .page-left {
+            border-right: 1px solid rgba(139, 69, 19, 0.2);
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+        }
+
+        .page-left .page-number {
+            left: 40px;
+        }
+
+        .page-right .page-number {
+            right: 40px;
+        }
+
+        .controls {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid var(--primary-color);
+            border-radius: 3px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--paper-color);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+        }
+
+        .dictionary-content {
+            column-count: 2;
+            column-gap: 30px;
+        }
+
+        .word-entry {
+            margin-bottom: 20px;
+            break-inside: avoid;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed rgba(139, 69, 19, 0.3);
+        }
+
+        .word {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .word-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .meaning {
+            font-style: italic;
+        }
+
+        .pos {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .word-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn {
+            background-color: #4a6baf;
+        }
+
+        .delete-btn {
+            background-color: #a52a2a;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--paper-color);
+            padding: 30px;
+            border-radius: 5px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--primary-color);
+            border-radius: 3px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--paper-color);
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            z-index: 200;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            font-style: italic;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .dictionary-content {
+                column-count: 1;
+            }
+            
+            .book-container::before {
+                display: none;
+            }
+            
+            .page-left {
+                border-right: none;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Conlang Dictionary</h1>
+            <p class="subtitle">Kosakata dasar tanpa afiks dan grammar kompleks</p>
+        </header>
+
+        <div class="controls">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search for a word...">
+            <button id="addWordBtn">Add New Word</button>
+            <button id="exportBtn">Export Dictionary</button>
+            <button id="importBtn">Import Dictionary</button>
+            <input type="file" id="importFile" style="display: none;" accept=".json">
+        </div>
+
+        <div class="book-container">
+            <div class="page page-left">
+                <div id="dictionaryContent" class="dictionary-content">
+                    <!-- Dictionary entries will be loaded here -->
+                </div>
+                <div class="page-number">1</div>
+            </div>
+            <div class="page page-right">
+                <div id="dictionaryContentRight" class="dictionary-content">
+                    <!-- More dictionary entries will be loaded here -->
+                </div>
+                <div class="page-number">2</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Word Modal -->
+    <div id="wordModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modalTitle">Add New Word</h2>
+            <form id="wordForm">
+                <div class="form-group">
+                    <label for="wordInput">Word</label>
+                    <input type="text" id="wordInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="meaningInput">Meaning</label>
+                    <input type="text" id="meaningInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="posInput">Part of Speech</label>
+                    <select id="posInput" required>
+                        <option value="noun">Noun</option>
+                        <option value="verb">Verb</option>
+                        <option value="adjective">Adjective</option>
+                        <option value="adverb">Adverb</option>
+                        <option value="pronoun">Pronoun</option>
+                        <option value="preposition">Preposition</option>
+                        <option value="conjunction">Conjunction</option>
+                        <option value="interjection">Interjection</option>
+                        <option value="question">Question</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancelBtn">Cancel</button>
+                    <button type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Dictionary data structure
+        let dictionaryData = {
+            meta: {
+                language_name: "Kamus Conlang",
+                version: "0.1",
+                description: "Kosakata dasar tanpa afiks dan grammar kompleks"
+            },
+            words: []
+        };
+
+        // DOM elements
+        const dictionaryContent = document.getElementById('dictionaryContent');
+        const dictionaryContentRight = document.getElementById('dictionaryContentRight');
+        const searchBox = document.getElementById('searchBox');
+        const addWordBtn = document.getElementById('addWordBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const importFile = document.getElementById('importFile');
+        const wordModal = document.getElementById('wordModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const wordForm = document.getElementById('wordForm');
+        const wordInput = document.getElementById('wordInput');
+        const meaningInput = document.getElementById('meaningInput');
+        const posInput = document.getElementById('posInput');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const closeModal = document.querySelector('.close-modal');
+        const notification = document.getElementById('notification');
+
+        // Current editing word ID
+        let editingWordId = null;
+
+        // Initialize the app
+        function init() {
+            // Load data from localStorage if available
+            const savedData = localStorage.getItem('conlangDictionary');
+            if (savedData) {
+                dictionaryData = JSON.parse(savedData);
+            } else {
+                // Initialize with empty data
+                saveToLocalStorage();
+            }
+            
+            renderDictionary();
+            setupEventListeners();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            searchBox.addEventListener('input', handleSearch);
+            addWordBtn.addEventListener('click', openAddModal);
+            exportBtn.addEventListener('click', exportDictionary);
+            importBtn.addEventListener('click', () => importFile.click());
+            importFile.addEventListener('change', handleImport);
+            wordForm.addEventListener('submit', handleFormSubmit);
+            cancelBtn.addEventListener('click', closeModalHandler);
+            closeModal.addEventListener('click', closeModalHandler);
+            window.addEventListener('click', (e) => {
+                if (e.target === wordModal) {
+                    closeModalHandler();
+                }
+            });
+        }
+
+        // Render dictionary entries
+        function renderDictionary(words = dictionaryData.words) {
+            dictionaryContent.innerHTML = '';
+            dictionaryContentRight.innerHTML = '';
+            
+            if (words.length === 0) {
+                dictionaryContent.innerHTML = '<div class="empty-state">No words in the dictionary. Add your first word!</div>';
+                return;
+            }
+            
+            // Sort words alphabetically
+            const sortedWords = [...words].sort((a, b) => a.word.localeCompare(b.word));
+            
+            // Distribute words between two columns
+            const halfLength = Math.ceil(sortedWords.length / 2);
+            const leftColumnWords = sortedWords.slice(0, halfLength);
+            const rightColumnWords = sortedWords.slice(halfLength);
+            
+            leftColumnWords.forEach(word => {
+                dictionaryContent.appendChild(createWordEntry(word));
+            });
+            
+            rightColumnWords.forEach(word => {
+                dictionaryContentRight.appendChild(createWordEntry(word));
+            });
+        }
+
+        // Create a word entry element
+        function createWordEntry(word) {
+            const entry = document.createElement('div');
+            entry.className = 'word-entry';
+            entry.innerHTML = `
+                <div class="word">${word.word}</div>
+                <div class="word-details">
+                    <div class="meaning">${word.meaning}</div>
+                    <div class="pos">${word.pos}</div>
+                </div>
+                <div class="word-actions">
+                    <button class="edit-btn" data-id="${word.id}">Edit</button>
+                    <button class="delete-btn" data-id="${word.id}">Delete</button>
+                </div>
+            `;
+            
+            // Add event listeners to buttons
+            const editBtn = entry.querySelector('.edit-btn');
+            const deleteBtn = entry.querySelector('.delete-btn');
+            
+            editBtn.addEventListener('click', () => openEditModal(word.id));
+            deleteBtn.addEventListener('click', () => deleteWord(word.id));
+            
+            return entry;
+        }
+
+        // Handle search
+        function handleSearch() {
+            const searchTerm = searchBox.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                renderDictionary();
+                return;
+            }
+            
+            const filteredWords = dictionaryData.words.filter(word => 
+                word.word.toLowerCase().includes(searchTerm) || 
+                word.meaning.toLowerCase().includes(searchTerm)
+            );
+            
+            renderDictionary(filteredWords);
+        }
+
+        // Open add word modal
+        function openAddModal() {
+            editingWordId = null;
+            modalTitle.textContent = 'Add New Word';
+            wordForm.reset();
+            wordModal.style.display = 'flex';
+        }
+
+        // Open edit modal
+        function openEditModal(id) {
+            editingWordId = id;
+            const word = dictionaryData.words.find(w => w.id === id);
+            
+            if (word) {
+                modalTitle.textContent = 'Edit Word';
+                wordInput.value = word.word;
+                meaningInput.value = word.meaning;
+                posInput.value = word.pos;
+                wordModal.style.display = 'flex';
+            }
+        }
+
+        // Close modal
+        function closeModalHandler() {
+            wordModal.style.display = 'none';
+            wordForm.reset();
+            editingWordId = null;
+        }
+
+        // Handle form submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const wordData = {
+                word: wordInput.value.trim(),
+                meaning: meaningInput.value.trim(),
+                pos: posInput.value
+            };
+            
+            if (editingWordId) {
+                // Update existing word
+                const index = dictionaryData.words.findIndex(w => w.id === editingWordId);
+                if (index !== -1) {
+                    dictionaryData.words[index] = { ...dictionaryData.words[index], ...wordData };
+                    showNotification('Word updated successfully!');
+                }
+            } else {
+                // Add new word
+                const newWord = {
+                    id: generateId(),
+                    ...wordData
+                };
+                dictionaryData.words.push(newWord);
+                showNotification('Word added successfully!');
+            }
+            
+            saveToLocalStorage();
+            renderDictionary();
+            closeModalHandler();
+        }
+
+        // Delete word
+        function deleteWord(id) {
+            if (confirm('Are you sure you want to delete this word?')) {
+                dictionaryData.words = dictionaryData.words.filter(w => w.id !== id);
+                saveToLocalStorage();
+                renderDictionary();
+                showNotification('Word deleted successfully!');
+            }
+        }
+
+        // Generate unique ID
+        function generateId() {
+            const maxId = dictionaryData.words.reduce((max, word) => {
+                const idNum = parseInt(word.id.substring(1));
+                return idNum > max ? idNum : max;
+            }, 0);
+            
+            return `w${String(maxId + 1).padStart(3, '0')}`;
+        }
+
+        // Export dictionary
+        function exportDictionary() {
+            const dataStr = JSON.stringify(dictionaryData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'conlang_dictionary.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('Dictionary exported successfully!');
+        }
+
+        // Import dictionary
+        function handleImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    
+                    // Validate the structure
+                    if (importedData.meta && importedData.words) {
+                        dictionaryData = importedData;
+                        saveToLocalStorage();
+                        renderDictionary();
+                        showNotification('Dictionary imported successfully!');
+                    } else {
+                        showNotification('Invalid dictionary format!', 'error');
+                    }
+                } catch (error) {
+                    showNotification('Error importing dictionary!', 'error');
+                    console.error(error);
+                }
+            };
+            
+            reader.readAsText(file);
+            e.target.value = ''; // Reset the file input
+        }
+
+        // Save to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('conlangDictionary', JSON.stringify(dictionaryData));
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.style.backgroundColor = type === 'error' ? '#a52a2a' : 'var(--primary-color)';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
