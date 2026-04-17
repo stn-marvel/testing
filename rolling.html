@@ -1,199 +1,607 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Rolling Tempat Duduk</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denah Tempat Duduk Kelas</title>
+    <!-- Library html2canvas untuk fitur download gambar -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --male-color: #3b82f6; /* Biru */
+            --female-color: #f97316; /* Oranye */
+            --desk-bg: #ffffff;
+            --desk-border: #e5e7eb;
+            --board-color: #334155;
+            --floor-color: #e5e7eb;
+        }
 
-    h1 {
-      margin-bottom: 10px;
-      color: #333;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    .controls {
-      margin-bottom: 20px;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
 
-    select, button {
-      padding: 8px 12px;
-      margin: 5px;
-      font-size: 14px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
+        /* --- Header & Controls --- */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
 
-    button {
-      background: #3498db;
-      color: white;
-      border: none;
-    }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
 
-    button:hover {
-      background: #2980b9;
-    }
+        .controls {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 150px);
-      grid-gap: 15px;
-    }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .meja {
-      background: white;
-      border-radius: 12px;
-      padding: 10px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: transform 0.2s ease;
-    }
+        select, button {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-    .meja:hover {
-      transform: scale(1.05);
-    }
+        select {
+            background-color: white;
+        }
 
-    .kursi {
-      display: flex;
-      gap: 6px;
-      margin: 5px 0;
-    }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
 
-    .siswa {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      color: white;
-    }
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
 
-    .L {
-      background: #3498db;
-    }
+        button.secondary {
+            background-color: white;
+            color: var(--text-color);
+            border: 1px solid #d1d5db;
+        }
 
-    .P {
-      background: #e67e22;
-    }
-  </style>
+        button.secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        /* --- Area Denah (Classroom) --- */
+        .classroom-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .classroom {
+            background-color: var(--floor-color);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            position: relative;
+            /* Scale logic untuk mobile ditangani di media query atau transform */
+            transform-origin: top center;
+            width: 100%;
+        }
+
+        /* Elemen Depan Kelas (Papan, Guru, Pintu) */
+        .front-wall {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            position: relative;
+            height: 120px;
+        }
+
+        .door {
+            width: 80px;
+            height: 120px;
+            background: #8d6e63;
+            border: 4px solid #5d4037;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .door::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: gold;
+            border-radius: 50%;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+        }
+
+        .blackboard-container {
+            flex: 1 1 auto;
+            width: clamp(420px, calc(100% - 220px), 580px);
+            margin: 0 20px;
+            height: 120px;
+            background: #334155;
+            border: 8px solid #475569;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+        }
+
+        .teacher-desk {
+            width: 100px;
+            height: 60px;
+            background: #fff;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            position: absolute;
+            right: 0;
+            top: 40px; /* Sedikit menjorok ke bawah */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .teacher-desk::before {
+            content: 'GURU';
+            font-weight: bold;
+        }
+        /* Kursi Guru */
+        .teacher-desk::after {
+            content: '';
+            width: 30px;
+            height: 30px;
+            background: #94a3b8;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -15px;
+            left: 35px;
+        }
+
+        /* --- Grid Meja --- */
+        .seating-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 20px 30px; /* Row gap, Column gap */
+            padding: 10px;
+        }
+
+        .desk {
+            background: var(--desk-bg);
+            border: 1px solid var(--desk-border);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: row; /* 2 orang side-by-side */
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            min-height: 80px; /* Tinggi minimum meja */
+            transition: transform 0.2s ease;
+        }
+
+        .desk:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Nomor Meja (Opsional) */
+        .desk-number {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #cbd5e1;
+            color: #475569;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Kursi (Card Siswa) */
+        .student {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            border-radius: 6px;
+            margin: 0 2px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            word-wrap: break-word;
+            line-height: 1.2;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Gender Colors */
+        .student.male {
+            background-color: var(--male-color);
+        }
+        .student.female {
+            background-color: var(--female-color);
+        }
+        .student.special {
+            background-color: #6b7280;
+            color: #f8fafc;
+        }
+        .student.empty {
+            background-color: #e2e8f0;
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.8rem;
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* Separator di tengah meja */
+        .desk-separator {
+            width: 2px;
+            background: #f1f5f9;
+            margin: 0 4px;
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 850px) {
+            .classroom-wrapper {
+                overflow-x: auto; /* Scroll horizontal jika terlalu kecil */
+                justify-content: flex-start;
+            }
+            .classroom {
+                min-width: 800px; /* Paksa lebar agar layout tidak berantakan */
+            }
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.4rem; }
+            .controls { flex-direction: column; align-items: stretch; }
+            .control-group { flex-direction: column; }
+            button { width: 100%; }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Rolling Tempat Duduk X-2</h1>
+    <header>
+        <h1>Denah Tempat Duduk Kelas</h1>
+        <div class="controls">
+            <div class="control-group">
+                <label for="genderStart">Mulai Pola Dari:</label>
+                <select id="genderStart">
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
+                </select>
+            </div>
+            <button onclick="generateSeatingChart()">🔄 Acak Denah</button>
+            <button class="secondary" onclick="downloadDenah()">⬇️ Download Denah</button>
+        </div>
+    </header>
 
-  <div class="controls">
-    <label for="start">Pola Awal:</label>
-    <select id="start">
-      <option value="L">Laki-Laki</option>
-      <option value="P">Perempuan</option>
-    </select>
-    <button onclick="buatDenah()">Acak Denah</button>
-  </div>
+    <main class="classroom-wrapper">
+        <!-- Area ini yang akan di-download -->
+        <div class="classroom" id="classroomArea">
+            
+            <div class="front-wall">
+                <div class="door">PINTU</div>
+                <div class="blackboard-container">
+                    PAPAN TULIS
+                </div>
+                <div class="teacher-desk"></div>
+            </div>
 
-  <div id="denah" class="grid"></div>
+            <div class="seating-grid" id="deskGrid">
+                <!-- Meja akan digenerate oleh JavaScript -->
+            </div>
 
-  <script>
-    const dataGender = {
-      1:"L",2:"L",3:"L",4:"L",5:"L",
-      6:"P",7:"P",8:"L",9:"P",10:"L",
-      11:"P",12:"P",13:"P",14:"P",15:"P",
-      16:"P",17:"P",18:"L",19:"L",20:"P",
-      21:"L",22:"P",23:"P",24:"P",25:"P",
-      26:"P",27:"L",28:"L",29:"L",30:"L",
-      31:"L",32:"L",33:"L",34:"P",35:"P",
-      36:"P",37:"L",38:"P",39:"L",40:"P",
-      41:"L",42:"L",43:"P",44:"P",45:"L",
-      46:"P",47:"L",48:"L"
-    };
+        </div>
+    </main>
 
-    // Fungsi acak Fisher-Yates
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
+    <div id="toast" class="toast">Denah berhasil diunduh!</div>
 
-    // Membuat pola papan catur berdasarkan gender awal
-    function generateCheckerboard(rows, cols, start) {
-      const pola = [];
-      for (let i = 0; i < rows; i++) {
-        const row = [];
-        for (let j = 0; j < cols; j++) {
-          if ((i + j) % 2 === 0) {
-            row.push(start);
-          } else {
-            row.push(start === "L" ? "P" : "L");
-          }
+    <script>
+        // --- 1. Data & State ---
+        
+        // Data siswa dummy generator
+        const maleNames = ["Abid", "Abyan", "Daus", "Adli", "Fahri", "Afghan", "Benito", "Haikal", "Hanif", "Juan", "Marvel", "Ricci", "Affan", "Fadli", "Hugo", "Keenan", "Raffi", "Pandu", "Raqly", "Richard", "Rio", "Velo", "Zhafran", "Tamlikho"];
+        const femaleNames = ["Anilla", "Anin", "Zahwa", "Bianca", "Brilliant", "Ceya", "Nunky", "Floren", "Flower", "Gendis", "Humaira", "Keren", "Keyra", "Khaila", "Khaira", "Khanza", "Nafisa", "Nandisa", "Novi", "Putri", "Bella", "Rizka", "Shofi", "Syahdhia"];
+
+        // Konfigurasi Layout
+        const TOTAL_DESKS = 24; // 4 kolom x 6 baris
+        const SEATS_PER_DESK = 2;
+        const TOTAL_SEATS = TOTAL_DESKS * SEATS_PER_DESK;
+
+        // --- 2. Fungsi Logic ---
+
+        // Fisher-Yates Shuffle Algorithm
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            // Copy array agar tidak merubah original reference
+            let newArr = [...array];
+
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [newArr[currentIndex], newArr[randomIndex]] = [newArr[randomIndex], newArr[currentIndex]];
+            }
+            return newArr;
         }
-        pola.push(row);
-      }
-      return pola;
-    }
 
-    // Membuat denah acak
-    function buatDenah() {
-      const start = document.getElementById("start").value;
-      const denahEl = document.getElementById("denah");
-      denahEl.innerHTML = "";
+        // Generate Data Siswa
+        function getStudents(count) {
+            let students = [];
+            // Alokasi setengah laki-laki, setengah perempuan (kurang lebih)
+            const half = Math.floor(count / 2);
+            
+            // Ambil dan acak nama L
+            const shuffledMale = shuffle(maleNames);
+            const shuffledFemale = shuffle(femaleNames);
 
-      // Pisahkan laki-laki dan perempuan
-      let laki = Object.entries(dataGender).filter(([_, g]) => g === "L").map(([a]) => parseInt(a));
-      let perempuan = Object.entries(dataGender).filter(([_, g]) => g === "P").map(([a]) => parseInt(a));
+            for (let i = 0; i < count; i++) {
+                // Logika sederhana: separuh awal L, separuh akhir P (atau acak total)
+                // Kita buat proporsi mendekati 50:50
+                if (i < half) {
+                    students.push({ nama: shuffledMale[i % shuffledMale.length], gender: "L" });
+                } else {
+                    students.push({ nama: shuffledFemale[(i - half) % shuffledFemale.length], gender: "P" });
+                }
+            }
+            return shuffle(students); // Acak total posisi di array mentah
+        }
 
-      // Buat pola
-      const pola = generateCheckerboard(6, 4, start);
+        // Generate Pola Gender (Checkerboard Logic per desk)
+        function generateGenderPattern(startGender) {
+            let pattern = [];
+            const rows = 6;
+            const cols = 4;
 
-      // Acak posisi
-      shuffle(laki);
-      shuffle(perempuan);
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    let isEven = (row + col) % 2 === 0;
+                    let deskGender = startGender === "L"
+                        ? (isEven ? "L" : "P")
+                        : (isEven ? "P" : "L");
+                    pattern.push(deskGender);
+                }
+            }
+            return pattern;
+        }
 
-      const denahMatrix = pola.map(row =>
-        row.map(meja => {
-          if (meja === "L") {
-            return [laki.pop(), laki.pop()];
-          } else {
-            return [perempuan.pop(), perempuan.pop()];
-          }
-        })
-      );
+        // --- 3. Fungsi Utama & Render ---
 
-      // Render hasil ke layar
-      denahMatrix.forEach(row => {
-        row.forEach(meja => {
-          const divMeja = document.createElement("div");
-          divMeja.className = "meja";
+        function generateSeatingChart() {
+            const startGender = document.getElementById('genderStart').value;
+            const count = 48;
 
-          const kursiDiv = document.createElement("div");
-          kursiDiv.className = "kursi";
+            // 1. Siapkan Siswa
+            let allStudents = getStudents(count);
+            
+            // Pisahkan berdasarkan gender
+            let maleStudents = shuffle(allStudents.filter(s => s.gender === "L"));
+            let femaleStudents = shuffle(allStudents.filter(s => s.gender === "P"));
 
-          meja.forEach(noAbsen => {
-            if (!noAbsen) return; // skip jika habis
-            const siswaDiv = document.createElement("div");
-            siswaDiv.className = `siswa ${dataGender[noAbsen]}`;
-            siswaDiv.textContent = noAbsen;
-            kursiDiv.appendChild(siswaDiv);
-          });
+            // Pastikan Tamlikho ditempatkan secara khusus di baris belakang
+            let specialStudent = null;
+            let tamlikhoIndex = maleStudents.findIndex(s => s.nama === "Tamlikho");
+            if (tamlikhoIndex !== -1) {
+                specialStudent = maleStudents.splice(tamlikhoIndex, 1)[0];
+                specialStudent.gender = "X";
+            }
 
-          divMeja.appendChild(kursiDiv);
-          denahEl.appendChild(divMeja);
-        });
-      });
-    }
+            // 2. Buat Pola Lantai (Template) untuk setiap meja
+            let deskPattern = generateGenderPattern(startGender);
 
-    // Jalankan pertama kali
-    buatDenah();
-  </script>
+            // 3. Mapping Siswa ke Pola
+            let finalSeats = [];
+            let mIndex = 0;
+            let fIndex = 0;
+
+            for (let i = 0; i < deskPattern.length; i++) {
+                const deskGender = deskPattern[i];
+                let student1 = null;
+                let student2 = null;
+
+                if (deskGender === "L") {
+                    if (mIndex < maleStudents.length) student1 = maleStudents[mIndex++];
+                    if (mIndex < maleStudents.length) student2 = maleStudents[mIndex++];
+                } else {
+                    if (fIndex < femaleStudents.length) student1 = femaleStudents[fIndex++];
+                    if (fIndex < femaleStudents.length) student2 = femaleStudents[fIndex++];
+                }
+
+                finalSeats.push(student1, student2);
+            }
+
+            if (specialStudent) {
+                const backRowStart = (TOTAL_DESKS - 4) * 2;
+                const backRowIndexes = [backRowStart, backRowStart + 1, backRowStart + 2, backRowStart + 3, backRowStart + 4, backRowStart + 5, backRowStart + 6, backRowStart + 7];
+                const nullIndex = finalSeats.findIndex(s => s === null);
+                const preferredBackIndex = backRowIndexes[0];
+
+                if (nullIndex !== -1) {
+                    const backNullIndex = backRowIndexes.find(index => finalSeats[index] === null);
+                    if (backNullIndex !== undefined) {
+                        finalSeats[backNullIndex] = specialStudent;
+                    } else {
+                        const movedStudent = finalSeats[preferredBackIndex];
+                        finalSeats[preferredBackIndex] = specialStudent;
+                        finalSeats[nullIndex] = movedStudent;
+                    }
+                } else {
+                    finalSeats[preferredBackIndex] = specialStudent;
+                }
+            }
+
+            // 4. Render ke UI
+            renderDenah(finalSeats);
+        }
+
+        function renderDenah(seatsArray) {
+            const gridContainer = document.getElementById('deskGrid');
+            gridContainer.innerHTML = ''; // Clear existing
+
+            // Loop berdasarkan jumlah meja (24)
+            // seatsArray sudah linear, kita ambil 2 per meja
+            for (let d = 0; d < TOTAL_DESKS; d++) {
+                const seatIndex1 = d * 2;
+                const seatIndex2 = d * 2 + 1;
+                const student1 = seatsArray[seatIndex1];
+                const student2 = seatsArray[seatIndex2];
+
+                // Buat elemen Meja
+                const deskEl = document.createElement('div');
+                deskEl.className = 'desk';
+
+                // Tambah nomor meja
+                const deskNum = document.createElement('div');
+                deskNum.className = 'desk-number';
+                deskNum.innerText = d + 1;
+                deskEl.appendChild(deskNum);
+
+                // Siswa 1 (Kiri)
+                deskEl.appendChild(createStudentCard(student1));
+
+                // Separator
+                const sep = document.createElement('div');
+                sep.className = 'desk-separator';
+                deskEl.appendChild(sep);
+
+                // Siswa 2 (Kanan)
+                deskEl.appendChild(createStudentCard(student2));
+
+                gridContainer.appendChild(deskEl);
+            }
+        }
+
+        function createStudentCard(student) {
+            const div = document.createElement('div');
+            
+            if (!student) {
+                div.className = 'student empty';
+                div.innerText = "Kosong";
+            } else if (student.gender === 'X') {
+                div.className = 'student special';
+                div.innerText = student.nama;
+                div.title = student.nama;
+            } else {
+                div.className = `student ${student.gender === 'L' ? 'male' : 'female'}`;
+                div.innerText = student.nama;
+                div.title = student.nama; // Tooltip untuk nama panjang
+            }
+            return div;
+        }
+
+        // --- 4. Fitur Download ---
+
+        function downloadDenah() {
+            const element = document.getElementById("classroomArea");
+            
+            // Gunakan html2canvas
+            html2canvas(element, {
+                scale: 2, // Meningkatkan resolusi agar teks jernih
+                backgroundColor: "#f3f4f6", // Sesuaikan dengan body background atau transparan
+                useCORS: true
+            }).then(canvas => {
+                // Buat link download virtual
+                const link = document.createElement('a');
+                link.download = 'denah-kelas.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+
+                showToast();
+            }).catch(err => {
+                console.error("Gagal generate gambar:", err);
+                alert("Terjadi kesalahan saat mengunduh gambar.");
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- Inisialisasi Awal ---
+        window.onload = function() {
+            generateSeatingChart();
+        };
+
+    </script>
 </body>
 </html>
