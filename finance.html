@@ -80,7 +80,6 @@
             overflow-y: auto;
             position: relative;
             scroll-behavior: smooth;
-            padding-bottom: 80px; /* Space for nav */
         }
 
         .view-section {
@@ -245,8 +244,6 @@
         
         /* --- BOTTOM NAV --- */
         nav {
-            position: absolute;
-            bottom: 0;
             width: 100%;
             background: var(--white);
             border-top: 1px solid var(--chat-bubble-bot);
@@ -254,6 +251,7 @@
             justify-content: space-around;
             padding: 10px 0 20px 0; /* Extra padding for iOS home bar */
             z-index: 20;
+            flex-shrink: 0; /* Prevent nav from shrinking */
         }
         .nav-item {
             display: flex;
