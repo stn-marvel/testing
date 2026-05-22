@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Financial Life Simulator — Code Breakdown</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- PrismJS Theme (Base) & Core -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        vs: {
+                            bg: '#1e1e1e',
+                            sidebar: '#252526',
+                            active: '#37373d',
+                            border: '#3c3c3c',
+                            text: '#d4d4d4',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base Styles */
+        body {
+            background-color: #0d0d0d;
+            color: #e0e0e0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1e1e; }
+        ::-webkit-scrollbar-thumb { background: #424242; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
+
+        /* VS Code Window Styles */
+        .vscode-window {
+            background-color: #1e1e1e;
+            border: 1px solid #3c3c3c;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .vscode-header {
+            background-color: #252526;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .filename { margin-left: 10px; font-size: 0.75rem; color: #999; }
+
+        .vscode-content {
+            padding: 0; /* Prism handles padding */
+            overflow-x: auto;
+            color: #d4d4d4;
+        }
+
+        /* Override Prism Colors to Match VS Code Dark */
+        .token.comment, .token.prolog, .token.doctype, .token.cdata { color: #6a9955; font-style: italic; }
+        .token.punctuation { color: #d4d4d4; }
+        .token.namespace { opacity: .7; }
+        .token.property, .token.boolean, .token.number, .token.constant, .token.symbol { color: #b5cea8; } 
+        .token.tag { color: #569cd6; }
+        .token.attr-name { color: #9cdcfe; }
+        .token.string, .token.attr-value { color: #ce9178; }
+        .token.operator, .token.entity, .token.url { color: #d4d4d4; }
+        .token.atrule, .token.keyword { color: #569cd6; } 
+        .token.function { color: #dcdcaa; }
+        .token.regex, .token.important, .token.variable { color: #d16969; }
+        code[class*="language-"], pre[class*="language-"] {
+            background: transparent !important;
+            margin: 0 !important;
+            padding: 1rem !important;
+            text-shadow: none !important;
+            font-family: 'Fira Code', monospace !important;
+        }
+
+        /* Accordion Styles */
+        details > summary { list-style: none; cursor: pointer; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary ~ * { animation: sweep .3s ease-in-out; }
+        @keyframes sweep { 0% {opacity: 0; transform: translateY(-10px)} 100% {opacity: 1; transform: translateY(0)} }
+
+        /* Diagram Flow */
+        .flow-node {
+            background: #252526; border: 1px solid #3c3c3c; padding: 10px 15px;
+            border-radius: 6px; font-size: 0.8rem; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .flow-arrow { height: 20px; width: 2px; background: #555; margin: 0 auto; position: relative; }
+        .flow-arrow::after {
+            content: ''; position: absolute; bottom: -4px; left: -4px;
+            border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid #555;
+        }
+
+        /* Mobile Sticky Nav Padding */
+        main { padding-bottom: 100px; }
+        .section-fade { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .section-fade.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="bg-[#0d0d0d] text-gray-300 font-sans selection:bg-brand-500 selection:text-white">
+
+    <!-- HERO SECTION -->
+    <header class="relative pt-16 pb-24 px-6 overflow-hidden">
+        <div class="absolute inset-0 bg-brand-900/10 z-0"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-brand-600/10 rounded-full blur-[100px] z-0"></div>
+        
+        <div class="relative z-10 max-w-3xl mx-auto text-center animate-fade-in-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-900/30 border border-brand-500/30 text-brand-400 text-xs font-semibold mb-6">
+                <i class="ph ph-code"></i> Code Documentation
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+                Financial Life Simulator <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-emerald-400">Code Breakdown</span>
+            </h1>
+            <p class="text-lg text-gray-400 max-w-xl mx-auto">
+                Panduan detail dan interaktif untuk memahami setiap baris kode program agar Anda bisa mempresentasikannya dengan percaya diri.
+            </p>
+            
+            <!-- Visual Editor Preview -->
+            <div class="mt-10 mx-auto max-w-lg transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                <div class="vscode-window text-left opacity-90">
+                    <div class="vscode-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                        <span class="filename">simulator.py</span>
+                    </div>
+                    <div class="vscode-content">
+                        <!-- Plain text for Prism to parse -->
+                        <pre><code class="language-python">from IPython.display import HTML, display
+
+# Menjalankan simulasi
+display(HTML(html_content))</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 md:px-8">
+        
+        <!-- SECTION 2: PENJELASAN UMUM -->
+        <section class="mb-16 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">1</span>
+                Apa itu Program Ini?
+            </h2>
+            <div class="bg-[#1a1a1a] rounded-xl p-6 border border-gray-800">
+                <p class="text-gray-300 leading-relaxed mb-4">
+                    Program ini adalah <strong class="text-white">Simulasi Kehidupan Finansial</strong> berbasis web. Pengguna berperan sebagai karakter yang harus mengelola uang selama 10 hari. Mereka harus memilih antara menghabiskan uang (hiburan, belanja) atau mencari uang (kerja).
+                </p>
+                <ul class="space-y-3 mt-4">
+                    <li class="flex items-start gap-3">
+                        <i class="ph-fill ph-check-circle text-brand-500 mt-1"></i>
+                        <span><strong>Fungsi:</strong> Melatih pengambilan keputusan keuangan sederhana.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="ph-fill ph-check-circle text-brand-500 mt-1"></i>
+                        <span><strong>Teknologi:</strong> Menggunakan <strong>React</strong> di dalam Python notebook agar interaktif.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="ph-fill ph-check-circle text-brand-500 mt-1"></i>
+                        <span><strong>Kenapa React?</strong> Karena React secara otomatis memperbarui tampilan (UI) saat data (uang/hari) berubah, membuat simulasi terasa hidup tanpa perlu reload halaman.</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECTION 3: STRUKTUR BESAR -->
+        <section class="mb-16 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">2</span>
+                Alur Kerja Program
+            </h2>
+            <div class="flex flex-col items-center gap-2 py-8 px-4 bg-[#1a1a1a] rounded-xl border border-gray-800 overflow-x-auto">
+                <div class="flex items-center gap-2 min-w-max">
+                    <div class="flow-node text-brand-400">Python Script</div>
+                    <i class="ph ph-arrow-right text-gray-500"></i>
+                    <div class="flow-node text-blue-400">HTML Template</div>
+                    <i class="ph ph-arrow-right text-gray-500"></i>
+                    <div class="flow-node text-cyan-400">React App</div>
+                </div>
+                <div class="flow-arrow relative"></div>
+                <div class="flex items-center gap-2 min-w-max">
+                    <div class="flow-node text-purple-400">User Interaction</div>
+                    <i class="ph ph-arrow-right text-gray-500"></i>
+                    <div class="flow-node text-yellow-400">State Update</div>
+                    <i class="ph ph-arrow-right text-gray-500"></i>
+                    <div class="flow-node text-green-400">Render UI</div>
+                </div>
+            </div>
+            <p class="text-center text-sm text-gray-500 mt-4">Diagram alur data dari kode Python hingga tampilan di layar pengguna.</p>
+        </section>
+
+        <!-- SECTION 4: BEDAH KODE (CORE) -->
+        <section class="mb-24 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">3</span>
+                Bedah Kode (Code Breakdown)
+            </h2>
+            <p class="mb-6 text-gray-400">Klik pada setiap bagian untuk melihat kode dan penjelasannya.</p>
+
+            <div class="space-y-4" id="accordion-container">
+
+                <!-- A. IMPORT DAN DISPLAY -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-python-logo text-yellow-400 text-xl"></i>
+                            <span>A. Import & Display (Python Wrapper)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Bagian ini adalah kode Python yang membungkus seluruh kode HTML/JS. Kode inilah yang pertama kali dijalankan.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Import Section</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-python">from IPython.display import HTML, display</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><code>IPython.display</code>: Modul khusus agar Python bisa menampilkan kode HTML di notebook.</li>
+                            <li><code>HTML()</code>: Fungsi yang mengubah string menjadi elemen HTML yang bisa dibaca browser.</li>
+                            <li><code>display()</code>: Fungsi untuk "merender" atau menampilkan hasilnya ke layar.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- B. HTML TEMPLATE -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-file-html text-orange-500 text-xl"></i>
+                            <span>B. HTML Template (Variabel String)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Seluruh kode website disimpan dalam satu variabel Python bernama <code>html_content</code>.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Python String</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-python">html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    ... 
+"""</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><strong>Triple Quote (<code>"""</code>):</strong> Digunakan agar string bisa terdiri dari banyak baris (multiline) tanpa error.</li>
+                            <li>Teknik ini memungkinkan kita menyisipkan kode HTML, CSS, dan JS lengkap di dalam file Python.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- C. HEAD SECTION -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-browsers text-blue-400 text-xl"></i>
+                            <span>C. Head Section</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Bagian kepala HTML yang berisi metadata dan pengaturan dasar.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">&lt;head&gt;</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-html">&lt;meta charset="UTF-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><code>charset="UTF-8"</code>: Memastikan browser bisa membaca karakter khusus (seperti emoji atau mata uang).</li>
+                            <li><code>viewport</code>: Sangat penting untuk <strong>Mobile-First</strong>. Ini membuat website menyesuaikan ukuran layar HP secara otomatis.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- D. IMPORT LIBRARY -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-download-simple text-green-400 text-xl"></i>
+                            <span>D. Import Library (Alat Tempur)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Kita menggunakan CDN (Content Delivery Network) untuk mengambil alat-alat siap pakai.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Libraries</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-html">&lt;script src="tailwindcss"&gt;&lt;/script&gt;
+&lt;script src="react"&gt;&lt;/script&gt;
+&lt;script src="babel"&gt;&lt;/script&gt;</code></pre>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="bg-[#252526] p-3 rounded border border-gray-700">
+                                <strong class="text-brand-400">Tailwind CSS</strong>
+                                <p class="text-xs text-gray-400 mt-1">Framework CSS untuk styling cepat. Analoginya: "Mainan Lego" untuk desain.</p>
+                            </div>
+                            <div class="bg-[#252526] p-3 rounded border border-gray-700">
+                                <strong class="text-blue-400">React & ReactDOM</strong>
+                                <p class="text-xs text-gray-400 mt-1">Library JavaScript untuk membuat UI interaktif.</p>
+                            </div>
+                            <div class="bg-[#252526] p-3 rounded border border-gray-700">
+                                <strong class="text-yellow-400">Babel</strong>
+                                <p class="text-xs text-gray-400 mt-1">Penerjemah. Mengubah kode JSX (HTML di dalam JS) menjadi JS asli yang dimengerti browser.</p>
+                            </div>
+                            <div class="bg-[#252526] p-3 rounded border border-gray-700">
+                                <strong class="text-pink-400">Phosphor Icons</strong>
+                                <p class="text-xs text-gray-400 mt-1">Kumpulan ikon cantik dan modern untuk tampilan aplikasi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- E. TAILWIND CONFIG -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-paint-brush-broad text-cyan-400 text-xl"></i>
+                            <span>E. Tailwind Config</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Kustomisasi tema Tailwind.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">tailwind.config</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: { 500: '#22c55e' } // Hijau Emerald
+      }
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Kita mendefinisikan warna <code>brand</code> khusus (hijau) agar konsisten dengan tema uang/keuangan di seluruh aplikasi.</p>
+                    </div>
+                </details>
+
+                <!-- F. CSS CUSTOM -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-css-logo text-blue-500 text-xl"></i>
+                            <span>F. Custom CSS</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Tambahan styling di luar Tailwind untuk efek khusus.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">&lt;style&gt;</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-css">.card-hover { transition: all 0.2s; }
+.card-hover:hover { transform: translateY(-2px); }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Menambahkan efek halus (smooth transition) saat kartu disentuh/hover dan animasi muncul (fade-in) agar aplikasi terasa premium.</p>
+                    </div>
+                </details>
+
+                <!-- G. ROOT ELEMENT -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-tree-structure text-gray-400 text-xl"></i>
+                            <span>G. Root Element</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Titik temu antara HTML biasa dan React.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">HTML Body</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-html">&lt;div id="root" class="..."&gt;&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2"><strong>Kenapa perlu Root?</strong> React butuh satu wadah kosong untuk diisi. React akan mengambil alih segala sesuatu yang ada di dalam <code>div id="root"</code> ini dan menggantinya dengan aplikasi simulasi.</p>
+                    </div>
+                </details>
+
+                <!-- H. REACT & JSX -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-atom text-cyan-400 text-xl"></i>
+                            <span>H. React & JSX</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Di mana logika JavaScript tertulis.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Script Tag</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-html">&lt;script type="text/babel"&gt;
+  const { useState } = React;
+  // Kode React di sini...
+&lt;/script&gt;</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><code>type="text/babel"</code>: Memberitahu browser "Jangan jalankan ini sebagai JS biasa, minta Babel menerjemahkannya dulu."</li>
+                            <li><strong>JSX:</strong> Singkatan dari JavaScript XML. Ini adalah syntax yang memungkinkan kita menulis kode HTML (seperti <code>&lt;div&gt;</code>) di dalam file JavaScript.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- I. GAME DATA -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-database text-orange-400 text-xl"></i>
+                            <span>I. Game Data</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Variabel yang menyimpan data statis game.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Data Constants</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const CHOICES_POOL = [
+  { id: 1, text: "Hangout", cost: -50000 },
+  { id: 2, text: "Save money", cost: 0 }
+];</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><strong>Array:</strong> Daftar pilihan yang tersedia.</li>
+                            <li><strong>Object:</strong> Setiap pilihan memiliki properti (text, cost, icon).</li>
+                            <li>Data ini tidak berubah selama game berjalan, hanya dibaca.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- J. HELPER FUNCTIONS -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-wrench text-gray-300 text-xl"></i>
+                            <span>J. Helper Functions</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Fungsi kecil pembantu.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Helpers</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: 'USD'
+  }).format(amount);
+};</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Fungsi ini mengubah angka mentah (misal: <code>50000</code>) menjadi format uang yang cantik (<code>$50,000</code>) secara otomatis.</p>
+                    </div>
+                </details>
+
+                <!-- K. COMPONENT SETUPSCREEN -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-monitor-play text-purple-400 text-xl"></i>
+                            <span>K. Component: SetupScreen</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Layar awal untuk memasukkan nama dan saldo awal.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">SetupScreen</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const SetupScreen = ({ onStart }) => {
+  const [name, setName] = useState("");
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;...&lt;/form&gt;
+  );
+};</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><strong>Component:</strong> Bagian UI yang terpisah dan bisa digunakan ulang.</li>
+                            <li><strong>Props:</strong> <code>{ onStart }</code> adalah fungsi yang dikirim dari induk (Parent) untuk memulai game.</li>
+                            <li><strong>useState:</strong> Hook untuk menyimpan data sementara (input nama) di layar ini.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- L. COMPONENT HISTORYITEM -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-list-dashes text-teal-400 text-xl"></i>
+                            <span>L. Component: HistoryItem</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Menampilkan satu baris riwayat keputusan.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">HistoryItem</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const HistoryItem = ({ record, index }) => (
+  &lt;div className={index % 2 === 0 ? 'bg-gray-50' : 'bg-transparent'}&gt;
+    ...
+  &lt;/div&gt;
+);</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Contoh <strong>Conditional Rendering</strong> dan <strong>Dynamic Class</strong>. Warna background baris berganti selang-seling (zebra striping) berdasarkan index genap/ganjil.</p>
+                    </div>
+                </details>
+
+                <!-- M. COMPONENT HISTORYPAGE -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-scroll text-yellow-600 text-xl"></i>
+                            <span>M. Component: HistoryPage</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Halaman penuh berisi daftar riwayat.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">HistoryPage</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">{
+  history.map((item, idx) => (
+    &lt;HistoryItem key={idx} record={item} /&gt;
+  ))
+}</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Menggunakan fungsi <code>.map()</code> untuk mengubah array data history menjadi komponen <code>HistoryItem</code> satu per satu secara otomatis.</p>
+                    </div>
+                </details>
+
+                <!-- N. COMPONENT RESULTSCREEN -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-flag-checkered text-red-500 text-xl"></i>
+                            <span>N. Component: ResultScreen</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Layar akhir yang menampilkan status keuangan.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">ResultScreen</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">if (finalBalance <= 0) {
+  status = "Bankrupt";
+  colorClass = "text-red-600";
+} else if (finalBalance < initialBalance * 0.5) {
+  status = "Surviving";
+}</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Menggunakan logika <code>if/else</code> untuk menentukan pesan (Bankrut vs Sehat) dan warna ikon berdasarkan sisa uang pemain.</p>
+                    </div>
+                </details>
+
+                <!-- O. MAIN APP COMPONENT (MOST IMPORTANT) -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all" open>
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-cpu text-brand-500 text-xl"></i>
+                            <span class="text-brand-400">O. Main App Component (Otak Program)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Ini adalah induk semua komponen. Tempat "State Management" utama berada.</p>
+                        
+                        <div class="bg-[#252526] p-4 rounded-lg border border-gray-700 mb-4">
+                            <h4 class="text-white font-bold mb-2">State Variables (Memori Program)</h4>
+                            <ul class="text-sm text-gray-300 space-y-2">
+                                <li><code>gameState</code>: Menyimpan tahap game ('SETUP', 'PLAYING', 'RESULT').</li>
+                                <li><code>user</code>: Menyimpan nama dan saldo awal.</li>
+                                <li><code>currentBalance</code>: Saldo saat ini (berubah tiap aksi).</li>
+                                <li><code>day</code>: Penghitung hari (1-10).</li>
+                                <li><code>history</code>: Array yang menyimpan semua log keputusan.</li>
+                            </ul>
+                        </div>
+
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">App Component State</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const App = () => {
+  const [gameState, setGameState] = useState('SETUP');
+  const [currentBalance, setCurrentBalance] = useState(0);
+  
+  // Logika utama ada di sini
+  return ( ... );
+};</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Konsep <strong>State</strong> adalah inti React. Ketika <code>currentBalance</code> berubah, React otomatis merender ulang (menggambar ulang) angka di layar tanpa kita menyuruh manual.</p>
+                    </div>
+                </details>
+
+                <!-- P. USEEFFECT -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-lightning text-yellow-400 text-xl"></i>
+                            <span>P. useEffect (Side Effects)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Fungsi yang berjalan otomatis saat terjadi perubahan.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">useEffect Hook</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">useEffect(() => {
+  const dataToSave = { user, currentBalance, day };
+  localStorage.setItem('save', JSON.stringify(dataToSave));
+}, [user, currentBalance, day]); // Dependency Array</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><strong>Fungsi:</strong> Menyimpan data ke <code>localStorage</code> browser.</li>
+                            <li><strong>Dependency Array:</strong> Kode di dalam hanya jalan jika variabel di kurung siku berubah. Ini mencegah loop tak terbatas.</li>
+                            <li><strong>Hasil:</strong> Jika browser di-refresh, game tidak hilang (Fitur Save).</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- Q. HANDLER FUNCTIONS -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-hand-tap text-pink-400 text-xl"></i>
+                            <span>Q. Handler Functions</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Fungsi yang menangani aksi tombol.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">handleChoice</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const handleChoice = (choice) => {
+  const newBalance = currentBalance + choice.cost;
+  // Cek Random Event
+  if (Math.random() < 0.3) {
+     // Munculkan event
+  }
+  setCurrentBalance(newBalance);
+};</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Ini adalah logika bisnis inti. Saat user klik pilihan, kita hitung saldo baru, cek apakah ada event acak, lalu update State.</p>
+                    </div>
+                </details>
+
+                <!-- R. RANDOM EVENT SYSTEM -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-shuffle text-indigo-400 text-xl"></i>
+                            <span>R. Random Event System</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Sistem kejutan dalam game.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Random Logic</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const triggerEvent = Math.random() < 0.3;
+const event = RANDOM_EVENTS[Math.floor(Math.random() * RANDOM_EVENTS.length)];</code></pre>
+                            </div>
+                        </div>
+                        <ul class="list-disc list-inside text-sm text-gray-300 space-y-2 mt-4">
+                            <li><code>Math.random()</code>: Menghasilkan angka acak antara 0 dan 1.</li>
+                            <li><code>< 0.3</code>: Artinya ada peluang 30% kejadian terjadi.</li>
+                            <li>Baris kedua memilih acak satu event dari daftar <code>RANDOM_EVENTS</code>.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <!-- S. USEMEMO -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-brain text-pink-300 text-xl"></i>
+                            <span>S. useMemo (Optimization)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Menghitung pesan saran (insight) secara efisien.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">useMemo</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const insightMessage = useMemo(() => {
+  // Logika perhitungan rumit
+  if (spending < -100000) return "Boros!";
+}, [history, currentBalance]);</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2"><code>useMemo</code> memastikan perhitungan pesan saran hanya dijalankan ketika data <code>history</code> atau <code>balance</code> berubah, tidak setiap kali komponen di-render ulang. Ini menghemat performa HP.</p>
+                    </div>
+                </details>
+
+                <!-- T. RENDER SECTION -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-eye text-blue-300 text-xl"></i>
+                            <span>T. Render Section (Tampilan UI)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Bagian return dari komponen App.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">JSX Return</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">return (
+  &lt;main&gt;
+    {gameState === 'SETUP' && &lt;SetupScreen .../&gt;}
+    {gameState === 'PLAYING' && (
+       &lt;&gt;
+         &lt;Header .../&gt;
+         &lt;Choices .../&gt;
+       &lt;/&gt;
+    )}
+  &lt;/main&gt;
+);</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Menggunakan <strong>Conditional Rendering</strong>. Tampilan layar berubah total tergantung nilai <code>gameState</code>. Tanda <code>&&;</code> artinya "Jika kondisi benar, tampilkan ini".</p>
+                    </div>
+                </details>
+
+                <!-- U. MODAL RANDOM EVENT -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-warning-octagon text-red-400 text-xl"></i>
+                            <span>U. Modal Random Event</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Popup yang menutupi layar saat event terjadi.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Modal Overlay</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">{randomEvent && (
+  &lt;div className="absolute inset-0 z-50 bg-black/60"&gt;
+    &lt;h3&gt;{randomEvent.text}&lt;/h3&gt;
+  &lt;/div&gt;
+)}</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">Modal muncul jika <code>randomEvent</code> tidak kosong (<code>truthy</code>). <code>absolute inset-0</code> memastikan kotak ini menutupi seluruh layar game.</p>
+                    </div>
+                </details>
+
+                <!-- V. REACTDOM -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-plugs-connected text-green-400 text-xl"></i>
+                            <span>V. ReactDOM (Mounting)</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Perintah terakhir untuk menyalakan aplikasi.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">ReactDOM</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-javascript">const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(&lt;App /&gt;);</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">
+                            1. Cari elemen <code>div id="root"</code>.<br>
+                            2. Buat "Root" React di sana.<br>
+                            3. Masukkan (Render) komponen <code>App</code> ke dalam root tersebut.
+                        </p>
+                    </div>
+                </details>
+
+                <!-- W. PYTHON IFRAME -->
+                <details class="group bg-[#1a1a1a] border border-gray-800 rounded-xl overflow-hidden open:border-brand-500/50 transition-all">
+                    <summary class="flex justify-between items-center p-4 font-medium text-white hover:bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-frames text-gray-400 text-xl"></i>
+                            <span>W. Python Iframe Trick</span>
+                        </div>
+                        <i class="ph ph-caret-down group-open:rotate-180 transition-transform"></i>
+                    </summary>
+                    <div class="p-4 pt-0 border-t border-gray-800 mt-2">
+                        <p class="text-sm text-gray-400 mb-4">Bagian akhir kode Python untuk menampilkan hasil.</p>
+                        <div class="vscode-window">
+                            <div class="vscode-header"><span class="filename">Python Display</span></div>
+                            <div class="vscode-content">
+                                <pre><code class="language-python">display(HTML(f"""
+    &lt;iframe srcdoc='{html_content.replace("'", "&apos;")}'&gt;&lt;/iframe&gt;
+print("""))</code></pre>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-2">
+                            <strong>Kenapa Iframe?</strong> Karena kode HTML React kita sangat panjang dan kompleks. Jika dimasukkan langsung ke notebook, bisa bentrok dengan style notebook lainnya. <br>
+                            <strong>srcdoc</strong> memasukkan string HTML kita langsung ke dalam "browser mini" (iframe) yang aman dan terpisah.
+                        </p>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+        <!-- SECTION 5: ALUR PROGRAM -->
+        <section class="mb-16 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">4</span>
+                Alur Lengkap Program
+            </h2>
+            <div class="relative border-l-2 border-gray-700 ml-3 space-y-8">
+                <!-- Step 1 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-500 border-4 border-[#0d0d0d]"></div>
+                    <h3 class="text-lg font-bold text-white">Python Menjalankan HTML</h3>
+                    <p class="text-sm text-gray-400">User menekan "Run" di notebook. Python membungkus string HTML dalam iframe dan menampilkannya.</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 border-4 border-[#0d0d0d]"></div>
+                    <h3 class="text-lg font-bold text-white">Browser Membaca & React Jalan</h3>
+                    <p class="text-sm text-gray-400">Browser memuat library (React, Tailwind) dan Babel menerjemahkan kode JSX menjadi JavaScript.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-purple-500 border-4 border-[#0d0d0d]"></div>
+                    <h3 class="text-lg font-bold text-white">User Input & State Berubah</h3>
+                    <p class="text-sm text-gray-400">User mengisi nama di <code>SetupScreen</code>. Fungsi <code>handleStartGame</code> dipanggil, mengubah <code>gameState</code> menjadi 'PLAYING'.</p>
+                </div>
+                <!-- Step 4 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 border-4 border-[#0d0d0d]"></div>
+                    <h3 class="text-lg font-bold text-white">UI Otomatis Update</h3>
+                    <p class="text-sm text-gray-400">Karena state berubah, React merender ulang layar. Sekarang layar Game muncul.</p>
+                </div>
+                <!-- Step 5 -->
+                <div class="relative pl-8">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-green-500 border-4 border-[#0d0d0d]"></div>
+                    <h3 class="text-lg font-bold text-white">Looping Hingga Selesai</h3>
+                    <p class="text-sm text-gray-400">Setiap klik pilihan mengurangi saldo. Jika hari > 10 atau saldo habis, <code>gameState</code> berubah jadi 'RESULT' dan layar akhir muncul.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: KONSEP DASAR -->
+        <section class="mb-16 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">5</span>
+                Konsep Dasar Wajib Pahami
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-[#1a1a1a] p-4 rounded-xl border border-gray-800">
+                    <h4 class="font-bold text-brand-400 mb-2">Variable</h4>
+                    <p class="text-xs text-gray-400">Seperti kotak penyimpanan bertanda. <code>let saldo = 100;</code></p>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 rounded-xl border border-gray-800">
+                    <h4 class="font-bold text-brand-400 mb-2">Function</h4>
+                    <p class="text-xs text-gray-400">Resep atau mesin kecil. Anda masukkan bahan (input), mesin mengolah, lalu mengeluarkan hasil (output).</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 rounded-xl border border-gray-800">
+                    <h4 class="font-bold text-brand-400 mb-2">Component</h4>
+                    <p class="text-xs text-gray-400">Lego digital. Potongan kode UI yang bisa dipasang-pasang. Contoh: <code>Header</code>, <code>Button</code>.</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 rounded-xl border border-gray-800">
+                    <h4 class="font-bold text-brand-400 mb-2">State</h4>
+                    <p class="text-xs text-gray-400">Memori jangka pendek aplikasi. Jika State berubah, layar berubah. Analoginya: Papan skor yang update real-time.</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 rounded-xl border border-gray-800">
+                    <h4 class="font-bold text-brand-400 mb-2">Props</h4>
+                    <p class="text-xs text-gray-400">Pesan yang dikirim dari komponen induk ke anak. Analoginya: Surat yang diberikan orang tua ke anak.</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 rounded-xl border border-gray-800">
+                    <h4 class="font-bold text-brand-400 mb-2">Event</h4>
+                    <p class="text-xs text-gray-400">Aksi user. Contoh: <code>onClick</code> (klik), <code>onChange</code> (ketik).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: KELEBIHAN PROGRAM -->
+        <section class="mb-16 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">6</span>
+                Kenapa Program Ini Bagus?
+            </h2>
+            <div class="bg-gradient-to-br from-[#1a1a1a] to-[#252526] p-6 rounded-2xl border border-gray-700">
+                <ul class="space-y-4">
+                    <li class="flex gap-4">
+                        <div class="mt-1 w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                            <i class="ph ph-puzzle-piece text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Modular Component</h4>
+                            <p class="text-sm text-gray-400">Kode tidak berantakan di satu tempat. Setiap bagian (History, Setup, Result) dipisah, jadi mudah diperbaiki.</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <div class="mt-1 w-8 h-8 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center shrink-0">
+                            <i class="ph ph-floppy-disk text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Persistent Save</h4>
+                            <p class="text-sm text-gray-400">Menggunakan <code>localStorage</code>, user bisa menutup browser dan kembali lagi tanpa kehilangan progres.</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <div class="mt-1 w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                            <i class="ph ph-lightning text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white">Responsif & Interaktif</h4>
+                            <p class="text-sm text-gray-400">Dibuat dengan mobile-first approach, terasa seperti aplikasi native di HP.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SECTION 8: PRESENTATION TIPS -->
+        <section class="mb-16 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">7</span>
+                Poin Presentasi
+            </h2>
+            <div class="space-y-3">
+                <div class="bg-[#1a1a1a] p-4 rounded-lg border-l-4 border-brand-500">
+                    <p class="text-sm text-gray-300"><strong>"Saya menggunakan React"</strong> karena framework ini memungkinkan pembuatan antarmuka yang dinamis. Saat saldo berubah, angka di layar terupdate otomatis tanpa reload halaman.</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 rounded-lg border-l-4 border-blue-500">
+                    <p class="text-sm text-gray-300"><strong>"Untuk penyimpanan data"</strong>, saya memanfaatkan LocalStorage browser. Ini membuat simulasi terasa nyata karena progres tidak hilang saat page di-refresh.</p>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 rounded-lg border-l-4 border-yellow-500">
+                    <p class="text-sm text-gray-300"><strong>"Sistem acak (Random Event)"</strong> dibuat menggunakan logika probabilitas sederhana dengan Math.random() untuk mensimulasikan ketidakpastian hidup.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 9: KESIMPULAN -->
+        <section class="mb-24 section-fade">
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-sm">8</span>
+                Kesimpulan
+            </h2>
+            <div class="text-center max-w-2xl mx-auto">
+                <p class="text-gray-300 mb-6">
+                    Program Financial Life Simulator ini menggabungkan logika pemrograman dasar, manajemen state React yang kompleks, dan desain UI yang modern. Kode ini bukan sekadar kalkulator, tapi simulasi state-based yang lengkap.
+                </p>
+                <div class="inline-block px-6 py-3 rounded-full bg-brand-900/30 text-brand-400 text-sm font-semibold border border-brand-500/30">
+                    React + LocalStorage + Tailwind = Modern Web App
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- STICKY BOTTOM NAV (MOBILE FIRST) -->
+    <nav class="fixed bottom-0 left-0 w-full bg-[#161616]/90 backdrop-blur-md border-t border-gray-800 pb-safe z-50">
+        <div class="flex justify-around items-center h-16 max-w-4xl mx-auto">
+            <button onclick="document.getElementById('accordion-container').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition active:text-brand-400">
+                <i class="ph ph-code text-xl"></i>
+                <span class="text-[10px] font-medium">Kode</span>
+            </button>
+            <button onclick="document.querySelector('section:nth-of-type(3)').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition active:text-brand-400">
+                <i class="ph ph-arrows-down-up text-xl"></i>
+                <span class="text-[10px] font-medium">Alur</span>
+            </button>
+            <button onclick="document.querySelector('section:nth-of-type(4)').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition active:text-brand-400">
+                <i class="ph ph-lightbulb text-xl"></i>
+                <span class="text-[10px] font-medium">Konsep</span>
+            </button>
+            <button onclick="document.querySelector('section:nth-of-type(5)').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition active:text-brand-400">
+                <i class="ph ph-presentation text-xl"></i>
+                <span class="text-[10px] font-medium">Tips</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- SCRIPT: INTERACTION (NO HIGHLIGHTING LOGIC NEEDED ANYMORE) -->
+    <script>
+        // Intersection Observer for Fade-in Animation
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Only animate once
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section-fade').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Trigger Prism Highlighting manually after content is loaded (safe guard)
+        document.addEventListener('DOMContentLoaded', () => {
+            Prism.highlightAll();
+        });
+    </script>
+</body>
+</html>
