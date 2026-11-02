@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#152755">
+  <title>Futuristic Digital — Developer Design Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* FONT FAMILY */
+      --font-heading: 'Orbitron', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+
+      /* TYPE SCALE */
+      --text-h1: clamp(2.5rem, 5vw, 4rem);
+      --text-h2: clamp(2rem, 3.5vw, 2.75rem);
+      --text-h3: clamp(1.5rem, 2.5vw, 2rem);
+      --text-h4: clamp(1.25rem, 2vw, 1.5rem);
+      --text-h5: 1.125rem;
+      --text-large: 1.125rem;
+      --text-base: 1rem;
+      --text-small: 0.875rem;
+      --text-caption: 0.75rem;
+
+      /* INTERFACE TYPE */
+      --text-navbar: 0.875rem;
+      --text-button: 0.875rem;
+      --text-label: 0.75rem;
+
+      /* TECHNICAL TYPE */
+      --text-data: 1.125rem;
+      --text-code: 0.875rem;
+      --text-metadata: 0.75rem;
+
+      /* COLOR PALETTE */
+      --color-primary: #5b63f1;
+      --color-secondary: #faea1c;
+      --color-accent-1: #ff614c;
+      --color-accent-2: #e5d13e;
+      --color-accent-3: #bb4b46;
+      --color-light: #496af1;
+      --color-dark: #152755;
+
+      /* NEUTRAL UI */
+      --color-bg: #f5f6fb;
+      --color-surface: #ffffff;
+      --color-ink: #17213c;
+      --color-muted: #68738d;
+      --color-border: #e3e7f0;
+      --radius: 18px;
+      --shadow: 0 16px 45px rgba(21, 39, 85, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(21, 39, 85, .96);
+      backdrop-filter: blur(14px);
+      color: white; border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .nav {
+      max-width: 1180px; margin: auto; padding: 13px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    }
+    .brand { font: 700 15px var(--font-heading); letter-spacing: .06em; }
+    .brand span { color: var(--color-secondary); }
+    .navlinks { display: flex; flex-wrap: wrap; gap: 18px; font-size: var(--text-navbar); color: #dce3ff; }
+    .navlinks a:hover { color: var(--color-secondary); }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: auto; }
+    .hero {
+      overflow: hidden; position: relative;
+      padding: 82px 0 70px; color: white;
+      background:
+        radial-gradient(circle at 82% 15%, rgba(91,99,241,.8), transparent 28%),
+        radial-gradient(circle at 10% 100%, rgba(255,97,76,.25), transparent 30%),
+        var(--color-dark);
+    }
+    .hero:after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .13;
+      background-image: linear-gradient(rgba(255,255,255,.18) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.18) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent);
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 850px; }
+    .eyebrow, .mono { font-family: var(--font-mono); letter-spacing: .08em; }
+    .eyebrow { color: var(--color-secondary); font-size: 13px; text-transform: uppercase; }
+    h1, h2, h3, h4, h5 { font-family: var(--font-heading); line-height: 1.2; margin: 0; }
+    h1 { font-size: var(--text-h1); letter-spacing: -.035em; margin: 16px 0; }
+    h2 { font-size: var(--text-h2); letter-spacing: -.025em; }
+    h3 { font-size: var(--text-h3); }
+    h4 { font-size: var(--text-h4); }
+    h5 { font-size: var(--text-h5); }
+    .hero p { color: #d8def4; max-width: 680px; font-size: var(--text-large); }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 26px; }
+    .tag { border: 1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.07); padding: 7px 11px; border-radius: 999px; font: 12px var(--font-mono); }
+    main { padding: 46px 0 80px; }
+    section { margin: 0 0 62px; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 22px; }
+    .section-head p { color: var(--color-muted); margin: 8px 0 0; max-width: 650px; }
+    .kicker { font: 12px var(--font-mono); color: var(--color-primary); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 9px; }
+    .panel, .sample-card, .type-card, .paint-card, .token-card {
+      background: var(--color-surface); border: 1px solid var(--color-border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .panel { padding: 24px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+    .muted { color: var(--color-muted); }
+    .small { font-size: var(--text-small); }
+    .caption { font-size: var(--text-caption); color: var(--color-muted); }
+    .font-specimen { padding: 22px; }
+    .font-specimen .sample { margin: 14px 0 5px; }
+    .font-name { font: 12px var(--font-mono); color: var(--color-primary); text-transform: uppercase; letter-spacing: .1em; }
+    .orbitron { font-family: var(--font-heading); }
+    .dm { font-family: var(--font-body); }
+    .share { font-family: var(--font-mono); }
+    .sample-h1 { font: 700 clamp(27px, 4vw, 42px)/1.2 var(--font-heading); }
+    .sample-body { font: 400 16px/1.65 var(--font-body); }
+    .sample-mono { font: 14px/1.6 var(--font-mono); }
+    .type-row { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--color-border); }
+    .type-row:last-child { border-bottom: 0; }
+    .type-meta { text-align: right; font: 12px/1.6 var(--font-mono); color: var(--color-muted); white-space: nowrap; }
+    .type-preview { overflow-wrap: anywhere; }
+    .type-preview.display { font-family: var(--font-heading); }
+    .type-preview.body { font-family: var(--font-body); }
+    .type-preview.code { font-family: var(--font-mono); }
+    .paint-card { overflow: hidden; }
+    .paint-swatch { height: 130px; position: relative; }
+    .paint-info { padding: 14px 15px 16px; }
+    .paint-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    .paint-name { font-weight: 700; }
+    .hex { font: 13px var(--font-mono); color: var(--color-muted); margin-top: 3px; }
+    .paint-role { font-size: 12px; color: var(--color-muted); margin-top: 8px; min-height: 36px; }
+    .copy-btn {
+      border: 1px solid var(--color-border); background: white; color: var(--color-ink);
+      border-radius: 9px; padding: 7px 10px; cursor: pointer; font-size: 12px; font-weight: 700;
+      transition: .2s ease;
+    }
+    .copy-btn:hover { border-color: var(--color-primary); color: var(--color-primary); transform: translateY(-1px); }
+    .copy-btn.dark { background: var(--color-dark); color: white; border-color: var(--color-dark); }
+    .copy-btn.dark:hover { background: var(--color-primary); border-color: var(--color-primary); color: white; }
+    .palette-note { margin-top: 18px; padding: 15px 17px; background: #fffbea; border: 1px solid #f3e7a3; border-radius: 12px; color: #655719; font-size: 13px; }
+    .token-card { padding: 18px; }
+    .token-card .token { font: 13px var(--font-mono); color: var(--color-primary); margin-top: 8px; }
+    .codebox { background: #101a36; border: 1px solid #29385f; border-radius: 15px; overflow: hidden; color: #e8edff; }
+    .codehead { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 15px; border-bottom: 1px solid #29385f; background: #17264d; }
+    .codehead span { font: 12px var(--font-mono); color: #b9c7f5; }
+    pre { margin: 0; padding: 20px; overflow: auto; font: 12px/1.7 var(--font-mono); tab-size: 2; }
+    .demo-ui { background: var(--color-dark); color: white; border-radius: 16px; padding: 22px; }
+    .demo-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(255,255,255,.16); padding-bottom: 15px; }
+    .demo-logo { font: 700 14px var(--font-heading); letter-spacing: .06em; }
+    .demo-menu { color: #dce3ff; font-size: 12px; }
+    .demo-hero { padding: 30px 0 22px; }
+    .demo-hero h3 { max-width: 520px; }
+    .demo-hero p { color: #cbd4f3; max-width: 520px; font-size: 14px; }
+    .demo-button { display: inline-block; background: var(--color-primary); color: white; padding: 10px 15px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 7px; }
+    .demo-status { color: var(--color-secondary); font: 11px var(--font-mono); }
+    .demo-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .demo-stat { padding: 13px; border: 1px solid rgba(255,255,255,.15); border-radius: 10px; }
+    .demo-stat strong { display: block; font: 20px var(--font-mono); }
+    .demo-stat span { color: #cbd4f3; font-size: 11px; }
+    .scale-list { display: grid; gap: 10px; }
+    .scale-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: white; border: 1px solid var(--color-border); padding: 12px 14px; border-radius: 11px; }
+    .scale-item code { color: var(--color-primary); font: 12px var(--font-mono); }
+    .notice { border-left: 4px solid var(--color-accent-1); background: #fff1ee; padding: 15px 17px; border-radius: 0 12px 12px 0; font-size: 13px; color: #65352f; }
+    footer { background: var(--color-dark); color: #cbd4f3; padding: 28px 0; font-size: 12px; }
+    footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .toast {
+      position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 20px);
+      background: #152755; color: white; padding: 11px 16px; border-radius: 999px;
+      font-size: 13px; opacity: 0; pointer-events: none; transition: .25s; z-index: 50;
+      box-shadow: 0 8px 25px rgba(0,0,0,.2);
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 850px) {
+      .grid-4 { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .grid-3 { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .navlinks { display: none; }
+      .hero { padding: 65px 0 55px; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .panel { padding: 17px; }
+      .type-row { grid-template-columns: 1fr; gap: 4px; }
+      .type-meta { text-align: left; }
+      .paint-swatch { height: 110px; }
+      .demo-stats { grid-template-columns: 1fr; }
+      pre { font-size: 11px; padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav">
+      <a class="brand" href="#top">NEX<span>GUIDE</span></a>
+      <div class="navlinks">
+        <a href="#fonts">Fonts</a><a href="#typography">Typography</a><a href="#colors">Colors</a>
+        <a href="#interface">UI</a><a href="#css">CSS Kit</a>
+      </div>
+      <a class="copy-btn dark" href="#css">Get CSS</a>
+    </nav>
+  </header>
+
+  <header class="hero" id="top">
+    <div class="wrap hero-content">
+      <div class="eyebrow">Developer design reference / 01</div>
+      <h1>Futuristic Digital<br>Design System.</h1>
+      <p>Panduan visual dan teknis untuk membangun website bertema teknologi dengan karakter futuristic, digital, dan experimental. Semua token, ukuran typography, warna, dan CSS siap dipakai.</p>
+      <div class="hero-tags">
+        <span class="tag">ORBITRON / DISPLAY</span>
+        <span class="tag">DM SANS / INTERFACE</span>
+        <span class="tag">SHARE TECH MONO / DATA</span>
+        <span class="tag">RESPONSIVE SYSTEM</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="fonts">
+      <div class="section-head">
+        <div><div class="kicker">01 / Font family</div><h2>Typography identity</h2><p>Tiga keluarga font dengan fungsi berbeda agar tampilan terasa futuristik tanpa mengorbankan keterbacaan.</p></div>
+      </div>
+      <div class="grid-3">
+        <article class="sample-card font-specimen">
+          <div class="font-name">01 / Display</div>
+          <div class="sample sample-h1">ORBITRON</div>
+          <p class="muted small">Gunakan untuk H1–H5, judul section, dan judul card yang perlu aksen teknologi.</p>
+          <a class="caption" href="https://fonts.google.com/specimen/Orbitron" target="_blank" rel="noopener">Google Fonts ↗</a>
+        </article>
+        <article class="sample-card font-specimen">
+          <div class="font-name">02 / Interface</div>
+          <div class="sample" style="font:700 34px/1.2 var(--font-body)">DM Sans</div>
+          <p class="muted small">Gunakan untuk paragraf, navigasi, tombol, label, form, dan semua teks UI.</p>
+          <a class="caption" href="https://fonts.google.com/specimen/DM+Sans" target="_blank" rel="noopener">Google Fonts ↗</a>
+        </article>
+        <article class="sample-card font-specimen">
+          <div class="font-name">03 / Technical</div>
+          <div class="sample sample-mono" style="font-size:25px">SHARE TECH<br>MONO_01</div>
+          <p class="muted small">Gunakan untuk code, nomor, status sistem, metadata, dan label teknis.</p>
+          <a class="caption" href="https://fonts.google.com/specimen/Share+Tech+Mono" target="_blank" rel="noopener">Google Fonts ↗</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="typography">
+      <div class="section-head">
+        <div><div class="kicker">02 / Type scale</div><h2>Typography scale</h2><p>Skala desktop responsif. Nilai H1–H3 memakai <code>clamp()</code>, sedangkan body text dijaga tetap stabil.</p></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <h3 style="margin-bottom:12px">Display & headings</h3>
+          <div class="type-row"><div class="type-preview display" style="font-size:clamp(2.5rem,5vw,4rem);font-weight:700">Heading 1</div><div class="type-meta">48–64px<br>3–4rem / 700</div></div>
+          <div class="type-row"><div class="type-preview display" style="font-size:clamp(2rem,3.5vw,2.75rem);font-weight:700">Heading 2</div><div class="type-meta">32–44px<br>2–2.75rem / 600–700</div></div>
+          <div class="type-row"><div class="type-preview display" style="font-size:clamp(1.5rem,2.5vw,2rem);font-weight:600">Heading 3</div><div class="type-meta">24–32px<br>1.5–2rem / 600</div></div>
+          <div class="type-row"><div class="type-preview display" style="font-size:1.5rem;font-weight:600">Heading 4</div><div class="type-meta">24px<br>1.5rem / 600</div></div>
+          <div class="type-row"><div class="type-preview display" style="font-size:1.125rem;font-weight:600">Heading 5</div><div class="type-meta">18px<br>1.125rem / 600</div></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-bottom:12px">Body & technical</h3>
+          <div class="type-row"><div class="type-preview body" style="font-size:1.125rem">Large paragraph</div><div class="type-meta">18px / 1.125rem<br>DM Sans 400</div></div>
+          <div class="type-row"><div class="type-preview body" style="font-size:1rem">Body default</div><div class="type-meta">16px / 1rem<br>DM Sans 400</div></div>
+          <div class="type-row"><div class="type-preview body" style="font-size:.875rem">Small text</div><div class="type-meta">14px / .875rem<br>DM Sans 400</div></div>
+          <div class="type-row"><div class="type-preview body" style="font-size:.75rem">Caption / helper</div><div class="type-meta">12px / .75rem<br>DM Sans 400</div></div>
+          <div class="type-row"><div class="type-preview code" style="font-size:1.125rem">DATA_STREAM_01</div><div class="type-meta">18px / 1.125rem<br>Share Tech Mono</div></div>
+          <div class="type-row"><div class="type-preview code" style="font-size:.875rem">const status = 200;</div><div class="type-meta">14px / .875rem<br>Share Tech Mono</div></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:18px">
+        <h3 style="margin-bottom:12px">Interface element sizing</h3>
+        <div class="grid-3">
+          <div class="token-card"><strong>Navbar logo</strong><div class="token">Orbitron / 20px</div></div>
+          <div class="token-card"><strong>Navbar menu</strong><div class="token">DM Sans / 14px</div></div>
+          <div class="token-card"><strong>Button</strong><div class="token">DM Sans / 14px</div></div>
+          <div class="token-card"><strong>Input field</strong><div class="token">DM Sans / 14px</div></div>
+          <div class="token-card"><strong>Input label</strong><div class="token">DM Sans / 12px</div></div>
+          <div class="token-card"><strong>Badge</strong><div class="token">Share Tech Mono / 11px</div></div>
+          <div class="token-card"><strong>Breadcrumb</strong><div class="token">DM Sans / 12px</div></div>
+          <div class="token-card"><strong>Card title</strong><div class="token">Orbitron / 18px</div></div>
+          <div class="token-card"><strong>Card description</strong><div class="token">DM Sans / 14px</div></div>
+          <div class="token-card"><strong>Footer heading</strong><div class="token">Orbitron / 16px</div></div>
+          <div class="token-card"><strong>Footer text</strong><div class="token">DM Sans / 13px</div></div>
+          <div class="token-card"><strong>Metadata</strong><div class="token">Share Tech Mono / 12px</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="colors">
+      <div class="section-head">
+        <div><div class="kicker">03 / Color system</div><h2>Color paint collection</h2><p>Color card dibuat seperti katalog toko cat: setiap warna punya nama, kode hex, dan fungsi yang disarankan. Klik tombol untuk menyalin kode warna.</p></div>
+      </div>
+      <div class="grid-4">
+        <article class="paint-card"><div class="paint-swatch" style="background:#5b63f1"></div><div class="paint-info"><div class="paint-top"><div class="paint-name">Primary</div><button class="copy-btn" data-copy="#5b63f1">Copy HEX</button></div><div class="hex">#5B63F1</div><div class="paint-role">Warna identitas utama, CTA, link aktif, dan elemen interaktif.</div></div></article>
+        <article class="paint-card"><div class="paint-swatch" style="background:#faea1c"></div><div class="paint-info"><div class="paint-top"><div class="paint-name">Secondary</div><button class="copy-btn" data-copy="#faea1c">Copy HEX</button></div><div class="hex">#FAEA1C</div><div class="paint-role">Highlight, status penting, aksen kecil, dan teks di latar gelap.</div></div></article>
+        <article class="paint-card"><div class="paint-swatch" style="background:#ff614c"></div><div class="paint-info"><div class="paint-top"><div class="paint-name">Accent 01</div><button class="copy-btn" data-copy="#ff614c">Copy HEX</button></div><div class="hex">#FF614C</div><div class="paint-role">Peringatan ringan, elemen promosi, dan aksen visual hangat.</div></div></article>
+        <article class="paint-card"><div class="paint-swatch" style="background:#e5d13e"></div><div class="paint-info"><div class="paint-top"><div class="paint-name">Accent 02</div><button class="copy-btn" data-copy="#e5d13e">Copy HEX</button></div><div class="hex">#E5D13E</div><div class="paint-role">Aksen sekunder, dekorasi, dan variasi highlight kuning.</div></div></article>
+        <article class="paint-card"><div class="paint-swatch" style="background:#bb4b46"></div><div class="paint-info"><div class="paint-top"><div class="paint-name">Accent 03</div><button class="copy-btn" data-copy="#bb4b46">Copy HEX</button></div><div class="hex">#BB4B46</div><div class="paint-role">Aksen merah gelap untuk detail, penanda, atau state khusus.</div></div></article>
+        <article class="paint-card"><div class="paint-swatch" style="background:#496af1"></div><div class="paint-info"><div class="paint-top"><div class="paint-name">Light</div><button class="copy-btn" data-copy="#496af1">Copy HEX</button></div><div class="hex">#496AF1</div><div class="paint-role">Biru terang untuk gradient, surface kontras, atau elemen visual.</div></div></article>
+        <article class="paint-card"><div class="paint-swatch" style="background:#152755"></div><div class="paint-info"><div class="paint-top"><div class="paint-name">Dark</div><button class="copy-btn" data-copy="#152755">Copy HEX</button></div><div class="hex">#152755</div><div class="paint-role">Latar utama gelap, navbar, footer, dan panel kontras.</div></div></article>
+      </div>
+      <div class="palette-note"><strong>Catatan kontras:</strong> Secondary dan Accent 02 cukup terang, jadi lebih aman dipakai sebagai aksen atau teks di atas latar gelap. Untuk teks kecil di atas warna kuning, gunakan warna gelap seperti <code>#152755</code>, bukan putih. Warna <code>Light</code> dan <code>Primary</code> juga perlu diuji kontrasnya sebelum dipakai untuk teks berukuran kecil.</div>
+    </section>
+
+    <section id="interface">
+      <div class="section-head">
+        <div><div class="kicker">04 / UI preview</div><h2>Live interface example</h2><p>Contoh penerapan font dan warna dalam komponen website. Ini bukan template halaman final, melainkan referensi visual.</p></div>
+      </div>
+      <div class="demo-ui">
+        <div class="demo-nav"><div class="demo-logo">NEXUS<span style="color:var(--color-secondary)">.TECH</span></div><div class="demo-menu">PLATFORM &nbsp;&nbsp; SOLUTIONS &nbsp;&nbsp; ABOUT</div><div class="demo-status">● SYSTEM ONLINE</div></div>
+        <div class="demo-hero">
+          <div class="eyebrow">NEXT-GEN DIGITAL SYSTEMS</div>
+          <h3>Engineering a smarter digital future.</h3>
+          <p>We combine technology, creativity, and intelligent systems to build meaningful digital experiences.</p>
+          <a class="demo-button" href="#css">Explore platform ↗</a>
+        </div>
+        <div class="demo-stats">
+          <div class="demo-stat"><strong>98.7%</strong><span>UPTIME PERFORMANCE</span></div>
+          <div class="demo-stat"><strong>24/7</strong><span>SYSTEM MONITORING</span></div>
+          <div class="demo-stat"><strong>v2.0.26</strong><span>PLATFORM VERSION</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="css">
+      <div class="section-head">
+        <div><div class="kicker">05 / Copy & paste</div><h2>Developer CSS kit</h2><p>Salin konfigurasi di bawah untuk dipakai di proyek. Font diambil dari Google Fonts dan token sudah mencakup typography serta color palette.</p></div>
+      </div>
+      <div class="codebox">
+        <div class="codehead"><span>design-system.css / FULL CONFIG</span><button class="copy-btn dark" id="copyCss">Copy CSS</button></div>
+        <pre><code id="cssCode">/* GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
+
+:root {
+  /* FONT FAMILY */
+  --font-heading: 'Orbitron', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+
+  /* TYPE SCALE */
+  --text-h1: clamp(2.5rem, 5vw, 4rem);
+  --text-h2: clamp(2rem, 3.5vw, 2.75rem);
+  --text-h3: clamp(1.5rem, 2.5vw, 2rem);
+  --text-h4: clamp(1.25rem, 2vw, 1.5rem);
+  --text-h5: 1.125rem;
+  --text-large: 1.125rem;
+  --text-base: 1rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.75rem;
+
+  /* INTERFACE */
+  --text-navbar: 0.875rem;
+  --text-button: 0.875rem;
+  --text-label: 0.75rem;
+
+  /* TECHNICAL */
+  --text-data: 1.125rem;
+  --text-code: 0.875rem;
+  --text-metadata: 0.75rem;
+
+  /* COLOR PALETTE */
+  --color-primary: #5b63f1;
+  --color-secondary: #faea1c;
+  --color-accent-1: #ff614c;
+  --color-accent-2: #e5d13e;
+  --color-accent-3: #bb4b46;
+  --color-light: #496af1;
+  --color-dark: #152755;
+
+  /* NEUTRAL UI */
+  --color-bg: #f5f6fb;
+  --color-surface: #ffffff;
+  --color-ink: #17213c;
+  --color-muted: #68738d;
+  --color-border: #e3e7f0;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+}
+
+h1 { font-size: var(--text-h1); }
+h2 { font-size: var(--text-h2); }
+h3 { font-size: var(--text-h3); }
+h4 { font-size: var(--text-h4); }
+h5 { font-size: var(--text-h5); }
+
+code, pre, .technical-data {
+  font-family: var(--font-mono);
+}</code></pre>
+      </div>
+      <div class="grid-2" style="margin-top:18px">
+        <div class="panel">
+          <h4>Quick usage</h4>
+          <p class="muted small">Pakai class atau variable ini di elemen HTML.</p>
+          <div class="scale-list">
+            <div class="scale-item"><span>Heading</span><code>font-family: var(--font-heading)</code></div>
+            <div class="scale-item"><span>Body</span><code>font-family: var(--font-body)</code></div>
+            <div class="scale-item"><span>Technical</span><code>font-family: var(--font-mono)</code></div>
+            <div class="scale-item"><span>Primary</span><code>color: var(--color-primary)</code></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h4>Implementation notes</h4>
+          <p class="muted small">Beberapa panduan supaya sistem tetap konsisten.</p>
+          <ul class="small" style="padding-left:19px;margin-bottom:0">
+            <li>Gunakan Orbitron seperlunya; jangan untuk paragraf panjang.</li>
+            <li>Body text idealnya 16px dengan line-height 1.5–1.6.</li>
+            <li>Gunakan uppercase untuk label sistem, bukan semua teks.</li>
+            <li>Gunakan warna aksen secara hemat agar hierarki tetap jelas.</li>
+            <li>Uji kontras teks dan background, terutama untuk ukuran kecil.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notice" style="margin-top:18px"><strong>Developer note:</strong> CSS pada bagian atas halaman adalah styling untuk dokumentasi ini. Blok <code>design-system.css</code> di atas merupakan konfigurasi ringkas yang bisa disalin ke proyek lu. Kalau proyek sudah punya file CSS utama, gabungkan bagian <code>:root</code> dan aturan elemen seperlunya.</div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap"><span class="brand">NEX<span style="color:var(--color-secondary)">GUIDE</span> / DESIGN SYSTEM</span><span>Futuristic Digital · Developer Reference · 2026</span></div>
+  </footer>
+  <div class="toast" id="toast">Copied to clipboard</div>
+
+  <script>
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+    async function copyText(value, message = 'Berhasil disalin') {
+      try {
+        await navigator.clipboard.writeText(value);
+        showToast(message);
+      } catch (error) {
+        const field = document.createElement('textarea');
+        field.value = value;
+        field.style.position = 'fixed';
+        field.style.opacity = '0';
+        document.body.appendChild(field);
+        field.select();
+        const ok = document.execCommand('copy');
+        field.remove();
+        showToast(ok ? message : 'Gagal menyalin — salin secara manual');
+      }
+    }
+    document.querySelectorAll('[data-copy]').forEach(button => {
+      button.addEventListener('click', () => copyText(button.dataset.copy, button.dataset.copy + ' disalin'));
+    });
+    document.getElementById('copyCss').addEventListener('click', () => {
+      copyText(document.getElementById('cssCode').innerText, 'CSS berhasil disalin');
+    });
+  </script>
+</body>
+</html>
