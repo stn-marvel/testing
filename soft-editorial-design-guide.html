@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F5F1EA">
+<title>Soft Editorial — Developer Design Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--font-heading:'DM Serif Display',Georgia,serif;--font-body:'DM Sans',sans-serif;--font-ui:'Manrope',sans-serif;--font-mono:'DM Mono',monospace;
+--text-display:clamp(3rem,7vw,6.5rem);--text-h1:clamp(2.5rem,5vw,4.5rem);--text-h2:clamp(2rem,3.8vw,3.25rem);--text-h3:clamp(1.5rem,2.5vw,2rem);--text-h4:1.375rem;--text-h5:1.125rem;--text-lead:1.1875rem;--text-body:1rem;--text-small:.875rem;--text-caption:.75rem;
+--color-paper:#F5F1EA;--color-cream:#EAE2D6;--color-ink:#302C28;--color-muted:#77716A;--color-sage:#A8B5A0;--color-dusty-rose:#C99591;--color-clay:#B97862;--color-mist-blue:#C7D5D8;--color-taupe:#B8A99A;--color-white:#FFFEFB;--color-line:#DED7CD;
+--radius-card:4px;--radius-pill:999px;--shadow-soft:0 18px 50px rgba(48,44,40,.07)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:var(--color-paper);color:var(--color-ink);font:400 var(--text-body)/1.75 var(--font-body)}
+a{color:inherit;text-decoration:none}button{font:inherit}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(245,241,234,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--color-line)}
+.nav{max-width:1160px;margin:auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font:500 13px var(--font-ui);letter-spacing:.18em;text-transform:uppercase}.brand span{color:var(--color-clay)}
+.navlinks{display:flex;gap:22px;color:var(--color-muted);font:500 12px var(--font-ui)}.navlinks a:hover{color:var(--color-clay)}
+.wrap{width:min(1160px,calc(100% - 42px));margin:auto}
+.hero{padding:88px 0 82px;position:relative;overflow:hidden;background:var(--color-cream);border-bottom:1px solid var(--color-line)}
+.hero:after{content:"E";position:absolute;right:8%;top:-115px;font:italic 600 clamp(300px,45vw,620px)/1 var(--font-heading);color:rgba(185,120,98,.09);pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:850px}
+.eyebrow,.kicker,.mono{font-family:var(--font-mono);letter-spacing:.1em}.eyebrow{color:var(--color-clay);font-size:11px;text-transform:uppercase}
+h1,h2,h3,h4,h5{font-family:var(--font-heading);font-weight:400;line-height:1.12}
+h1{font-size:var(--text-h1);margin:20px 0;letter-spacing:-.025em}h2{font-size:var(--text-h2);margin:0;letter-spacing:-.02em}h3{font-size:var(--text-h3);margin:0}h4{font-size:var(--text-h4);margin:0}h5{font-size:var(--text-h5);margin:0}
+.hero p{max-width:650px;color:#655E56;font-size:var(--text-lead)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.pill{border:1px solid #CFC4B7;padding:7px 12px;border-radius:var(--radius-pill);color:#625A52;font:11px var(--font-mono)}
+main{padding:55px 0 85px}section{margin-bottom:68px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:24px}
+.kicker{color:var(--color-clay);font-size:10px;text-transform:uppercase;margin-bottom:10px}
+.section-head p{max-width:650px;color:var(--color-muted);margin:9px 0 0;font-size:14px}
+.panel,.font-card,.palette-card,.token-card{background:var(--color-white);border:1px solid var(--color-line);box-shadow:var(--shadow-soft)}
+.panel{padding:25px}.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px}
+.font-card{padding:23px;min-height:220px}.font-role{color:var(--color-clay);font:10px var(--font-mono);letter-spacing:.12em;text-transform:uppercase}
+.font-sample{margin:17px 0 10px}.serif{font-family:var(--font-heading)}.sans{font-family:var(--font-body)}.ui-font{font-family:var(--font-ui)}.mono-font{font-family:var(--font-mono)}
+.muted{color:var(--color-muted)}.small{font-size:var(--text-small)}.caption{font-size:var(--text-caption);color:var(--color-muted)}
+.font-card p{font-size:13px;color:var(--color-muted)}.font-card a{color:var(--color-clay);font-size:12px;border-bottom:1px solid #D9B7A9}
+.type-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px;padding:16px 0;border-bottom:1px solid var(--color-line)}.type-row:last-child{border-bottom:0}
+.type-preview{overflow-wrap:anywhere}.type-meta{text-align:right;white-space:nowrap;color:var(--color-muted);font:11px/1.7 var(--font-mono)}
+.palette-card{overflow:hidden}.swatch{height:128px;position:relative}.palette-info{padding:14px 15px 16px}
+.palette-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.palette-name{font:600 13px var(--font-ui)}.hex{color:var(--color-muted);font:12px var(--font-mono);margin-top:5px}
+.palette-role{color:var(--color-muted);font-size:12px;line-height:1.5;margin-top:9px;min-height:38px}
+.copy-btn{border:1px solid var(--color-line);color:var(--color-ink);background:transparent;padding:7px 10px;border-radius:3px;cursor:pointer;font:600 10px var(--font-ui);letter-spacing:.04em;transition:.2s}
+.copy-btn:hover{background:var(--color-ink);color:white;border-color:var(--color-ink)}
+.note{padding:16px 18px;background:#F1EAE0;border-left:3px solid var(--color-clay);color:#62584F;font-size:13px;margin-top:18px}
+.token-card{padding:17px}.token-card strong{font:600 12px var(--font-ui)}.token-card .value{color:var(--color-clay);font:11px var(--font-mono);margin-top:8px}
+.editorial-demo{background:var(--color-white);border:1px solid var(--color-line);box-shadow:var(--shadow-soft);padding:34px}
+.demo-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;border-bottom:1px solid var(--color-line);font:10px var(--font-mono);letter-spacing:.12em;color:var(--color-muted)}
+.demo-title{max-width:720px;font:400 clamp(38px,6vw,72px)/1.03 var(--font-heading);letter-spacing:-.03em;margin:34px 0 18px}.demo-title em{color:var(--color-clay);font-weight:400}
+.demo-copy{max-width:550px;color:var(--color-muted)}.demo-bottom{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:30px;padding-top:18px;border-top:1px solid var(--color-line)}
+.demo-link{display:inline-block;background:var(--color-ink);color:white;padding:11px 17px;font:500 11px var(--font-ui);letter-spacing:.05em}.demo-index{font:11px var(--font-mono);color:var(--color-muted)}
+.codebox{background:#292824;color:#F6F1E9;border:1px solid #454139;overflow:hidden}.code-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 15px;background:#37342F;border-bottom:1px solid #514B42}.code-head span{font:11px var(--font-mono);color:#D6CBBE}
+pre{margin:0;padding:20px;overflow:auto;font:11px/1.8 var(--font-mono);tab-size:2}
+.quick-list{display:grid;gap:9px}.quick-item{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--color-line);padding:10px 0;font-size:12px}.quick-item code{font:10px var(--font-mono);color:var(--color-clay);text-align:right}
+footer{background:var(--color-ink);color:#E7DED3;padding:28px 0;font-size:11px}footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,18px);opacity:0;pointer-events:none;background:var(--color-ink);color:white;padding:10px 15px;font:11px var(--font-ui);transition:.2s;z-index:20}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}.navlinks{display:none}}
+@media(max-width:600px){.wrap{width:calc(100% - 30px)}.hero{padding:65px 0}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.section-head{display:block}.panel{padding:18px}.type-row{grid-template-columns:1fr;gap:5px}.type-meta{text-align:left}.editorial-demo{padding:21px}.demo-bottom{align-items:flex-start;flex-direction:column}pre{font-size:10px;padding:15px}}
+</style>
+</head>
+<body>
+<header class="topbar"><nav class="nav">
+<a class="brand" href="#top">THE <span>EDITORIAL</span> KIT</a>
+<div class="navlinks"><a href="#fonts">Fonts</a><a href="#type">Type scale</a><a href="#palette">Palette</a><a href="#preview">Preview</a><a href="#css">CSS kit</a></div>
+<a class="copy-btn" href="#css">COPY CSS KIT</a>
+</nav></header>
+
+<header class="hero" id="top"><div class="wrap hero-inner">
+<div class="eyebrow">A visual language for thoughtful digital spaces</div>
+<h1>Soft tones.<br><i>Strong stories.</i></h1>
+<p>Design reference untuk website bertema editorial dengan nuansa soft, hangat, dan refined. Menggabungkan tipografi serif yang ekspresif, sans-serif yang bersih, serta palet warna natural yang tenang.</p>
+<div class="hero-meta"><span class="pill">SOFT EDITORIAL</span><span class="pill">WARM NEUTRALS</span><span class="pill">TIMELESS TYPOGRAPHY</span></div>
+</div></header>
+
+<main class="wrap">
+<section id="fonts"><div class="section-head"><div><div class="kicker">01 / Font direction</div><h2>Typography with character</h2><p>Serif untuk headline editorial, sans-serif untuk keterbacaan, dan monospace untuk detail kecil seperti tanggal atau kategori.</p></div></div>
+<div class="grid-3">
+<article class="font-card"><div class="font-role">01 / Editorial display</div><div class="font-sample serif" style="font-size:42px;line-height:1.05">DM Serif<br><i>Display</i></div><p>Serif dengan karakter klasik dan lembut. Cocok untuk hero title, headline artikel, dan judul besar.</p><a href="https://fonts.google.com/specimen/DM+Serif+Display" target="_blank" rel="noopener">Explore Google Fonts ↗</a></article>
+<article class="font-card"><div class="font-role">02 / Reading & body</div><div class="font-sample sans" style="font-size:35px;font-weight:500">DM Sans</div><p>Netral, bersih, dan nyaman dibaca. Cocok untuk paragraf, navigasi, tombol, dan deskripsi.</p><a href="https://fonts.google.com/specimen/DM+Sans" target="_blank" rel="noopener">Explore Google Fonts ↗</a></article>
+<article class="font-card"><div class="font-role">03 / UI alternative</div><div class="font-sample ui-font" style="font-size:35px;font-weight:600">Manrope</div><p>Geometris dan modern. Gunakan untuk UI yang lebih terstruktur, label, dan elemen navigasi.</p><a href="https://fonts.google.com/specimen/Manrope" target="_blank" rel="noopener">Explore Google Fonts ↗</a></article>
+</div>
+<div class="panel" style="margin-top:18px"><div class="font-role">Optional / Metadata</div><div class="mono-font" style="font-size:21px;margin:9px 0">DM MONO — ISSUE 04 / AUTUMN EDITION</div><p class="muted small" style="margin:0">Font monospace opsional untuk tanggal, nomor edisi, kategori, label gambar, dan metadata. Jangan gunakan untuk paragraf panjang.</p><a class="caption" href="https://fonts.google.com/specimen/DM+Mono" target="_blank" rel="noopener">Google Fonts ↗</a></div>
+</section>
+
+<section id="type"><div class="section-head"><div><div class="kicker">02 / Typography scale</div><h2>Type hierarchy</h2><p>Skala editorial: headline punya ruang bernapas, sementara teks bacaan tetap nyaman.</p></div></div>
+<div class="grid-2">
+<div class="panel"><h3 style="margin-bottom:12px">Display & headings</h3>
+<div class="type-row"><div class="type-preview serif" style="font-size:clamp(3rem,7vw,6.5rem);line-height:1">Display</div><div class="type-meta">48–104px<br>3–6.5rem</div></div>
+<div class="type-row"><div class="type-preview serif" style="font-size:clamp(2.5rem,5vw,4.5rem)">Heading 1</div><div class="type-meta">40–72px<br>2.5–4.5rem</div></div>
+<div class="type-row"><div class="type-preview serif" style="font-size:clamp(2rem,3.8vw,3.25rem)">Heading 2</div><div class="type-meta">32–52px<br>2–3.25rem</div></div>
+<div class="type-row"><div class="type-preview serif" style="font-size:2rem">Heading 3</div><div class="type-meta">32px<br>2rem</div></div>
+<div class="type-row"><div class="type-preview serif" style="font-size:1.375rem">Heading 4</div><div class="type-meta">22px<br>1.375rem</div></div>
+<div class="type-row"><div class="type-preview serif" style="font-size:1.125rem">Heading 5</div><div class="type-meta">18px<br>1.125rem</div></div>
+</div>
+<div class="panel"><h3 style="margin-bottom:12px">Reading & interface</h3>
+<div class="type-row"><div class="type-preview sans" style="font-size:1.1875rem">Lead paragraph</div><div class="type-meta">19px<br>1.1875rem</div></div>
+<div class="type-row"><div class="type-preview sans" style="font-size:1rem">Body default</div><div class="type-meta">16px<br>1rem</div></div>
+<div class="type-row"><div class="type-preview sans" style="font-size:.875rem">Small text</div><div class="type-meta">14px<br>.875rem</div></div>
+<div class="type-row"><div class="type-preview sans" style="font-size:.75rem">Caption / helper</div><div class="type-meta">12px<br>.75rem</div></div>
+<div class="type-row"><div class="type-preview ui-font" style="font-size:.8125rem">Navigation / Button</div><div class="type-meta">13px<br>.8125rem</div></div>
+<div class="type-row"><div class="type-preview mono-font" style="font-size:.75rem">ISSUE_04 / 2026</div><div class="type-meta">12px<br>.75rem</div></div>
+</div></div>
+<div class="panel" style="margin-top:18px"><h3 style="margin-bottom:15px">Element sizing</h3><div class="grid-3">
+<div class="token-card"><strong>Navbar / UI</strong><div class="value">Manrope · 13px</div></div><div class="token-card"><strong>Button</strong><div class="value">Manrope · 12–13px</div></div><div class="token-card"><strong>Article title</strong><div class="value">DM Serif · 32–56px</div></div><div class="token-card"><strong>Article excerpt</strong><div class="value">DM Sans · 16px</div></div><div class="token-card"><strong>Image caption</strong><div class="value">DM Sans · 12px</div></div><div class="token-card"><strong>Category / Date</strong><div class="value">DM Mono · 11–12px</div></div>
+</div></div></section>
+
+<section id="palette"><div class="section-head"><div><div class="kicker">03 / Color direction</div><h2>The quiet palette</h2><p>Palet terinspirasi kertas, linen, sage, tanah liat, dan warna langit berkabut. Klik copy untuk menyalin kode HEX.</p></div></div>
+<div class="grid-4">
+<article class="palette-card"><div class="swatch" style="background:#F5F1EA"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Paper</span><button class="copy-btn" data-copy="#F5F1EA">COPY HEX</button></div><div class="hex">#F5F1EA</div><div class="palette-role">Background utama seperti kertas editorial yang hangat.</div></div></article>
+<article class="palette-card"><div class="swatch" style="background:#EAE2D6"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Warm Cream</span><button class="copy-btn" data-copy="#EAE2D6">COPY HEX</button></div><div class="hex">#EAE2D6</div><div class="palette-role">Section background, panel lembut, dan bidang pembeda.</div></div></article>
+<article class="palette-card"><div class="swatch" style="background:#302C28"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Ink</span><button class="copy-btn" data-copy="#302C28">COPY HEX</button></div><div class="hex">#302C28</div><div class="palette-role">Warna teks utama dan elemen gelap dengan kontras nyaman.</div></div></article>
+<article class="palette-card"><div class="swatch" style="background:#A8B5A0"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Sage</span><button class="copy-btn" data-copy="#A8B5A0">COPY HEX</button></div><div class="hex">#A8B5A0</div><div class="palette-role">Aksen natural, label kategori, dan blok dekoratif.</div></div></article>
+<article class="palette-card"><div class="swatch" style="background:#C99591"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Dusty Rose</span><button class="copy-btn" data-copy="#C99591">COPY HEX</button></div><div class="hex">#C99591</div><div class="palette-role">Aksen lembut untuk highlight dan elemen editorial.</div></div></article>
+<article class="palette-card"><div class="swatch" style="background:#B97862"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Soft Clay</span><button class="copy-btn" data-copy="#B97862">COPY HEX</button></div><div class="hex">#B97862</div><div class="palette-role">Aksen hangat untuk link, detail, dan penekanan visual.</div></div></article>
+<article class="palette-card"><div class="swatch" style="background:#C7D5D8"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Misty Blue</span><button class="copy-btn" data-copy="#C7D5D8">COPY HEX</button></div><div class="hex">#C7D5D8</div><div class="palette-role">Aksen dingin untuk variasi section atau visual pendukung.</div></div></article>
+<article class="palette-card"><div class="swatch" style="background:#B8A99A"></div><div class="palette-info"><div class="palette-top"><span class="palette-name">Soft Taupe</span><button class="copy-btn" data-copy="#B8A99A">COPY HEX</button></div><div class="hex">#B8A99A</div><div class="palette-role">Border, garis pemisah, dan detail netral.</div></div></article>
+</div>
+<div class="note"><strong>Color balance:</strong> jadikan Paper dan Warm Cream sebagai warna bidang terbesar, Ink untuk teks, lalu pilih satu atau dua aksen saja dalam satu halaman. Teks utama di atas swatch pastel tetap perlu memakai warna Ink agar mudah dibaca.</div>
+</section>
+
+<section id="preview"><div class="section-head"><div><div class="kicker">04 / Layout preview</div><h2>Editorial composition</h2><p>Contoh penerapan serif headline, body sans-serif, metadata monospace, dan warna hangat.</p></div></div>
+<div class="editorial-demo"><div class="demo-top"><span>FIELD NOTES — DESIGN & CULTURE</span><span>VOL. 04 / 2026</span></div>
+<div class="eyebrow" style="margin-top:30px">A slower way to see things</div><div class="demo-title">The beauty of<br><em>everyday details.</em></div>
+<p class="demo-copy">A collection of thoughts, places, and small discoveries. Stories that remind us to pause, look closer, and find meaning in the ordinary.</p>
+<div class="demo-bottom"><a class="demo-link" href="#css">READ THE JOURNAL ↗</a><span class="demo-index">WORDS & IMAGES / 06 MIN READ</span></div></div></section>
+
+<section id="css"><div class="section-head"><div><div class="kicker">05 / Developer handoff</div><h2>Copy & paste CSS</h2><p>Token CSS inti untuk langsung dipakai di proyek. Font di-load dari Google Fonts.</p></div></div>
+<div class="codebox"><div class="code-head"><span>soft-editorial.css / DESIGN TOKENS</span><button class="copy-btn" id="copyCss" style="background:#F5F1EA">COPY CSS</button></div>
+<pre><code id="cssCode">/* GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+  /* FONT FAMILY */
+  --font-heading: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-ui: 'Manrope', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  /* TYPOGRAPHY */
+  --text-display: clamp(3rem, 7vw, 6.5rem);
+  --text-h1: clamp(2.5rem, 5vw, 4.5rem);
+  --text-h2: clamp(2rem, 3.8vw, 3.25rem);
+  --text-h3: clamp(1.5rem, 2.5vw, 2rem);
+  --text-h4: 1.375rem;
+  --text-h5: 1.125rem;
+  --text-lead: 1.1875rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.75rem;
+
+  /* COLOR PALETTE */
+  --color-paper: #F5F1EA;
+  --color-cream: #EAE2D6;
+  --color-ink: #302C28;
+  --color-muted: #77716A;
+  --color-sage: #A8B5A0;
+  --color-dusty-rose: #C99591;
+  --color-clay: #B97862;
+  --color-mist-blue: #C7D5D8;
+  --color-taupe: #B8A99A;
+  --color-white: #FFFEFB;
+  --color-line: #DED7CD;
+
+  /* UI TOKENS */
+  --radius-card: 4px;
+  --radius-pill: 999px;
+  --shadow-soft: 0 18px 50px rgba(48, 44, 40, .07);
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.75;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.12;
+}
+
+h1 { font-size: var(--text-h1); }
+h2 { font-size: var(--text-h2); }
+h3 { font-size: var(--text-h3); }
+h4 { font-size: var(--text-h4); }
+h5 { font-size: var(--text-h5); }
+
+button, nav, .ui-text {
+  font-family: var(--font-ui);
+}
+
+.meta, time, .category {
+  font-family: var(--font-mono);
+}</code></pre></div>
+<div class="grid-2" style="margin-top:18px">
+<div class="panel"><h4 style="margin-bottom:14px">Quick usage</h4><div class="quick-list">
+<div class="quick-item"><span>Editorial headline</span><code>var(--font-heading)</code></div><div class="quick-item"><span>Paragraph</span><code>var(--font-body)</code></div><div class="quick-item"><span>Navigation / UI</span><code>var(--font-ui)</code></div><div class="quick-item"><span>Date / metadata</span><code>var(--font-mono)</code></div><div class="quick-item"><span>Page background</span><code>var(--color-paper)</code></div><div class="quick-item"><span>Main text</span><code>var(--color-ink)</code></div>
+</div></div>
+<div class="panel"><h4 style="margin-bottom:12px">Art direction notes</h4><ul class="small muted" style="padding-left:19px;margin:0">
+<li>Gunakan ruang kosong yang cukup; jangan padatkan setiap section.</li><li>Serif paling efektif untuk headline, bukan semua komponen.</li><li>Batasi lebar paragraf sekitar 60–75 karakter per baris.</li><li>Pakai garis tipis dan border halus sebagai pemisah.</li><li>Gunakan foto dengan tone natural, grain lembut, dan pencahayaan hangat bila diperlukan.</li>
+</ul></div></div></section>
+</main>
+<footer><div class="wrap"><span class="brand">THE <span>EDITORIAL</span> KIT</span><span>Soft Editorial · Developer Reference · 2026</span></div></footer>
+<div class="toast" id="toast">Copied</div>
+<script>
+const toast=document.getElementById('toast');let toastTimer;
+function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),1700)}
+async function copyText(value,message){try{await navigator.clipboard.writeText(value);showToast(message||'Berhasil disalin')}catch(error){const area=document.createElement('textarea');area.value=value;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();const ok=document.execCommand('copy');area.remove();showToast(ok?(message||'Berhasil disalin'):'Gagal menyalin, salin manual')}}
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',()=>copyText(button.dataset.copy,button.dataset.copy+' copied')));
+document.getElementById('copyCss').addEventListener('click',()=>copyText(document.getElementById('cssCode').innerText,'CSS berhasil disalin'));
+</script>
+</body></html>
